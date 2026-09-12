@@ -54,6 +54,7 @@ This file is the navigation map for the Personal OS product-definition package.
 - [`04-design-system/CHARACTER_SYSTEM_V0_1.md`](04-design-system/CHARACTER_SYSTEM_V0_1.md)
 - [`04-design-system/VISUAL_REFERENCE_PACKAGE_V0_1.md`](04-design-system/VISUAL_REFERENCE_PACKAGE_V0_1.md)
 - [`04-design-system/VISUAL_REFERENCE_MANIFEST.md`](04-design-system/VISUAL_REFERENCE_MANIFEST.md)
+- [`04-design-system/SECOND_TIER_VISUAL_REFERENCES_V0_1.md`](04-design-system/SECOND_TIER_VISUAL_REFERENCES_V0_1.md) — Search, Settings, Task Detail, Project Detail, Weekly Review and Life Timeline candidate references
 
 ## Behavior Specifications
 - [`05-behavior/TASKS_REMINDERS_V0_1.md`](05-behavior/TASKS_REMINDERS_V0_1.md)
