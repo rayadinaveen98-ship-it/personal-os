@@ -179,3 +179,27 @@ Generic “come back to the app” notifications are not part of the product phi
 Feature completion requires behavior, persistence, navigation, states, permissions where relevant, tests, and approved UI fidelity.
 
 **Status:** Locked.
+
+---
+
+## D-016 — Premium experience is a product requirement
+
+**Decision:** Personal OS must deliver a premium, rich, calm, peaceful, emotionally warm experience across the complete product — from app icon and launch through setup, Today, deep screens, transitions, empty states and success states.
+
+**Why:** Personal OS is intended to feel like a private digital life space, not a generic productivity utility.
+
+**Implication:** Generic stock-Material presentation is not acceptable as the final visual result. Visual polish and interaction quality are part of the definition of done.
+
+**Status:** Locked founder direction.
+
+---
+
+## D-017 — Calm 2D companion system
+
+**Decision:** Personal OS should be designed to support a small calm 2D companion-character layer. If technically feasible without weakening core reliability, at least one tap-reactive companion should appear on selected high-value surfaces such as Welcome, onboarding, Today, empty states and reflection moments.
+
+**Behavior:** The companion may idle gently, react to taps with varied short actions, respond subtly to meaningful context such as task completion or evening reflection, and then return to idle.
+
+**Constraints:** It must remain secondary to utility, never block workflows, never carry essential information alone, and must not make the product feel childish or noisy.
+
+**Status:** Direction locked; exact character form and animation technology not yet frozen.
