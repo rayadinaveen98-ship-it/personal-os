@@ -6,8 +6,8 @@ This file is the navigation map for the product-definition package.
 
 - **Phase 0 Product Foundation:** baseline established
 - **Phase 1 Information Architecture:** working draft started
-- **Phase 2 UX Flows:** launch/welcome/setup flow started
-- **Phase 3 Screen Specs:** Today/Home working draft started
+- **Phase 2 UX Flows:** launch/welcome/setup + screen/flow matrix started
+- **Phase 3 Screen Specs:** core primary screens drafted (Today, Plan, Capture, Journey, Me)
 - **Phase 4 Design System:** visual language, brand/icon, motion, and companion-character drafts started
 - **Phase 5+ Behavior / Intelligence / Data / Android / QA:** pending
 - **Astra build handoff:** not ready yet
@@ -27,10 +27,15 @@ This file is the navigation map for the product-definition package.
 ## UX Flows
 
 - [`02-ux-flows/LAUNCH_WELCOME_SETUP_V0_1.md`](02-ux-flows/LAUNCH_WELCOME_SETUP_V0_1.md) — detailed first-launch, welcome, setup, personalization, permission and first-Today handoff behavior
+- [`02-ux-flows/SCREEN_FLOW_MATRIX_V0_1.md`](02-ux-flows/SCREEN_FLOW_MATRIX_V0_1.md) — master surface/readiness map for all screens and flows still needed before Astra handoff
 
 ## Screen Specifications
 
 - [`03-screen-specs/TODAY_HOME_V0_1.md`](03-screen-specs/TODAY_HOME_V0_1.md) — detailed working specification for the most important screen
+- [`03-screen-specs/PLAN_V0_1.md`](03-screen-specs/PLAN_V0_1.md) — Today/Week/Projects planning behavior, task interactions, coming-up and empty states
+- [`03-screen-specs/CAPTURE_V0_1.md`](03-screen-specs/CAPTURE_V0_1.md) — universal natural-language/voice capture, structured correction, permissions and save behavior
+- [`03-screen-specs/JOURNEY_V0_1.md`](03-screen-specs/JOURNEY_V0_1.md) — truthful daily history, journal, timeline, memories and reflection behavior
+- [`03-screen-specs/ME_V0_1.md`](03-screen-specs/ME_V0_1.md) — identity, life areas, projects, goals/growth truthfulness, privacy and settings gateway
 
 ## Design System
 
