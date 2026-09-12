@@ -78,8 +78,8 @@ jobs:
           grep -q "No fabricated personal data" docs/decisions/DECISION_LOG.md
           grep -q "Today / Plan / central Capture / Journey / Me" docs/decisions/DECISION_LOG.md
           grep -q "V1 VISUAL TARGETS FROZEN" docs/04-design-system/VISUAL_REFERENCE_MANIFEST.md
-          grep -q "Status: FROZEN for initial implementation" docs/07-data/DATA_SCHEMA_V1_FROZEN.md
-          grep -q "Status: FROZEN for Astra implementation start" docs/08-android/ANDROID_BUILD_BASELINE_FROZEN_2026_09_12.md
+          grep -q "FROZEN for initial implementation" docs/07-data/DATA_SCHEMA_V1_FROZEN.md
+          grep -q "FROZEN for Astra implementation start" docs/08-android/ANDROID_BUILD_BASELINE_FROZEN_2026_09_12.md
           grep -q "READY FOR ASTRA EXECUTION" docs/10-execution/BUILD_HANDOFF_READINESS.md
           grep -q "AUTHORIZED: Execute Personal OS end-to-end" docs/10-execution/ASTRA_EXECUTION_BRIEF_V1.md
           echo "Frozen product truth guards passed."
