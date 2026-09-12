@@ -1,301 +1,198 @@
 # Personal OS — Build Handoff Readiness Checklist
 
-This checklist determines when the project is ready to be handed to a high-capability Work model for implementation.
+This checklist determines when Personal OS is ready for a high-capability Astra/Work implementation handoff.
 
-The implementation handoff should happen only when the required sections are complete enough that the model does not need to invent major product decisions.
-
-> **Important:** A detailed working draft is not the same as a frozen implementation specification. Items explicitly requiring a freeze remain unchecked until open decisions are resolved.
+A detailed draft is not the same as a frozen implementation spec.
 
 ## A. Product foundation
+- [x] Product name / promise / core loop
+- [x] Product principles and non-goals
+- [x] Local-first philosophy
+- [x] No-fake-data / truthful-interaction rules
+- [x] Premium rich calm founder direction
+- [x] Calm 2D companion direction
+- [x] V1 scope boundary
+- [x] Source-of-truth repository
 
-- [x] Product name locked: Personal OS
-- [x] Product promise defined
-- [x] Core loop defined
-- [x] Product principles documented
-- [x] V1 direction documented
-- [x] Non-goals documented
-- [x] Local-first philosophy documented
-- [x] No-fake-data rule documented
-- [x] Source-of-truth repository established
-- [x] Premium/rich/calm founder experience requirement documented
-- [x] Calm 2D companion direction documented
+## B. Information architecture & flows
+- [x] Primary mental model: Today / Plan / Capture / Journey / Me
+- [x] V1 feature ownership/home defined
+- [x] Detail-first navigation rule
+- [x] Back-navigation principles
+- [x] First install / returning open flow
+- [x] Task / reminder / project / goal / habit create behavior
+- [x] Capture / voice / morning / evening / weekly-review flows
+- [x] Search / edit-delete / permission-recovery direction
+- [ ] Final route-name hierarchy freeze for Android Navigation
 
-## B. Information architecture
+## C. Screen specification coverage
+Working specs now exist for:
+- [x] Welcome / setup
+- [x] Today
+- [x] Plan
+- [x] Capture
+- [x] Journey
+- [x] Me
+- [x] Search
+- [x] Settings
+- [x] Weekly Review
+- [x] Core detail screens
+- [x] Life Area Detail
+- [x] Timeline / Archive
 
-- [ ] Primary navigation frozen
-- [ ] Route hierarchy frozen
-- [x] Every V1 feature has a working defined home
-- [x] Detail-screen structure defined at working-draft level
-- [x] Global Search placement defined
-- [x] Settings placement defined
-- [x] Create/edit flow ownership placed
-- [x] Back-navigation expectations defined
+Still required before implementation freeze:
+- [ ] final per-screen review against approved visual references
+- [ ] exact visible controls/states synchronized with final design files
+- [ ] final dark-mode/small-screen review
 
-## C. UX flows
+## D. Design system
+Drafted:
+- [x] Warm Personal Observatory identity
+- [x] semantic light/dark direction
+- [x] typography direction/scale
+- [x] component system
+- [x] app icon/brand direction
+- [x] motion/micro-interactions
+- [x] companion system
+- [x] visual-reference production plan
+- [x] visual-reference manifest created
 
-- [x] First install flow drafted
-- [x] Returning user open flow drafted
-- [x] Create task flow behavior defined
-- [x] Create reminder flow behavior defined
-- [x] Create project flow behavior defined
-- [x] Create goal flow behavior defined
-- [x] Habit flow behavior defined
-- [x] Universal capture flow drafted
-- [x] Voice capture flow drafted
-- [x] Morning flow behavior defined
-- [x] Evening reflection flow behavior defined
-- [x] Weekly review flow drafted
-- [x] Search/retrieve flow drafted
-- [x] Edit/delete principles defined
-- [x] Permission denial/recovery behavior defined
-- [x] Notification interaction direction defined
+Still blocking:
+- [ ] companion visual identity approved
+- [ ] app icon approved
+- [ ] Welcome/setup references approved
+- [ ] Today morning/empty/evening references approved
+- [ ] Capture/Journey/Me references approved
+- [ ] dark-mode reference approved
+- [ ] component sheet approved
+- [ ] final font family + accessibility contrast audit
+- [ ] final token freeze after visual review
 
-Several flows still need exact visual/edge-state freeze before handoff.
+## E. Feature behavior
+- [x] Tasks/subtasks
+- [x] Reminders
+- [x] Recurrence semantics
+- [x] Projects/milestones
+- [x] Goals
+- [x] Habits/routines
+- [x] Journal
+- [x] Ideas
+- [x] Hobbies/skills/sessions
+- [x] Memories
+- [x] Chapters
+- [x] Life Areas
+- [x] Search
+- [x] Daily reflection
+- [x] Weekly review
+- [x] Timeline/archive
+- [x] Morning Brief
+- [x] Evening close
+- [x] Attachments V1 scope
+- [x] Export/backup direction
+- [x] App Lock V1 decision
 
-## D. Screen specifications
+## F. Personal Intelligence
+- [x] Today prioritization
+- [x] carry-forward rules
+- [x] next-action principles
+- [x] project resumption
+- [x] inactive/neglected context direction
+- [x] capture classification direction
+- [x] weekly evidence rules
+- [x] explainability
+- [x] confidence/fallback principles
+- [x] optional-AI boundaries
 
-For every V1 screen, final freeze still requires:
+Final implementation should translate these into deterministic test cases.
 
-- [ ] purpose defined for every screen
-- [ ] entry routes frozen for every screen
-- [ ] exact content hierarchy frozen
-- [ ] every visible control frozen
-- [ ] data source frozen
-- [ ] empty state frozen
-- [ ] loading state frozen where relevant
-- [ ] error state frozen where relevant
-- [ ] first-use state frozen
-- [ ] populated state frozen
-- [ ] navigation destinations frozen
-- [ ] destructive actions frozen
-- [ ] dark-mode behavior frozen
-- [ ] small-screen behavior frozen
+## G. Data architecture
+- [x] V1 entity list freeze candidate
+- [x] major relationships freeze candidate
+- [x] Memory/Chapter decision
+- [x] recurrence model candidate
+- [x] reminder model candidate
+- [x] timeline-event scope candidate
+- [x] tag/link scope candidate
+- [x] attachment model candidate
+- [x] IDs/time handling
+- [x] archive/delete direction
+- [x] search strategy
+- [x] migration policy
+- [x] export representation direction
 
-### Major screen draft coverage
+Still required:
+- [ ] final Room entity/foreign-key/index review
+- [ ] exact FTS architecture
+- [ ] schema candidate marked FROZEN
 
-- [x] Onboarding / launch / welcome — working draft
-- [x] Today/Home — deep working draft
-- [x] Plan — working draft
-- [x] Universal Capture — working draft
-- [x] Journey — working draft
-- [x] Me — working draft
-- [x] Task/Reminder Detail — working shared detail draft
-- [x] Project Detail — working shared detail + behavior draft
-- [x] Goal Detail — working shared detail + behavior draft
-- [x] Habit Detail — working shared detail + behavior draft
-- [x] Hobby/Skill Detail — working shared detail + behavior draft
-- [x] Journal Detail — working shared detail + behavior draft
-- [x] Idea Detail — working shared detail + behavior draft
-- [x] Search — working draft
-- [x] Weekly Review — working draft
-- [ ] Life Timeline/archive — dedicated screen draft still needed
-- [x] Settings — working draft
-- [ ] Life Area Detail — dedicated screen draft still needed
+## H. Android architecture/build
+- [x] application ID candidate: `com.navin.personalos`
+- [x] min/compile/target SDK freeze candidate
+- [x] JDK/toolchain stable baseline researched
+- [x] Kotlin/Compose stable baseline researched
+- [x] Kotlin/Compose/Room/DataStore/Hilt architecture direction
+- [x] ViewModel/StateFlow direction
+- [x] AlarmManager/WorkManager roles
+- [x] notification/permission/recovery direction
+- [x] SpeechRecognizer direction
+- [x] Biometric/app-lock decision
+- [x] backup/export direction
+- [x] repository/branch/artifact policy
 
-None of the above is marked **frozen for implementation** yet.
+Still required:
+- [ ] final pre-build dependency-version recheck
+- [ ] exact Navigation/Room/Hilt library versions frozen
+- [ ] production Android CI workflow added once project skeleton exists
 
-## E. Design system
+## I. Quality & acceptance
+- [x] Definition of Done draft
+- [x] no-placeholder controls rule
+- [x] no-fake personal data rule
+- [x] unit/integration/UI critical areas
+- [x] reminder/reboot/permission tests
+- [x] persistence/migration tests
+- [x] light/dark/small-screen expectations
+- [x] APK smoke audit
+- [ ] final test-device matrix and RC checklist freeze
 
-- [ ] Design identity frozen
-- [ ] Light palette frozen
-- [ ] Dark palette frozen
-- [ ] Typography frozen
-- [ ] Spacing scale frozen
-- [ ] Radius/elevation system frozen
-- [ ] Card styles frozen
-- [ ] Button hierarchy frozen
-- [ ] Chip styles frozen
-- [ ] Inputs frozen
-- [ ] Bottom navigation frozen
-- [ ] Dialog/sheet patterns frozen
-- [ ] Icons rules frozen
-- [ ] Empty-state pattern frozen
-- [ ] Motion rules frozen
-- [x] Accessibility constraints documented at draft level
-- [ ] Status/navigation bar rules frozen
-- [ ] Responsive rules frozen
+## J. Repository preparation
+- [x] repository created/public
+- [x] docs structure populated
+- [x] `.gitignore`
+- [x] spec-validation GitHub Action
+- [x] branch convention drafted
+- [x] artifact naming drafted
+- [x] Astra execution brief skeleton
+- [ ] Android app skeleton/build workflow — intentionally deferred to implementation start
+- [ ] approved app icon/companion assets
+- [ ] approved visual screen references
+- [ ] asset licensing/source manifest
+- [ ] final secrets audit before build
 
-### Design draft coverage
-
-- [x] Warm Personal Observatory direction
-- [x] Premium founder experience direction
-- [x] Semantic light/dark working palette
-- [x] Typography candidates/scale
-- [x] Reusable component system
-- [x] App icon/brand direction
-- [x] Motion/micro-interaction system
-- [x] Calm 2D companion system
-
-## F. Feature behavior
-
-- [x] Tasks — working behavior draft
-- [x] Subtasks — working behavior draft
-- [x] Reminders — working behavior draft
-- [ ] Recurrence — exact recurrence-engine semantics still required
-- [x] Projects — working behavior draft
-- [x] Milestones — working behavior draft
-- [x] Goals — working behavior draft
-- [x] Habits/routines — working behavior draft
-- [x] Journal — working behavior draft
-- [x] Ideas — working behavior draft
-- [x] Hobbies — working behavior draft
-- [x] Skills — working behavior draft
-- [x] Sessions/activity — working behavior draft
-- [x] Search — working behavior draft
-- [x] Daily reflection — working behavior draft
-- [x] Weekly review — working behavior draft
-- [ ] Timeline/archive — dedicated behavior/screen freeze pending
-- [x] Morning brief — working behavior draft
-- [x] Evening close — working behavior draft
-- [ ] Attachments — exact V1 subset pending
-- [x] Export/backup — working behavior/security draft
-- [ ] Privacy/app lock — final V1 inclusion/policy pending
-
-## G. Intelligence specification
-
-- [x] Today prioritization working rules
-- [ ] Carry-forward exact rules
-- [x] Next-action principles
-- [x] Project resumption logic
-- [x] Neglected project/goal direction
-- [x] Capture classification architecture/rules direction
-- [x] Weekly evidence/insight rules
-- [x] Explainability rules
-- [x] Confidence/fallback principles
-- [x] Optional-AI boundaries
-
-## H. Data architecture
-
-- [ ] V1 entity list frozen
-- [ ] Relationships frozen
-- [x] IDs/timestamps working policy defined
-- [x] Archive/delete semantics direction defined
-- [x] Completion history model direction defined
-- [ ] Recurrence model frozen
-- [ ] Event/activity model frozen
-- [ ] Tag/relation model frozen
-- [x] Search strategy defined
-- [x] Migration policy defined
-- [x] Export representation direction defined
-
-### Data draft coverage
-
-- [x] Core domain entities enumerated
-- [x] DataStore ownership direction
-- [x] local-time/instant handling principles
-- [x] Room FTS/search direction
-- [x] versioned backup/restore direction
-- [x] referential-integrity principles
-
-## I. Android architecture
-
-- [ ] Package ID frozen
-- [ ] Min/target/compile SDK frozen
-- [ ] Kotlin/Compose versions frozen
-- [ ] Navigation architecture frozen
-- [ ] Room architecture frozen
-- [ ] DataStore ownership frozen
-- [ ] Hilt structure frozen
-- [ ] ViewModel/state conventions frozen
-- [ ] AlarmManager strategy frozen
-- [ ] WorkManager strategy frozen
-- [ ] Notification architecture frozen
-- [ ] Permission architecture frozen
-- [ ] Speech recognition behavior frozen
-- [ ] Biometric/app-lock decision frozen
-- [ ] Backup/export implementation direction frozen
-- [ ] Error/logging policy frozen
-
-### Android architecture draft coverage
-
-- [x] Native Kotlin + Jetpack Compose direction
-- [x] Room + DataStore direction
-- [x] Hilt / ViewModel / StateFlow direction
-- [x] AlarmManager + WorkManager roles
-- [x] notification/deep-link requirements
-- [x] SpeechRecognizer behavior direction
-- [x] backup/export service direction
-- [x] companion rendering isolation requirement
-- [x] test/CI architecture direction
-
-## J. Quality and tests
-
-- [x] Definition of Done working draft
-- [x] no-placeholder-controls rule included
-- [x] no-fake-personal-data rule included
-- [x] unit-test minimum areas defined
-- [x] integration/UI-test flow matrix defined at draft level
-- [x] reminder test matrix defined
-- [x] persistence/restart expectations defined
-- [x] migration test plan defined
-- [x] small-screen/device direction defined
-- [x] light/dark test requirements defined
-- [x] permission-denial tests defined
-- [x] reboot recovery test defined
-- [x] APK/manual smoke-audit expectations defined
-
-Final device list and release-candidate checklist still need freeze.
-
-## K. Repository/build preparation
-
-- [x] GitHub repository created
-- [x] Repository confirmed public for free GitHub Actions usage
-- [x] Source-of-truth rule documented
-- [x] Documentation structure substantially populated
-- [ ] `.gitignore` prepared
-- [ ] CI workflow prepared
-- [ ] branch convention frozen
-- [ ] artifact naming frozen
-- [ ] app icon assets ready
-- [ ] approved visual screen references ready
-- [ ] companion/illustration assets ready
-- [ ] licensing/asset notes ready
-- [ ] secrets audit complete
-
-## L. Final Astra execution package
-
-- [ ] Master execution brief complete
-- [ ] Frozen-spec index complete
-- [ ] Implementation order specified
-- [ ] Acceptance contract embedded
-- [ ] CI requirements embedded
-- [ ] APK delivery requirement embedded
-- [ ] Model instructed to read all specifications before coding
-- [ ] Model instructed not to replace product decisions with assumptions
-- [ ] Model instructed to report genuine blockers rather than fake completion
+## K. Final Astra package
+- [x] execution brief skeleton exists
+- [x] implementation order drafted
+- [x] acceptance/CI/APK requirements drafted
+- [x] model read-order specified
+- [x] no-assumption / genuine-blocker rules drafted
+- [ ] frozen-spec index declared final
+- [ ] visual manifest populated with approved references
+- [ ] execution brief version finalized
+- [ ] explicit `AUTHORIZED: Execute Personal OS end-to-end` line added
 
 ---
 
-## Current readiness — 2026-09-12
+# Current readiness — 2026-09-12
 
-The project has advanced well beyond Phase 0. We now have substantial working drafts covering:
+**Product/behavior preparation is now broadly complete at working-draft level.** The main handoff blocker is no longer “we do not know what the app should do.”
 
-- product foundation
-- premium experience direction
-- information architecture
-- first-run UX
-- all five primary screens
-- Search / Settings / Weekly Review
-- core detail-screen behavior
-- design language/components/motion/companion system
-- major domain behaviors
-- deterministic Personal Intelligence
-- data architecture
-- privacy/backup/security
-- Android architecture
-- V1 QA/acceptance
+The dominant remaining work is:
+1. create and approve the premium visual-reference package
+2. choose/freeze the companion character identity
+3. freeze design tokens after those visuals
+4. perform the final schema/toolchain/accessibility review
+5. finalize the Astra execution brief
 
-### Still intentionally blocking Astra handoff
+## Status
 
-1. Resolve/freeze major open product decisions (recurrence, attachments, App Lock, Memory/Chapters, Life Areas).
-2. Produce/approve final high-value visual references and companion direction.
-3. Freeze typography/palette/component values after accessibility review.
-4. Freeze Room entities/relationships and Android dependency/toolchain versions.
-5. Prepare repository build skeleton, CI and asset licensing.
-6. Write the final master Astra execution brief against the frozen package.
-
-The project is **NOT READY FOR ASTRA EXECUTION YET**, by design.
-
-When all critical freeze items are complete, this document should be updated to:
-
-> **READY FOR ASTRA EXECUTION**
+> **NOT READY FOR ASTRA EXECUTION YET — VISUAL FREEZE PHASE NEXT**
