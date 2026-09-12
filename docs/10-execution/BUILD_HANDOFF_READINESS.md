@@ -4,6 +4,8 @@ This checklist determines when the project is ready to be handed to a high-capab
 
 The implementation handoff should happen only when the required sections are complete enough that the model does not need to invent major product decisions.
 
+> **Important:** A detailed working draft is not the same as a frozen implementation specification. Items explicitly requiring a freeze remain unchecked until open decisions are resolved.
+
 ## A. Product foundation
 
 - [x] Product name locked: Personal OS
@@ -15,76 +17,82 @@ The implementation handoff should happen only when the required sections are com
 - [x] Local-first philosophy documented
 - [x] No-fake-data rule documented
 - [x] Source-of-truth repository established
+- [x] Premium/rich/calm founder experience requirement documented
+- [x] Calm 2D companion direction documented
 
 ## B. Information architecture
 
 - [ ] Primary navigation frozen
 - [ ] Route hierarchy frozen
-- [ ] Every V1 feature has a defined home
-- [ ] Detail-screen structure defined
-- [ ] Global Search placement defined
-- [ ] Settings placement defined
-- [ ] Create/edit flows placed
-- [ ] Back-navigation expectations defined
+- [x] Every V1 feature has a working defined home
+- [x] Detail-screen structure defined at working-draft level
+- [x] Global Search placement defined
+- [x] Settings placement defined
+- [x] Create/edit flow ownership placed
+- [x] Back-navigation expectations defined
 
 ## C. UX flows
 
-- [ ] First install flow
-- [ ] Returning user open flow
-- [ ] Create task flow
-- [ ] Create reminder flow
-- [ ] Create project flow
-- [ ] Create goal flow
-- [ ] Habit flow
-- [ ] Universal capture flow
-- [ ] Voice capture flow
-- [ ] Morning flow
-- [ ] Evening reflection flow
-- [ ] Weekly review flow
-- [ ] Search/retrieve flow
-- [ ] Edit/delete flow
-- [ ] Permission denial/recovery flow
-- [ ] Notification interaction flow
+- [x] First install flow drafted
+- [x] Returning user open flow drafted
+- [x] Create task flow behavior defined
+- [x] Create reminder flow behavior defined
+- [x] Create project flow behavior defined
+- [x] Create goal flow behavior defined
+- [x] Habit flow behavior defined
+- [x] Universal capture flow drafted
+- [x] Voice capture flow drafted
+- [x] Morning flow behavior defined
+- [x] Evening reflection flow behavior defined
+- [x] Weekly review flow drafted
+- [x] Search/retrieve flow drafted
+- [x] Edit/delete principles defined
+- [x] Permission denial/recovery behavior defined
+- [x] Notification interaction direction defined
+
+Several flows still need exact visual/edge-state freeze before handoff.
 
 ## D. Screen specifications
 
-For every V1 screen:
+For every V1 screen, final freeze still requires:
 
-- [ ] purpose defined
-- [ ] entry routes defined
-- [ ] exact content hierarchy defined
-- [ ] every visible control defined
-- [ ] data source defined
-- [ ] empty state defined
-- [ ] loading state defined where relevant
-- [ ] error state defined where relevant
-- [ ] first-use state defined
-- [ ] populated state defined
-- [ ] navigation destinations defined
-- [ ] destructive actions defined
-- [ ] dark-mode behavior defined
-- [ ] small-screen behavior defined
+- [ ] purpose defined for every screen
+- [ ] entry routes frozen for every screen
+- [ ] exact content hierarchy frozen
+- [ ] every visible control frozen
+- [ ] data source frozen
+- [ ] empty state frozen
+- [ ] loading state frozen where relevant
+- [ ] error state frozen where relevant
+- [ ] first-use state frozen
+- [ ] populated state frozen
+- [ ] navigation destinations frozen
+- [ ] destructive actions frozen
+- [ ] dark-mode behavior frozen
+- [ ] small-screen behavior frozen
 
-Key screens still to freeze:
+### Major screen draft coverage
 
-- [ ] Onboarding
-- [ ] Today/Home
-- [ ] Plan
-- [ ] Universal Capture
-- [ ] Journey
-- [ ] Me
-- [ ] Task Detail
-- [ ] Project List
-- [ ] Project Detail
-- [ ] Goal Detail
-- [ ] Habit Detail
-- [ ] Hobby/Skill Detail
-- [ ] Journal Detail
-- [ ] Idea Detail
-- [ ] Search
-- [ ] Weekly Review
-- [ ] Timeline
-- [ ] Settings
+- [x] Onboarding / launch / welcome — working draft
+- [x] Today/Home — deep working draft
+- [x] Plan — working draft
+- [x] Universal Capture — working draft
+- [x] Journey — working draft
+- [x] Me — working draft
+- [x] Task/Reminder Detail — working shared detail draft
+- [x] Project Detail — working shared detail + behavior draft
+- [x] Goal Detail — working shared detail + behavior draft
+- [x] Habit Detail — working shared detail + behavior draft
+- [x] Hobby/Skill Detail — working shared detail + behavior draft
+- [x] Journal Detail — working shared detail + behavior draft
+- [x] Idea Detail — working shared detail + behavior draft
+- [x] Search — working draft
+- [x] Weekly Review — working draft
+- [ ] Life Timeline/archive — dedicated screen draft still needed
+- [x] Settings — working draft
+- [ ] Life Area Detail — dedicated screen draft still needed
+
+None of the above is marked **frozen for implementation** yet.
 
 ## E. Design system
 
@@ -103,61 +111,81 @@ Key screens still to freeze:
 - [ ] Icons rules frozen
 - [ ] Empty-state pattern frozen
 - [ ] Motion rules frozen
-- [ ] Accessibility constraints documented
+- [x] Accessibility constraints documented at draft level
 - [ ] Status/navigation bar rules frozen
 - [ ] Responsive rules frozen
 
+### Design draft coverage
+
+- [x] Warm Personal Observatory direction
+- [x] Premium founder experience direction
+- [x] Semantic light/dark working palette
+- [x] Typography candidates/scale
+- [x] Reusable component system
+- [x] App icon/brand direction
+- [x] Motion/micro-interaction system
+- [x] Calm 2D companion system
+
 ## F. Feature behavior
 
-- [ ] Tasks
-- [ ] Subtasks
-- [ ] Reminders
-- [ ] Recurrence
-- [ ] Projects
-- [ ] Milestones
-- [ ] Goals
-- [ ] Habits/routines
-- [ ] Journal
-- [ ] Ideas
-- [ ] Hobbies
-- [ ] Skills
-- [ ] Sessions/activity
-- [ ] Search
-- [ ] Daily reflection
-- [ ] Weekly review
-- [ ] Timeline
-- [ ] Morning brief
-- [ ] Evening close
-- [ ] Attachments
-- [ ] Export/backup
-- [ ] Privacy/app lock
+- [x] Tasks — working behavior draft
+- [x] Subtasks — working behavior draft
+- [x] Reminders — working behavior draft
+- [ ] Recurrence — exact recurrence-engine semantics still required
+- [x] Projects — working behavior draft
+- [x] Milestones — working behavior draft
+- [x] Goals — working behavior draft
+- [x] Habits/routines — working behavior draft
+- [x] Journal — working behavior draft
+- [x] Ideas — working behavior draft
+- [x] Hobbies — working behavior draft
+- [x] Skills — working behavior draft
+- [x] Sessions/activity — working behavior draft
+- [x] Search — working behavior draft
+- [x] Daily reflection — working behavior draft
+- [x] Weekly review — working behavior draft
+- [ ] Timeline/archive — dedicated behavior/screen freeze pending
+- [x] Morning brief — working behavior draft
+- [x] Evening close — working behavior draft
+- [ ] Attachments — exact V1 subset pending
+- [x] Export/backup — working behavior/security draft
+- [ ] Privacy/app lock — final V1 inclusion/policy pending
 
 ## G. Intelligence specification
 
-- [ ] Today prioritization rules
-- [ ] Carry-forward rules
-- [ ] Next-action rules
-- [ ] Project resumption logic
-- [ ] Neglected goal logic
-- [ ] Capture classification rules
-- [ ] Weekly insight rules
-- [ ] Explainability rules
-- [ ] Confidence/fallback rules
-- [ ] Optional-AI boundaries
+- [x] Today prioritization working rules
+- [ ] Carry-forward exact rules
+- [x] Next-action principles
+- [x] Project resumption logic
+- [x] Neglected project/goal direction
+- [x] Capture classification architecture/rules direction
+- [x] Weekly evidence/insight rules
+- [x] Explainability rules
+- [x] Confidence/fallback principles
+- [x] Optional-AI boundaries
 
 ## H. Data architecture
 
 - [ ] V1 entity list frozen
 - [ ] Relationships frozen
-- [ ] IDs/timestamps defined
-- [ ] Archive/delete semantics defined
-- [ ] Completion history model defined
-- [ ] Recurrence model defined
-- [ ] Event/activity model defined
-- [ ] Tag/relation model defined
-- [ ] Search strategy defined
-- [ ] Migration policy defined
-- [ ] Export representation defined
+- [x] IDs/timestamps working policy defined
+- [x] Archive/delete semantics direction defined
+- [x] Completion history model direction defined
+- [ ] Recurrence model frozen
+- [ ] Event/activity model frozen
+- [ ] Tag/relation model frozen
+- [x] Search strategy defined
+- [x] Migration policy defined
+- [x] Export representation direction defined
+
+### Data draft coverage
+
+- [x] Core domain entities enumerated
+- [x] DataStore ownership direction
+- [x] local-time/instant handling principles
+- [x] Room FTS/search direction
+- [x] versioned backup/restore direction
+- [x] referential-integrity principles
 
 ## I. Android architecture
 
@@ -178,34 +206,49 @@ Key screens still to freeze:
 - [ ] Backup/export implementation direction frozen
 - [ ] Error/logging policy frozen
 
+### Android architecture draft coverage
+
+- [x] Native Kotlin + Jetpack Compose direction
+- [x] Room + DataStore direction
+- [x] Hilt / ViewModel / StateFlow direction
+- [x] AlarmManager + WorkManager roles
+- [x] notification/deep-link requirements
+- [x] SpeechRecognizer behavior direction
+- [x] backup/export service direction
+- [x] companion rendering isolation requirement
+- [x] test/CI architecture direction
+
 ## J. Quality and tests
 
-- [ ] Definition of Done frozen
-- [ ] no-placeholder-controls rule included
-- [ ] no-fake-personal-data rule included
-- [ ] unit-test minimums defined
-- [ ] integration-test matrix defined
-- [ ] reminder test matrix defined
-- [ ] persistence/restart test matrix defined
-- [ ] migration test plan defined
-- [ ] small-screen test devices defined
-- [ ] light/dark test matrix defined
-- [ ] permission-denial test matrix defined
-- [ ] reboot recovery test defined
-- [ ] APK smoke-test checklist defined
+- [x] Definition of Done working draft
+- [x] no-placeholder-controls rule included
+- [x] no-fake-personal-data rule included
+- [x] unit-test minimum areas defined
+- [x] integration/UI-test flow matrix defined at draft level
+- [x] reminder test matrix defined
+- [x] persistence/restart expectations defined
+- [x] migration test plan defined
+- [x] small-screen/device direction defined
+- [x] light/dark test requirements defined
+- [x] permission-denial tests defined
+- [x] reboot recovery test defined
+- [x] APK/manual smoke-audit expectations defined
+
+Final device list and release-candidate checklist still need freeze.
 
 ## K. Repository/build preparation
 
 - [x] GitHub repository created
 - [x] Repository confirmed public for free GitHub Actions usage
 - [x] Source-of-truth rule documented
-- [ ] final documentation structure populated
+- [x] Documentation structure substantially populated
 - [ ] `.gitignore` prepared
 - [ ] CI workflow prepared
 - [ ] branch convention frozen
 - [ ] artifact naming frozen
 - [ ] app icon assets ready
-- [ ] approved screen references ready
+- [ ] approved visual screen references ready
+- [ ] companion/illustration assets ready
 - [ ] licensing/asset notes ready
 - [ ] secrets audit complete
 
@@ -223,12 +266,36 @@ Key screens still to freeze:
 
 ---
 
-## Current readiness
+## Current readiness — 2026-09-12
 
-**Phase 0 foundation is underway.**
+The project has advanced well beyond Phase 0. We now have substantial working drafts covering:
 
-The project is intentionally **not ready for the full Astra implementation handoff yet**.
+- product foundation
+- premium experience direction
+- information architecture
+- first-run UX
+- all five primary screens
+- Search / Settings / Weekly Review
+- core detail-screen behavior
+- design language/components/motion/companion system
+- major domain behaviors
+- deterministic Personal Intelligence
+- data architecture
+- privacy/backup/security
+- Android architecture
+- V1 QA/acceptance
 
-When all critical items above are checked, this document should be updated to:
+### Still intentionally blocking Astra handoff
+
+1. Resolve/freeze major open product decisions (recurrence, attachments, App Lock, Memory/Chapters, Life Areas).
+2. Produce/approve final high-value visual references and companion direction.
+3. Freeze typography/palette/component values after accessibility review.
+4. Freeze Room entities/relationships and Android dependency/toolchain versions.
+5. Prepare repository build skeleton, CI and asset licensing.
+6. Write the final master Astra execution brief against the frozen package.
+
+The project is **NOT READY FOR ASTRA EXECUTION YET**, by design.
+
+When all critical freeze items are complete, this document should be updated to:
 
 > **READY FOR ASTRA EXECUTION**
