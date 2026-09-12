@@ -1,0 +1,60 @@
+name: Validate Personal OS Specs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate-specs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate required specification files
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            "README.md"
+            "docs/INDEX.md"
+            "docs/00-foundation/PRODUCT_FOUNDATION_V1.md"
+            "docs/00-foundation/PRODUCT_PRINCIPLES.md"
+            "docs/00-foundation/V1_SCOPE_MATRIX.md"
+            "docs/01-information-architecture/INFORMATION_ARCHITECTURE_V0_1.md"
+            "docs/02-ux-flows/SCREEN_FLOW_MATRIX_V0_1.md"
+            "docs/03-screen-specs/TODAY_HOME_V0_1.md"
+            "docs/04-design-system/DESIGN_LANGUAGE_V0_1.md"
+            "docs/04-design-system/CHARACTER_SYSTEM_V0_1.md"
+            "docs/07-data/DATA_SCHEMA_FREEZE_CANDIDATE_V0_2.md"
+            "docs/08-android/ANDROID_BUILD_BASELINE_V0_1.md"
+            "docs/09-qa/V1_ACCEPTANCE_TEST_PLAN_V0_1.md"
+            "docs/10-execution/BUILD_HANDOFF_READINESS.md"
+          )
+
+          missing=0
+          for file in "${required[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "Missing required specification: $file"
+              missing=1
+            fi
+          done
+
+          if [[ "$missing" -ne 0 ]]; then
+            exit 1
+          fi
+
+          echo "Required specification set is present."
+
+      - name: Guard against destructive migration approval
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RIn --include='*.md' "fallbackToDestructiveMigration() is acceptable" docs; then
+            echo "Specification contradicts the no-destructive-migration rule."
+            exit 1
+          fi
+          echo "Migration safety guard passed."
