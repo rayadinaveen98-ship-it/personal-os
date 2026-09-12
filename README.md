@@ -14,7 +14,13 @@ The product should feel like a private, intelligent life cockpit and journal rat
 
 The major product, UX, visual, behavior, data, Android architecture, privacy and acceptance decisions are now frozen sufficiently for autonomous implementation.
 
-The final authorized build instruction is:
+### Astra / Work entrypoint
+
+Start the implementation session at:
+
+- `START_HERE_FOR_ASTRA.md`
+
+That file defines the required read order and points to the final authorized build contract:
 
 - `docs/10-execution/ASTRA_EXECUTION_BRIEF_V1.md`
 
@@ -136,6 +142,7 @@ Never ship:
 
 Start at:
 
+- `START_HERE_FOR_ASTRA.md`
 - `docs/INDEX.md`
 
 Important frozen V1 files include:
