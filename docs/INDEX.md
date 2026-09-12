@@ -1,22 +1,26 @@
-# Personal OS — Specification Index
+# Personal OS — Frozen Specification Index
 
-This file is the navigation map for the Personal OS product-definition package.
+**State:** PRE-BUILD PACKAGE COMPLETE  
+**Date:** 2026-09-12  
+**Repository:** `rayadinaveen98-ship-it/personal-os`
 
-## Current project state
+This is the navigation map and precedence guide for the Personal OS V1 implementation package.
 
-- **Phase 0 Product Foundation:** baseline established
-- **Phase 1 Information Architecture:** working draft established
-- **Phase 2 UX Flows:** launch/welcome/setup and screen-flow matrix drafted
-- **Phase 3 Screen Specs:** Today, Plan, Capture, Journey, Me, Search, Settings, Weekly Review, Life Area, Timeline/Archive and core detail behavior drafted
-- **Phase 4 Design System:** visual language, color/type, components, brand/icon, motion, character system and visual-reference plan drafted
-- **Phase 5 Behavior:** tasks/reminders, projects/goals, habits, hobbies/skills, journal/ideas/memories, recurrence and Life Areas/Chapters drafted
-- **Phase 6 Personal Intelligence:** deterministic V1 rules + carry-forward behavior drafted
-- **Phase 7 Data:** domain model, schema freeze candidate, privacy/security, app-lock/attachments and backup direction drafted
-- **Phase 8 Android:** architecture, build baseline and repository/build policy drafted
-- **Phase 9 QA:** V1 acceptance plan drafted
-- **Phase 10 Execution:** Astra execution brief skeleton drafted; final authorization intentionally withheld
-- **Visual reference approval:** pending
-- **Astra build handoff:** not ready yet; remaining blockers are mainly visual-reference approval + final freeze/recheck
+## Read this first
+
+Astra/Work must read the repository broadly before coding, but the following frozen files resolve ambiguity from older working drafts.
+
+### V1 frozen decision layer
+1. [`decisions/DECISION_LOG.md`](decisions/DECISION_LOG.md)
+2. [`01-information-architecture/ROUTE_HIERARCHY_FROZEN_V1.md`](01-information-architecture/ROUTE_HIERARCHY_FROZEN_V1.md)
+3. [`03-screen-specs/SCREEN_SPEC_RESOLUTIONS_V1_FROZEN.md`](03-screen-specs/SCREEN_SPEC_RESOLUTIONS_V1_FROZEN.md)
+4. [`04-design-system/VISUAL_REFERENCE_MANIFEST.md`](04-design-system/VISUAL_REFERENCE_MANIFEST.md)
+5. [`04-design-system/DESIGN_TOKENS_V1_FROZEN.md`](04-design-system/DESIGN_TOKENS_V1_FROZEN.md)
+6. [`04-design-system/ASSET_LICENSE_MANIFEST_V1.md`](04-design-system/ASSET_LICENSE_MANIFEST_V1.md)
+7. [`07-data/DATA_SCHEMA_V1_FROZEN.md`](07-data/DATA_SCHEMA_V1_FROZEN.md)
+8. [`08-android/ANDROID_BUILD_BASELINE_FROZEN_2026_09_12.md`](08-android/ANDROID_BUILD_BASELINE_FROZEN_2026_09_12.md)
+9. [`09-qa/RC_DEVICE_MATRIX_V1.md`](09-qa/RC_DEVICE_MATRIX_V1.md)
+10. [`10-execution/FINAL_CONSISTENCY_AUDIT_V1.md`](10-execution/FINAL_CONSISTENCY_AUDIT_V1.md)
 
 ## Foundation
 - [`00-foundation/PRODUCT_FOUNDATION_V1.md`](00-foundation/PRODUCT_FOUNDATION_V1.md)
@@ -25,14 +29,15 @@ This file is the navigation map for the Personal OS product-definition package.
 - [`00-foundation/PREPARATION_ROADMAP.md`](00-foundation/PREPARATION_ROADMAP.md)
 - [`00-foundation/FOUNDER_DIRECTION_PREMIUM_EXPERIENCE_2026_09_12.md`](00-foundation/FOUNDER_DIRECTION_PREMIUM_EXPERIENCE_2026_09_12.md)
 
-## Information Architecture
-- [`01-information-architecture/INFORMATION_ARCHITECTURE_V0_1.md`](01-information-architecture/INFORMATION_ARCHITECTURE_V0_1.md)
+## Information architecture
+- [`01-information-architecture/INFORMATION_ARCHITECTURE_V0_1.md`](01-information-architecture/INFORMATION_ARCHITECTURE_V0_1.md) — design history / conceptual explanation
+- [`01-information-architecture/ROUTE_HIERARCHY_FROZEN_V1.md`](01-information-architecture/ROUTE_HIERARCHY_FROZEN_V1.md) — **V1 authority**
 
-## UX Flows
+## UX flows
 - [`02-ux-flows/LAUNCH_WELCOME_SETUP_V0_1.md`](02-ux-flows/LAUNCH_WELCOME_SETUP_V0_1.md)
 - [`02-ux-flows/SCREEN_FLOW_MATRIX_V0_1.md`](02-ux-flows/SCREEN_FLOW_MATRIX_V0_1.md)
 
-## Screen Specifications
+## Screen specifications
 - [`03-screen-specs/TODAY_HOME_V0_1.md`](03-screen-specs/TODAY_HOME_V0_1.md)
 - [`03-screen-specs/PLAN_V0_1.md`](03-screen-specs/PLAN_V0_1.md)
 - [`03-screen-specs/CAPTURE_V0_1.md`](03-screen-specs/CAPTURE_V0_1.md)
@@ -44,19 +49,24 @@ This file is the navigation map for the Personal OS product-definition package.
 - [`03-screen-specs/CORE_DETAIL_SCREENS_V0_1.md`](03-screen-specs/CORE_DETAIL_SCREENS_V0_1.md)
 - [`03-screen-specs/LIFE_AREA_DETAIL_V0_1.md`](03-screen-specs/LIFE_AREA_DETAIL_V0_1.md)
 - [`03-screen-specs/TIMELINE_ARCHIVE_V0_1.md`](03-screen-specs/TIMELINE_ARCHIVE_V0_1.md)
+- [`03-screen-specs/SCREEN_SPEC_RESOLUTIONS_V1_FROZEN.md`](03-screen-specs/SCREEN_SPEC_RESOLUTIONS_V1_FROZEN.md) — **resolves historical open questions**
 
-## Design System & Visual References
+## Design system & visual references
 - [`04-design-system/DESIGN_LANGUAGE_V0_1.md`](04-design-system/DESIGN_LANGUAGE_V0_1.md)
-- [`04-design-system/COLOR_TYPOGRAPHY_V0_1.md`](04-design-system/COLOR_TYPOGRAPHY_V0_1.md)
+- [`04-design-system/COLOR_TYPOGRAPHY_V0_1.md`](04-design-system/COLOR_TYPOGRAPHY_V0_1.md) — historical working palette/type reasoning
 - [`04-design-system/COMPONENT_SYSTEM_V0_1.md`](04-design-system/COMPONENT_SYSTEM_V0_1.md)
 - [`04-design-system/APP_ICON_BRAND_V0_1.md`](04-design-system/APP_ICON_BRAND_V0_1.md)
 - [`04-design-system/MOTION_MICROINTERACTIONS_V0_1.md`](04-design-system/MOTION_MICROINTERACTIONS_V0_1.md)
 - [`04-design-system/CHARACTER_SYSTEM_V0_1.md`](04-design-system/CHARACTER_SYSTEM_V0_1.md)
 - [`04-design-system/VISUAL_REFERENCE_PACKAGE_V0_1.md`](04-design-system/VISUAL_REFERENCE_PACKAGE_V0_1.md)
-- [`04-design-system/VISUAL_REFERENCE_MANIFEST.md`](04-design-system/VISUAL_REFERENCE_MANIFEST.md)
-- [`04-design-system/SECOND_TIER_VISUAL_REFERENCES_V0_1.md`](04-design-system/SECOND_TIER_VISUAL_REFERENCES_V0_1.md) — Search, Settings, Task Detail, Project Detail, Weekly Review and Life Timeline candidate references
+- [`04-design-system/SECOND_TIER_VISUAL_REFERENCES_V0_1.md`](04-design-system/SECOND_TIER_VISUAL_REFERENCES_V0_1.md)
+- [`04-design-system/THIRD_TIER_VISUAL_REFERENCES_V0_1.md`](04-design-system/THIRD_TIER_VISUAL_REFERENCES_V0_1.md)
+- [`04-design-system/VISUAL_REFERENCE_MANIFEST.md`](04-design-system/VISUAL_REFERENCE_MANIFEST.md) — **frozen screen targets / Canva IDs**
+- [`04-design-system/DESIGN_TOKENS_V1_FROZEN.md`](04-design-system/DESIGN_TOKENS_V1_FROZEN.md) — **frozen implementation tokens**
+- [`04-design-system/ASSET_LICENSE_MANIFEST_V1.md`](04-design-system/ASSET_LICENSE_MANIFEST_V1.md) — **asset provenance policy**
+- `04-design-system/reference-html/` — source-level layout references
 
-## Behavior Specifications
+## Feature behavior
 - [`05-behavior/TASKS_REMINDERS_V0_1.md`](05-behavior/TASKS_REMINDERS_V0_1.md)
 - [`05-behavior/PROJECTS_GOALS_V0_1.md`](05-behavior/PROJECTS_GOALS_V0_1.md)
 - [`05-behavior/HABITS_ROUTINES_V0_1.md`](05-behavior/HABITS_ROUTINES_V0_1.md)
@@ -69,40 +79,46 @@ This file is the navigation map for the Personal OS product-definition package.
 - [`06-intelligence/PERSONAL_INTELLIGENCE_V0_1.md`](06-intelligence/PERSONAL_INTELLIGENCE_V0_1.md)
 - [`06-intelligence/CARRY_FORWARD_RULES_V0_1.md`](06-intelligence/CARRY_FORWARD_RULES_V0_1.md)
 
-## Data, Privacy & Backup
-- [`07-data/DATA_MODEL_V0_1.md`](07-data/DATA_MODEL_V0_1.md)
-- [`07-data/DATA_SCHEMA_FREEZE_CANDIDATE_V0_2.md`](07-data/DATA_SCHEMA_FREEZE_CANDIDATE_V0_2.md)
+## Data / privacy / security
+- [`07-data/DATA_MODEL_V0_1.md`](07-data/DATA_MODEL_V0_1.md) — design history
+- [`07-data/DATA_SCHEMA_FREEZE_CANDIDATE_V0_2.md`](07-data/DATA_SCHEMA_FREEZE_CANDIDATE_V0_2.md) — freeze candidate/history
+- [`07-data/DATA_SCHEMA_V1_FROZEN.md`](07-data/DATA_SCHEMA_V1_FROZEN.md) — **V1 authority**
 - [`07-data/PRIVACY_BACKUP_SECURITY_V0_1.md`](07-data/PRIVACY_BACKUP_SECURITY_V0_1.md)
 - [`07-data/APP_LOCK_ATTACHMENTS_V0_1.md`](07-data/APP_LOCK_ATTACHMENTS_V0_1.md)
 
-## Android Architecture & Build
+## Android architecture / build
 - [`08-android/ANDROID_ARCHITECTURE_V0_1.md`](08-android/ANDROID_ARCHITECTURE_V0_1.md)
-- [`08-android/ANDROID_BUILD_BASELINE_V0_1.md`](08-android/ANDROID_BUILD_BASELINE_V0_1.md)
+- [`08-android/ANDROID_BUILD_BASELINE_V0_1.md`](08-android/ANDROID_BUILD_BASELINE_V0_1.md) — research/history
+- [`08-android/ANDROID_BUILD_BASELINE_FROZEN_2026_09_12.md`](08-android/ANDROID_BUILD_BASELINE_FROZEN_2026_09_12.md) — **V1 authority**
 - [`08-android/REPOSITORY_BUILD_POLICY_V0_1.md`](08-android/REPOSITORY_BUILD_POLICY_V0_1.md)
 
-## Quality & Acceptance
+## QA / acceptance
 - [`09-qa/V1_ACCEPTANCE_TEST_PLAN_V0_1.md`](09-qa/V1_ACCEPTANCE_TEST_PLAN_V0_1.md)
+- [`09-qa/RC_DEVICE_MATRIX_V1.md`](09-qa/RC_DEVICE_MATRIX_V1.md)
 
-## Decisions
-- [`decisions/DECISION_LOG.md`](decisions/DECISION_LOG.md)
-
-## Execution Readiness
+## Execution / handoff
+- [`10-execution/PRE_BUILD_SECRETS_AUDIT_2026_09_12.md`](10-execution/PRE_BUILD_SECRETS_AUDIT_2026_09_12.md)
+- [`10-execution/FINAL_CONSISTENCY_AUDIT_V1.md`](10-execution/FINAL_CONSISTENCY_AUDIT_V1.md)
 - [`10-execution/BUILD_HANDOFF_READINESS.md`](10-execution/BUILD_HANDOFF_READINESS.md)
-- [`10-execution/ASTRA_EXECUTION_BRIEF_DRAFT_V0_1.md`](10-execution/ASTRA_EXECUTION_BRIEF_DRAFT_V0_1.md) — draft only; intentionally not authorized yet
+- [`10-execution/ASTRA_EXECUTION_BRIEF_DRAFT_V0_1.md`](10-execution/ASTRA_EXECUTION_BRIEF_DRAFT_V0_1.md) — historical draft; do not execute once final brief exists
+- `10-execution/ASTRA_EXECUTION_BRIEF_V1.md` — final instruction after authorization
 
 ## Repository safeguards
-- `/.gitignore` — Android/build/secrets hygiene
-- `/.github/workflows/spec-validation.yml` — validates required specification presence and guards a core migration-safety rule
+- `/.gitignore` — ignores signing/secrets/local build files and generated APK/AAB/ZIP files
+- `/.github/workflows/spec-validation.yml` — validates specification package safeguards
 
-## Status labels
-### Working draft
-Direction exists but may still change during review.
+## Implementation precedence
 
-### Approved
-Founder/product direction is approved, but connected implementation detail may still need freeze.
+When two docs appear to disagree:
+1. `decisions/DECISION_LOG.md`
+2. explicitly frozen V1 documents
+3. frozen `VISUAL_REFERENCE_MANIFEST.md` + `DESIGN_TOKENS_V1_FROZEN.md`
+4. `SCREEN_SPEC_RESOLUTIONS_V1_FROZEN.md`
+5. behavior/intelligence/privacy specs
+6. working v0.1 docs
+7. static/reference composition
 
-### Frozen for implementation
-Authoritative for Astra. Changes require an explicit version/decision update.
+Accessibility, privacy, data truthfulness and actual interactive behavior must never be sacrificed merely to mimic a static screenshot.
 
 ## Rule for Astra/Work
-Astra should eventually begin with this INDEX, read the complete frozen specification set and approved visual manifest, then read the final execution brief last before writing production code.
+Read the specification package before coding. Read the final Astra execution brief **last**. Once authorized, continue through implementation, CI repair, QA and verified APK delivery instead of stopping at planning/mockups.
