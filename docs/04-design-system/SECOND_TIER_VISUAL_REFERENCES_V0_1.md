@@ -6,6 +6,19 @@
 
 These screens extend the Warm Personal Observatory system without introducing a new visual language. All content shown must be traceable to real data or clearly treated as example/reference content during design review.
 
+## Source-level references stored in GitHub
+
+The exact HTML layouts used to build/review this tier are stored in:
+
+- `reference-html/tier2/search_v0_1.html`
+- `reference-html/tier2/settings_v0_1.html`
+- `reference-html/tier2/task_detail_v0_1.html`
+- `reference-html/tier2/project_detail_v0_1.html`
+- `reference-html/tier2/weekly_review_v0_1.html`
+- `reference-html/tier2/life_timeline_v0_1.html`
+
+These HTML files are implementation-friendly structural references. Canva remains the editable visual review surface; the written product/screen specs remain authoritative for behavior.
+
 ## 1. Search
 
 **Canva:** `DAHU9QAsesE`  
