@@ -1,274 +1,132 @@
 # Personal OS — Decision Log
 
-This file records product and architecture decisions that future contributors or Work sessions should not have to reconstruct from chat history.
+**V1 freeze updated:** 2026-09-12
+
+This is the durable decision record for Personal OS. Later numbered decisions supersede older working-status wording where necessary.
 
 ## D-001 — Product name
-
-**Decision:** The rebuilt app is named **Personal OS**.
-
-**Why:** The product is intended to be a broader personal operating system, not merely a life organizer or task manager.
-
+**Decision:** The clean rebuild is named **Personal OS**.  
 **Status:** Locked.
-
----
 
 ## D-002 — Rebuild strategy
-
-**Decision:** Personal OS will be rebuilt from scratch rather than continuing the previous Personal Life OS codebase.
-
-**Why:** The earlier prototype produced useful lessons and validated design direction, but also accumulated static UI, placeholder behavior, and architecture that should not define the new product.
-
-**What may be reused:**
-- validated product philosophy
-- successful UX lessons
-- approved visual direction
-- known failure patterns
-- feature behavior lessons
-- Android implementation knowledge
-
-**What should not be blindly copied:**
-- old navigation structure
-- placeholder metrics
-- hard-coded user history
-- accidental schemas
-- static controls
-- incomplete permission behavior
-
+**Decision:** Build from scratch rather than continue the previous Personal Life OS codebase. Reuse validated lessons/specs, not accidental architecture/static placeholder behavior.  
 **Status:** Locked.
-
----
 
 ## D-003 — Repository source of truth
-
-**Decision:** `rayadinaveen98-ship-it/personal-os` is the authoritative source of truth for the rebuild.
-
-**Why:** The project must be recoverable from GitHub without relying on one conversation thread.
-
+**Decision:** `rayadinaveen98-ship-it/personal-os` is the authoritative source of truth. The project must be recoverable without chat history.  
 **Status:** Locked.
 
----
-
-## D-004 — Implementation timing
-
-**Decision:** Full production coding must not begin until the specification package is sufficiently complete.
-
-**Why:** The goal is to hand a high-capability model an execution-ready product definition rather than ask it to invent major product decisions during implementation.
-
-**Status:** Locked.
-
----
+## D-004 — Specification before implementation
+**Decision:** Major product/UX/data decisions are frozen before the autonomous implementation handoff.  
+**Status:** Satisfied for V1 handoff.
 
 ## D-005 — Primary build model
+**Decision:** Use **Astra Medium in Work** for the main end-to-end Android implementation. Higher effort is reserved for genuine hard blockers if necessary.  
+**Status:** Locked for handoff.
 
-**Decision:** Target **Astra Medium** in Work for the main end-to-end implementation handoff.
-
-**Why:** The project contains substantial interconnected Android architecture and UX behavior. Medium reasoning is the intended balance for a large software build; higher effort can be used selectively for unusually difficult problems.
-
-**Status:** Working lock; may be revisited if model availability/capability changes before handoff.
-
----
-
-## D-006 — Platform priority
-
-**Decision:** Android first, native Kotlin + Jetpack Compose.
-
-**Why:** The product needs deep Android behavior such as reminders, notifications, reboot recovery, speech recognition, local storage, and polished mobile UX.
-
+## D-006 — Platform
+**Decision:** Android first, native Kotlin + Jetpack Compose.  
 **Status:** Locked.
 
----
-
-## D-007 — Local-first philosophy
-
-**Decision:** Core Personal OS functionality must be useful without a cloud account, paid AI API, or constant internet connection.
-
+## D-007 — Local-first core
+**Decision:** Core daily functionality works without a cloud account, paid AI API or permanent internet connection.  
 **Status:** Locked.
-
----
 
 ## D-008 — Core loop
-
-**Decision:**
-
-> **Capture → Understand → Act → Reflect → Progress**
-
+**Decision:** **Capture → Understand → Act → Reflect → Progress.**  
 **Status:** Locked.
 
----
+## D-009 — Primary mental model
+**Decision:** Today / Plan / central Capture / Journey / Me.  
+**Status:** Locked. Exact destinations are frozen in `ROUTE_HIERARCHY_FROZEN_V1.md`.
 
-## D-009 — Top-level mental model
-
-**Decision:**
-- Today
-- Plan
-- Capture
-- Journey
-- Me
-
-**Status:** Direction locked; detailed routes are specified separately.
-
----
-
-## D-010 — Design identity
-
-**Decision:** Working visual identity is **Warm Personal Observatory**.
-
-**Characteristics:** warm, premium, quiet, editorial, personal, production-realistic, lightly cinematic.
-
-**Status:** Direction locked; final visual references still pending approval.
-
----
+## D-010 — Visual identity
+**Decision:** **Warm Personal Observatory** — premium, calm, intimate, editorial, warm, production-realistic and lightly cinematic.  
+**Status:** Frozen with `VISUAL_REFERENCE_MANIFEST.md` + `DESIGN_TOKENS_V1_FROZEN.md`.
 
 ## D-011 — No fabricated personal data
-
-**Decision:** Personal OS must never display fake progress, fake memories, fake achievements, fake activity, fake streaks, fake project movement, or fake user history as if it were real.
-
+**Decision:** Never present fake progress, memories, activity, achievements, streaks, project movement or history as user truth.  
 **Status:** Non-negotiable.
-
----
 
 ## D-012 — Interaction truthfulness
-
-**Decision:** Anything that looks interactive must perform a documented action.
-
+**Decision:** Anything styled as interactive must perform a documented real action.  
 **Status:** Non-negotiable.
-
----
 
 ## D-013 — Notification philosophy
-
-**Decision:** Notifications should serve user-created intent, not manufacture engagement.
-
-Examples allowed:
-- reminders
-- explicitly enabled routines
-- optional Morning Brief
-- optional Evening Reflection
-- time-sensitive commitments
-
+**Decision:** Notifications serve user-created intent: reminders, explicitly enabled routines/brief/reflection and time-sensitive commitments. No engagement bait.  
 **Status:** Locked.
 
----
-
-## D-014 — No destructive production migrations
-
-**Decision:** Production database upgrades require explicit data-preserving migrations. `fallbackToDestructiveMigration()` is forbidden for real user data.
-
+## D-014 — Migration safety
+**Decision:** Explicit data-preserving Room migrations. `fallbackToDestructiveMigration()` is forbidden for production user data.  
 **Status:** Non-negotiable.
 
----
-
-## D-015 — Build definition of done
-
-**Decision:** Compile/APK generation alone is insufficient. Completion requires behavior, persistence, navigation, states, permissions, tests, approved UI fidelity and a verified APK.
-
+## D-015 — Definition of Done
+**Decision:** Compilation/APK alone is insufficient. Done requires behavior, persistence, navigation, permissions, tests, approved visual fidelity, green CI and verified APK.  
 **Status:** Locked.
 
----
-
-## D-016 — Premium experience is a product requirement
-
-**Decision:** Personal OS must deliver a premium, rich, calm, peaceful, emotionally warm experience from icon/launch through setup, Today, deep screens, transitions, empty states and success states.
-
+## D-016 — Premium experience requirement
+**Decision:** Rich/premium/calm quality is required from icon and splash through setup, Today, deep screens, empty states, transitions and dark mode. Generic Material-demo appearance is unacceptable.  
 **Status:** Locked founder direction.
 
----
-
-## D-017 — Calm 2D companion system
-
-**Decision:** Personal OS supports a small calm 2D companion layer. At least one tap-reactive companion should appear on selected high-value surfaces such as Welcome, onboarding, Today, empty states and reflection moments when it can be implemented without weakening core reliability.
-
-**Constraints:** Secondary to utility, never blocks workflows, never carries essential information alone, respects reduced motion, and must not feel childish/noisy.
-
+## D-017 — Calm 2D companion
+**Decision:** Personal OS includes a subtle tap-reactive 2D companion layer where it improves warmth without harming utility.  
 **Status:** Locked.
 
----
-
-## D-018 — App Lock is part of V1
-
-**Decision:** V1 includes optional local app lock using Android BiometricPrompt/device credential behavior.
-
-**Default:** Off.
-
-**Privacy:** Locked state obscures personal content; notification detail privacy is user-selectable.
-
-**Status:** Locked V1 decision.
-
----
-
-## D-019 — Attachments are limited but real in V1
-
-**Decision:** V1 supports images and general files through Android-safe picker/storage semantics for selected domains such as Journal, Memory, Idea and Project context.
-
-**Not V1:** media-management suite, OCR, cloud upload, video/audio editing.
-
-**Status:** Locked V1 scope.
-
----
-
-## D-020 — Memories and Chapters are explicit, not invented
-
-**Decision:** Memory is a first-class curated user record. Chapters are user-created/named periods with explicitly selected or linked real records.
-
-Personal Intelligence may suggest creating a Chapter but cannot silently write autobiographical chapters as fact.
-
+## D-018 — App Lock
+**Decision:** Optional local App Lock is in V1 using BiometricPrompt/device credential semantics. Default off.  
 **Status:** Locked.
 
----
-
-## D-021 — Recurrence must not create punishment debt
-
-**Decision:** Recurring habits/routines record scheduled history; missed days do not accumulate as overdue debt. Recurring tasks surface the latest unresolved occurrence rather than producing unlimited overdue copies.
-
+## D-019 — Attachments
+**Decision:** V1 supports images/general files for selected domains through Android-safe picker/storage semantics. No OCR/cloud/media-suite requirement.  
 **Status:** Locked.
 
----
+## D-020 — Memories and Chapters
+**Decision:** Memory is first-class. Chapters are explicit user-created/named periods with user-controlled membership; intelligence can suggest but cannot silently author autobiographical facts.  
+**Status:** Locked.
 
-## D-022 — Android clean-rebuild identity and platform baseline
+## D-021 — Recurrence without punishment debt
+**Decision:** Missed habits do not accumulate guilt/debt. Recurring tasks do not produce unlimited overdue copies.  
+**Status:** Locked.
 
-**Decision:** Working application ID is `com.navin.personalos`.
+## D-022 — Android identity/toolchain
+**Decision:** applicationId `com.navin.personalos`; minSdk 26; compileSdk 37; targetSdk 36; JDK 17; stable dependencies only by default. Exact versions are frozen in `ANDROID_BUILD_BASELINE_FROZEN_2026_09_12.md`.  
+**Status:** Frozen after pre-build recheck on 2026-09-12.
 
-Freeze candidate as of 2026-09-12:
-- minSdk 26
-- compileSdk 37
-- targetSdk 36 while Android 17/API 37 remains beta
-- JDK 17
-- stable dependency lines only by default
+## D-023 — Companion identity
+**Decision:** **Tiny Observatory Friend** — small human-like 2D companion, soft dark hair, minimal calm facial features, sage/moss clothing, warm low-contrast editorial style; curious, kind, quiet and slightly playful when invited.  
+**Interaction:** short rotating tap reactions, contextual morning/evening/reflection/completion states, always returns to idle, respects reduced motion.  
+**Status:** Identity frozen. Production runtime assets are implementation work.
 
-Versions must be rechecked immediately before Astra starts without opportunistically adopting preview dependencies.
+## D-024 — App icon identity
+**Decision:** **Minimal Leaf** — two simple leaves on one centered stem, restrained moss/forest foreground on warm ivory/cream. Same mark drives launcher and splash; companion is not the launcher logo.  
+**Status:** Direction frozen. Production adaptive/monochrome vectors are implementation work.
 
-**Status:** Working lock pending final pre-build version recheck.
+## D-025 — Visual-reference freeze
+**Decision:** The staged Canva/reference package is frozen as the V1 implementation target after the founder repeatedly instructed continuation past each review gate. Static visuals yield to accessibility, runtime behavior, data truthfulness and frozen semantic tokens where necessary.  
+**Source:** `VISUAL_REFERENCE_MANIFEST.md`.  
+**Status:** Frozen.
 
----
+## D-026 — V1 route hierarchy
+**Decision:** Exact semantic Android navigation hierarchy is frozen in `ROUTE_HIERARCHY_FROZEN_V1.md`; Plan modes are Today / Week / Projects.  
+**Status:** Frozen.
 
-## D-023 — Companion visual identity: Tiny Observatory Friend
+## D-027 — V1 data schema
+**Decision:** V1 entity set, foreign-key policy, recurrence exceptions, SearchDocument/FTS strategy, archive/delete semantics and migration policy are frozen in `DATA_SCHEMA_V1_FROZEN.md`.  
+**Status:** Frozen.
 
-**Decision:** The founder selected **Concept B — Tiny Observatory Friend** from the companion direction sheet on 2026-09-12.
+## D-028 — Typography and semantic design tokens
+**Decision:** Manrope is primary UI sans; Newsreader is selective reflective serif. Frozen light/dark colors, contrast rules, geometry, touch targets and motion are defined in `DESIGN_TOKENS_V1_FROZEN.md`.  
+**Status:** Frozen.
 
-**Visual identity:** A small, peaceful, human-like 2D companion with soft dark hair, calm minimal facial features, moss/sage clothing, warm low-contrast illustration, and a gentle editorial atmosphere.
+## D-029 — Asset provenance
+**Decision:** Shipping icon/character assets must be project-owned recreations from the frozen identity or explicitly licensed. Manrope and Newsreader use SIL OFL 1.1. No ambiguous stock/Canva asset may be shipped without recorded rights.  
+**Source:** `ASSET_LICENSE_MANIFEST_V1.md`.  
+**Status:** Locked.
 
-**Personality:** curious, kind, quiet, patient, non-judgmental and slightly playful when invited.
+## D-030 — Handoff interpretation rule
+**Decision:** Earlier v0.1 docs are preserved as design history. They cannot reopen questions explicitly resolved by later frozen V1 documents.  
+**Precedence:** this Decision Log → frozen V1 docs → Visual Manifest/Design Tokens → Screen Spec Resolutions → working feature specs → old drafts/reference composition.  
+**Status:** Locked.
 
-**Usage:** Welcome, selected onboarding moments, Today, truthful empty states, setup completion, Evening Reflection and Weekly Review moments. It must remain subtle on dense functional screens.
-
-**Interaction:** tap reactions rotate between short gestures such as wave, smile/blink, stretch, nod or curious look, then always return to idle. Contextual states may include morning, attentive/focus, completion, quiet day, reflective and sleepy/evening.
-
-**Status:** Locked character direction. Canonical model/pose sheet still requires visual approval before implementation.
-
----
-
-## D-024 — App icon identity: Minimal Leaf
-
-**Decision:** Use the **Minimal Leaf** direction as the primary Personal OS launcher/app mark.
-
-**Why:** It remains legible at small launcher sizes, feels calm and timeless, works in adaptive and monochrome/themed icon variants, and avoids turning the Tiny Observatory Friend into the brand logo itself.
-
-**Visual rule:** two simple life/growth leaves on one centered stem, rendered with restrained moss/forest tones on a warm ivory/cream field. The symbol must remain recognizable with no text and no decorative scenery.
-
-**Adaptive icon:** the leaf mark is the foreground; background is a single calm brand surface. Themed/monochrome version uses a one-color silhouette.
-
-**Splash relationship:** the same Minimal Leaf mark is used for launch/splash identity; do not create a separate unrelated splash symbol.
-
-**Companion relationship:** the Tiny Observatory Friend belongs to the same world but is not the launcher icon.
-
-**Status:** Locked visual direction; final vector geometry/export assets still need production freeze.
+## Change policy
+Any post-handoff change to a frozen product decision must be recorded here with a new decision number and rationale. Low-level implementation choices that preserve the frozen contract do not require founder approval.
