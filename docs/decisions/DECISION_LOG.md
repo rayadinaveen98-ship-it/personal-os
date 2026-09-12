@@ -254,3 +254,21 @@ Versions must be rechecked immediately before Astra starts without opportunistic
 **Interaction:** tap reactions rotate between short gestures such as wave, smile/blink, stretch, nod or curious look, then always return to idle. Contextual states may include morning, attentive/focus, completion, quiet day, reflective and sleepy/evening.
 
 **Status:** Locked character direction. Canonical model/pose sheet still requires visual approval before implementation.
+
+---
+
+## D-024 — App icon identity: Minimal Leaf
+
+**Decision:** Use the **Minimal Leaf** direction as the primary Personal OS launcher/app mark.
+
+**Why:** It remains legible at small launcher sizes, feels calm and timeless, works in adaptive and monochrome/themed icon variants, and avoids turning the Tiny Observatory Friend into the brand logo itself.
+
+**Visual rule:** two simple life/growth leaves on one centered stem, rendered with restrained moss/forest tones on a warm ivory/cream field. The symbol must remain recognizable with no text and no decorative scenery.
+
+**Adaptive icon:** the leaf mark is the foreground; background is a single calm brand surface. Themed/monochrome version uses a one-color silhouette.
+
+**Splash relationship:** the same Minimal Leaf mark is used for launch/splash identity; do not create a separate unrelated splash symbol.
+
+**Companion relationship:** the Tiny Observatory Friend belongs to the same world but is not the launcher icon.
+
+**Status:** Locked visual direction; final vector geometry/export assets still need production freeze.
