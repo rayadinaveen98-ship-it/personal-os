@@ -39,6 +39,12 @@ This file records the exact visual references Astra must use during implementati
 | Settings — personal control center | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9bzWaa8` · Edit: https://www.canva.com/d/vRQUJ69JAPZcGEp · View: https://www.canva.com/d/bBwE1Z0qnyhUjBZ | Identity, appearance, companion, Morning Brief, Evening Reflection, notifications, App Lock, backup/export and privacy in a calm grouped layout. |
 | Task Detail — actionable item | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9doCl8I` · Edit: https://www.canva.com/d/U4dwcIxO1unGsi6 · View: https://www.canva.com/d/V2fpNd2vSim78aM | Full task home with separate navigation/completion semantics, editable due/reminder/project/life-area/priority/notes and explicit completion CTA. |
 | Project Detail — next-action-first | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9bkP3X4` · Edit: https://www.canva.com/d/VIM2vwzhL7IpTX_ · View: https://www.canva.com/d/C-f0tA4Vkjl3e_q | Next action first, then real milestones, open work and traceable project activity. Avoid arbitrary progress percentages. |
+| Goal Detail — evidence first | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9R7yozQ` · Edit: https://www.canva.com/d/v3Y_LKf-b2Ev52T · View: https://www.canva.com/d/FnrJYTmoGsvr8S3 | User-authored why, next meaningful action, linked projects and milestone/evidence progress. No percentage unless measurement is explicitly valid. |
+| Habit Detail — calm consistency | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9Q1Fx9M` · Edit: https://www.canva.com/d/5Gq_1CXwwAJNhsO · View: https://www.canva.com/d/NM3mpbDzxheLnZv | Today log state, factual weekly/history evidence, linked context and reminder/schedule editing. Missed days never become punishment debt. |
+| Hobby / Skill Detail — session based | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9Y1NxEQ` · Edit: https://www.canva.com/d/4JJBkOK4_BNSrOe · View: https://www.canva.com/d/6b8F30YUbEPsHCa | Current focus, real session/time evidence, recent sessions, notes/resources and Log Session CTA. No invented proficiency level. |
+| Journal Detail — reflective record | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9adUM0I` · Edit: https://www.canva.com/d/F_XjA1k7mztF53K · View: https://www.canva.com/d/iTXUTDgB__TDnDY | Full readable journal body, date/time/context, linked activity, Edit/Link context and Save as Memory without fabricating autobiographical content. |
+| Idea Detail — preserve and act | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9RwwgSY` · Edit: https://www.canva.com/d/TaG395VbX1U7wbz · View: https://www.canva.com/d/CHv1iFxGczAewAV | Preserves original idea while allowing traceable conversion/linking to task/project/life area. Original remains unless explicitly deleted. |
+| Life Area Detail — contextual home | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9ehV5MA` · Edit: https://www.canva.com/d/3s0Nc8EnhWKE4bR · View: https://www.canva.com/d/iiq1xLq_NFWW3gV | Active projects/goals, next actions, routines, growth, recent context and filtered history. Only real sections render; no Life Area score. |
 | Weekly Review — truthful close | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9dx70_U` · Edit: https://www.canva.com/d/p2tl7fBJzAIYdOA · View: https://www.canva.com/d/y0aGuzWMfflmgmv | Evidence-based weekly ritual: what moved, what stayed open, optional reflection, user-controlled carry-forward and no engagement/streak pressure. |
 | Life Timeline / Archive | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9QnjzNI` · Edit: https://www.canva.com/d/9F-mfPiuwMAMrN4 · View: https://www.canva.com/d/BJFe2JYGIDr4AQ9 | Chronological archive of real project, journal, memory and idea events. Every timeline row must resolve to a real stored source/event. |
 | Today — dark | **CANDIDATE — REVIEW REQUIRED** | Canva `DAHU9YCDa0k` · Edit: https://www.canva.com/d/eHdYaFXvfHzjJdI · View: https://www.canva.com/d/-cP5W3ulGOmR3Wp | Intentional warm dark-mode benchmark using Night Ink / Deep Moss Charcoal / Soft Moss / restrained Lavender rather than simple color inversion. |
@@ -49,8 +55,10 @@ This file records the exact visual references Astra must use during implementati
 
 ## Supporting packages
 
-- `SECOND_TIER_VISUAL_REFERENCES_V0_1.md` — detailed intent and implementation rules for Search, Settings, Task Detail, Project Detail, Weekly Review and Life Timeline.
-- `reference-html/tier2/search_v0_1.html` — exact Search HTML source used for the first second-tier import. Additional source-level structures are governed by the visual package and screen specs.
+- `SECOND_TIER_VISUAL_REFERENCES_V0_1.md` — Search, Settings, Task Detail, Project Detail, Weekly Review and Life Timeline.
+- `THIRD_TIER_VISUAL_REFERENCES_V0_1.md` — Goal, Habit, Hobby/Skill, Journal, Idea and Life Area detail references.
+- `reference-html/tier2/` — source-level second-tier layouts.
+- `reference-html/tier3/detail_screens_v0_1.html` — bundled source-level third-tier layouts.
 
 ## Brand implementation target
 
