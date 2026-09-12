@@ -1,182 +1,261 @@
-# Character System V0.1 — Calm 2D Life Companions
+# Character System V0.2 — Tiny Observatory Friend
 
 **Project:** Personal OS  
-**Status:** Working draft  
+**Status:** Founder-approved direction; visual details still being refined  
 **Priority:** High design differentiator, lower than core functionality reliability
 
-## Purpose
-This document defines how Personal OS can include cute, calm, responsive 2D characters without making the product childish, distracting, or gimmicky.
+## 1. Locked companion direction
 
-## Why a character system exists
-The founder wants the app to feel rich, warm, and alive. A small 2D character system can help Personal OS feel emotionally memorable and unique.
+The founder selected **Concept B — Tiny Observatory Friend** on 2026-09-12.
 
-The character system should:
-- soften the productivity experience
-- make onboarding and empty states feel welcoming
-- add delight to tapping and completing actions
-- reinforce a calm emotional atmosphere
-- create identity for Personal OS
+This replaces the earlier open-ended choice between spirit-like, human-like, and animal-inspired companions.
 
-## Product position
-The character is not a mascot pasted everywhere.
-It is a **gentle companion presence**.
+The companion is now defined as a **small, peaceful, human-like 2D friend** who quietly inhabits Personal OS and makes the product feel emotionally warm, alive, and personal.
 
-The system should feel more like:
-- a quiet companion
-- a tiny inhabitant of the interface
-- a soft emotional bridge
+The character must remain:
+- calm
+- gentle
+- observant
+- warm
+- neutral enough to belong to any user
+- cute without becoming childish
+- expressive without becoming noisy
 
-Not like:
+## 2. Product role
+
+The Tiny Observatory Friend is not a mascot pasted everywhere and not a virtual pet game.
+
+It is a **gentle companion presence** — a small inhabitant of the user's private digital life space.
+
+It should feel like:
+- someone quietly sitting with you while you plan
+- a soft witness to progress
+- a calm presence during reflection
+- a tiny source of delight when tapped
+
+It must never feel like:
 - a game HUD pet
 - a noisy cartoon overlay
 - an interruptive assistant
-- an always-talking coach
+- a chat avatar constantly demanding attention
+- a gamification mechanic that pressures the user
 
-## Recommended art direction
-### Core style
-- 2D illustrated characters
-- soft outlines or outline-free depending on final art tests
-- rounded shapes
-- warm, low-contrast palette
-- minimal facial features
-- emotionally legible poses
-- peaceful idle expression
-- small-scale presence relative to layout
+## 3. Approved visual foundation
 
-### Emotional tone
-Characters should feel:
-- cute
-- gentle
-- safe
-- calm
-- observant
-- supportive
-- never overexcited
+The selected concept uses:
+- warm 2D illustration
+- small human-like proportions
+- rounded friendly silhouette
+- dark soft hair
+- calm minimal facial features
+- moss/sage clothing
+- warm cream/ivory environment
+- subtle plant/book/lantern/moon visual language
+- gentle low-contrast shading
+- editorial, peaceful presentation
 
-### Avoid
-- loud saturated color explosions
-- meme-like expressions
-- exaggerated squash-and-stretch comedy
-- overly childish schoolbook style
-- overly anime-specific identity unless intentionally chosen later
-- cluttered accessories
+The final character should preserve this emotional identity while being simplified enough for reliable Android animation and multiple reusable poses.
 
-## Where characters may appear
-Best candidate surfaces:
-- splash / launch
-- welcome screen
-- onboarding/setup steps
-- empty states
-- Today home
-- evening reflection prompt
-- celebration / success moments
-- no-data states in Journey or Plan
-- weekly review intro / completion moments
+## 4. Character personality
 
-Characters should generally not obstruct:
-- dense task lists
-- text entry zones
-- detail forms
-- search results
-- accessibility-critical content
+Working personality:
+- curious
+- kind
+- quiet
+- patient
+- never judgmental
+- slightly playful when invited
+- peaceful by default
 
-## Character interaction model
+The companion does not speak constantly. Most of its personality should come from posture, expression, small motion, and context.
+
+## 5. Core states
+
 ### Idle
-The character rests quietly.
-Examples:
-- breathing
-- blinking
-- tiny swaying motion
-- looking at a nearby card
+Default resting state.
+Possible behavior:
+- slow breathing
+- occasional blink
+- tiny head movement
+- looking toward nearby content
+- relaxed seated posture
 
-### Tap response
-When tapped, the character briefly reacts and returns to idle.
-Tap reactions can rotate.
-Examples:
-- wave
-- blink + smile
-- stretch
-- little hop
-- look around
-- tiny bow
+### Tap reaction rotation
+A tap should trigger one short reaction and then return to idle.
+Possible reactions:
+1. small wave
+2. blink + smile
+3. gentle stretch
+4. tiny celebratory hand gesture
+5. curious look left/right
+6. small nod
 
-### Context reaction
-Character state can change subtly based on context.
-Examples:
-- morning: fresh / awake
-- evening: sleepy / softer pose
-- after task completion: subtle happy gesture
-- after setup completion: welcoming pose
-- reflection mode: calm seated pose
+Repeated taps should rotate or pseudo-randomize reactions so the character does not repeat the exact same motion every time.
 
-### Return behavior
-After the interaction, the character must smoothly return to its resting state.
+### Morning
+- alert but calm
+- brighter posture
+- subtle stretch / cup / morning-light motif if appropriate
 
-## Interaction rules
-- animation duration should usually stay within ~300–900 ms
-- no long loops that distract from reading
-- never cover important text or buttons
-- do not autoplay loud or exaggerated celebration motions
-- no mandatory interaction with the character to complete a workflow
-- tapping the character should never navigate away unexpectedly
+### Focus / working
+- attentive pose
+- may look toward the primary focus card
+- should not animate continuously while the user reads
 
-## Technical recommendation
-### V1 build recommendation
-For Astra / Android implementation, use a staged approach:
+### Completion
+After a meaningful completion:
+- subtle smile
+- small clap / raised hand / happy nod
+- no confetti explosion by default
 
-#### Stage 1 — character-ready architecture
-- reserve optional character slots on key screens
-- support idle state + tap reactions
-- keep state driven by screen/time/context
+### Empty / quiet day
+- relaxed peaceful pose
+- communicates that having nothing urgent is acceptable
+- never implies guilt or inactivity failure
 
-#### Stage 2 — one character, limited presence
-- implement one calm companion
-- surfaces: welcome, onboarding, Today, empty states, reflection
-- 3 to 5 idle/tap states
+### Evening / reflection
+- softer posture
+- sleepy/calm expression
+- optionally holding a warm cup / sitting beside a small lantern
+- lower-energy motion
 
-#### Stage 3 — richer context awareness
-- greeting variants
-- task completion reactions
-- evening reflection state
-- no-data comforting state
+### Setup completion
+- welcoming wave / tiny celebratory gesture
+- then return to relaxed idle before Today appears
 
-### Rendering suggestion
-Potential approaches:
-- lightweight frame animation
-- Lottie / Rive if licensing and tooling fit
-- custom Compose animation with asset states
+## 6. Placement strategy
 
-Need later engineering choice based on:
-- APK size
+Preferred V1 surfaces:
+- launch/welcome
+- selected onboarding screens
+- onboarding completion
+- Today / Home
+- truthful empty states
+- Evening Reflection
+- Weekly Review intro/completion
+
+Use sparingly on:
+- Plan
+- Journey
+- Me
+
+Avoid or minimize on:
+- dense task lists
+- structured forms
+- search results
+- date/time pickers
+- destructive confirmation dialogs
+- screens where it competes with reading or editing
+
+## 7. Today integration
+
+The companion may occupy a small intentional area near the greeting/focus region or another dedicated non-obstructive slot.
+
+Behavior can respond to real context:
+- morning → awake calm pose
+- no urgent work → relaxed pose
+- focus selected → attentive pose
+- task completion → short happy response
+- evening → quieter/sleepier pose
+
+It must never cover cards or consume so much vertical space that Today becomes less useful.
+
+## 8. Interaction rules
+
+- tap target should be accessible, roughly 48dp minimum where feasible
+- reaction should begin quickly after tap
+- normal tap reactions approximately 300–900ms
+- slightly longer contextual transitions may reach ~1200ms when justified
+- reaction always settles back into a stable resting state
+- no infinite distracting motion loops beyond extremely subtle idle breathing/blinking
+- no sound required
+- no haptic requirement, though very subtle haptics may be evaluated later
+- tapping the companion should not navigate away unexpectedly
+
+## 9. Reduced motion
+
+If Android reduced-motion/accessibility preferences indicate reduced motion:
+- use static pose changes or tiny fades
+- disable unnecessary loops
+- preserve tap acknowledgment without energetic movement
+
+No essential information may be communicated only through animation.
+
+## 10. Technical implementation direction
+
+V1 should support a dedicated companion state model separate from business logic.
+
+Working states can include:
+- `Idle`
+- `Morning`
+- `Attentive`
+- `Celebrate`
+- `Reflective`
+- `Sleepy`
+- `EmptyCalm`
+- transient tap reactions
+
+Implementation options to evaluate before final build:
+- Rive state machine
+- Lottie compositions
+- lightweight frame/vector animation
+- Compose-driven pose assets
+
+Selection criteria:
 - performance on mid-range Android devices
-- ability to maintain multiple states
-- tooling simplicity for Astra
+- offline operation
+- package size
+- state-machine reliability
+- ease of maintaining and extending poses
+- licensing
 
-## Accessibility and UX rules
-- character animation should respect reduced-motion preference if supported later
-- no essential information conveyed only by the character
-- all important actions must remain understandable without the character
-- the app must still feel premium if character rendering is disabled
+The rest of the app must not depend on the animation engine being available.
 
-## Open decisions later
-These are not locked yet:
-- exact character species/form (human-like, blob-like, animal-like, spirit-like)
-- single character vs tiny family of companions
-- illustration tool pipeline
-- animation toolchain
-- final placement conventions per screen
+## 11. Asset requirements before Astra execution
 
-## Working recommendation right now
-Start with **one small calm companion character**.
-It should be simple enough to animate economically and flexible enough to appear on multiple screens.
+The approved visual package should eventually contain:
+- canonical front/3-quarter idle character
+- seated idle pose
+- wave
+- smile/blink
+- stretch
+- completion reaction
+- morning pose
+- evening/reflection pose
+- empty-state pose
+- reduced-motion/static equivalents where necessary
 
-Preferred traits:
-- soft round silhouette
-- neutral-gender presentation
-- peaceful face
-- adaptable to morning/evening moods
-- can sit, wave, stretch, smile, observe
+## 12. Things to avoid
 
-## Acceptance rule
-If characters are added, they must make the app feel **more calm, more premium, and more alive**.
-If they make it feel cluttered, childish, distracting, or technically fragile, they should be reduced or deferred.
+- exaggerated anime proportions
+- childish school-app styling
+- loud saturated clothing
+- massive eyes or meme expressions
+- constant bouncing
+- guilt/sadness when tasks are missed
+- angry/disappointed reactions
+- streak-loss reactions
+- excessive speech bubbles
+- using the character as a substitute for actual UI clarity
+
+## 13. Acceptance rule
+
+The Tiny Observatory Friend is successful only if it makes Personal OS feel:
+- calmer
+- warmer
+- more premium
+- more personal
+- more alive
+
+If any implementation makes the app feel cluttered, childish, distracting, or technically fragile, reduce the character's prominence rather than compromising the core product.
+
+## 14. Current visual status
+
+**Concept B is founder-approved.**
+
+Next visual work:
+1. refine the character into a canonical model sheet
+2. freeze proportions/clothing/colors
+3. create tap/context pose sheet
+4. integrate it into Welcome, setup, Today and Evening Reflection references
+5. record the resulting approved references in `VISUAL_REFERENCE_MANIFEST.md`
