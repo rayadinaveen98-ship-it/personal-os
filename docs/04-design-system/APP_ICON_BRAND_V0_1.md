@@ -32,6 +32,7 @@ It should not literally try to show every feature.
 - complicated miniature dashboards
 - text like `Personal OS` inside the icon
 - overly detailed mascot artwork that becomes unreadable at launcher size
+- using the Tiny Observatory Friend's face as the default launcher icon
 
 ## 4. Working concept directions
 These are exploration directions, not final choices.
@@ -47,11 +48,14 @@ Potential traits:
 ### Direction B — Personal portal
 A calm rounded doorway/window symbol suggesting entering one's personal space.
 
-### Direction C — Life layers
+### Direction C — Life growth mark
+A minimal sprout/leaf form that suggests growth, continuity and a life being cultivated without looking like a wellness-only app.
+
+### Direction D — Life layers
 Two or three softly nested forms implying plans, memories and growth coexisting.
 
-### Direction D — Companion-adjacent mark
-A minimal abstract face/shape inspired by the companion silhouette, without making the launcher icon a cartoon head.
+### Direction E — Observatory horizon
+A minimal horizon/orbit/sun combination that can work as a quiet symbol for present, past and future.
 
 ## 5. Adaptive icon
 Deliverables must include:
@@ -76,8 +80,13 @@ Where a wordmark is used:
 The wordmark may appear on Welcome and selected branding surfaces, but everyday navigation should not constantly repeat it.
 
 ## 8. Companion relationship
-The companion and brand mark must feel like they belong to the same visual world.
-The companion should not replace the core brand mark.
+The approved companion direction is **Tiny Observatory Friend**.
+
+The companion and brand mark must feel like they belong to the same visual world, but they have different jobs:
+- **brand mark/icon** = timeless system identity
+- **Tiny Observatory Friend** = emotional/living companion layer
+
+The character must not replace the core brand mark. The icon should remain useful even if companion visibility is disabled.
 
 ## 9. Color direction
 Start from the Warm Personal Observatory palette:
@@ -104,3 +113,4 @@ The final icon must:
 - avoid misleading feature symbolism
 - work as the splash mark
 - harmonize with the app's calm premium identity
+- remain visually distinct from the companion character
