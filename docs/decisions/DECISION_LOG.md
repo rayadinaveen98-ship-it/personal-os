@@ -19,7 +19,6 @@ This file records product and architecture decisions that future contributors or
 **Why:** The earlier prototype produced useful lessons and validated design direction, but also accumulated static UI, placeholder behavior, and architecture that should not define the new product.
 
 **What may be reused:**
-
 - validated product philosophy
 - successful UX lessons
 - approved visual direction
@@ -28,7 +27,6 @@ This file records product and architecture decisions that future contributors or
 - Android implementation knowledge
 
 **What should not be blindly copied:**
-
 - old navigation structure
 - placeholder metrics
 - hard-coded user history
@@ -72,13 +70,11 @@ This file records product and architecture decisions that future contributors or
 
 ## D-006 — Platform priority
 
-**Decision:** Android first, native.
-
-**Initial stack direction:** Kotlin + Jetpack Compose.
+**Decision:** Android first, native Kotlin + Jetpack Compose.
 
 **Why:** The product needs deep Android behavior such as reminders, notifications, reboot recovery, speech recognition, local storage, and polished mobile UX.
 
-**Status:** Locked at product level; exact versions will be frozen later.
+**Status:** Locked.
 
 ---
 
@@ -86,15 +82,13 @@ This file records product and architecture decisions that future contributors or
 
 **Decision:** Core Personal OS functionality must be useful without a cloud account, paid AI API, or constant internet connection.
 
-**Why:** Reliability, privacy, ownership, and cost control are central to a personal operating system.
-
 **Status:** Locked.
 
 ---
 
 ## D-008 — Core loop
 
-**Decision:** The product loop is:
+**Decision:**
 
 > **Capture → Understand → Act → Reflect → Progress**
 
@@ -104,17 +98,14 @@ This file records product and architecture decisions that future contributors or
 
 ## D-009 — Top-level mental model
 
-**Decision:** The working experiential structure is:
-
+**Decision:**
 - Today
 - Plan
 - Capture
 - Journey
 - Me
 
-This is a mental model, not yet the final route hierarchy. Phase 1 will decide exact navigation and detail routes.
-
-**Status:** Direction locked; route implementation not frozen.
+**Status:** Direction locked; detailed routes are specified separately.
 
 ---
 
@@ -124,7 +115,7 @@ This is a mental model, not yet the final route hierarchy. Phase 1 will decide e
 
 **Characteristics:** warm, premium, quiet, editorial, personal, production-realistic, lightly cinematic.
 
-**Status:** Direction locked; full design system not yet frozen.
+**Status:** Direction locked; final visual references still pending approval.
 
 ---
 
@@ -132,15 +123,13 @@ This is a mental model, not yet the final route hierarchy. Phase 1 will decide e
 
 **Decision:** Personal OS must never display fake progress, fake memories, fake achievements, fake activity, fake streaks, fake project movement, or fake user history as if it were real.
 
-**Why:** Trust is foundational to the product.
-
 **Status:** Non-negotiable.
 
 ---
 
 ## D-012 — Interaction truthfulness
 
-**Decision:** Anything that looks interactive must perform a documented action. Unimplemented features must not masquerade as completed controls.
+**Decision:** Anything that looks interactive must perform a documented action.
 
 **Status:** Non-negotiable.
 
@@ -151,14 +140,11 @@ This is a mental model, not yet the final route hierarchy. Phase 1 will decide e
 **Decision:** Notifications should serve user-created intent, not manufacture engagement.
 
 Examples allowed:
-
 - reminders
 - explicitly enabled routines
-- optional morning brief
-- optional evening reflection
+- optional Morning Brief
+- optional Evening Reflection
 - time-sensitive commitments
-
-Generic “come back to the app” notifications are not part of the product philosophy.
 
 **Status:** Locked.
 
@@ -166,7 +152,7 @@ Generic “come back to the app” notifications are not part of the product phi
 
 ## D-014 — No destructive production migrations
 
-**Decision:** Production database upgrades must use explicit migrations or another data-preserving strategy. Destructive migration is unacceptable for journal/history data.
+**Decision:** Production database upgrades require explicit data-preserving migrations. `fallbackToDestructiveMigration()` is forbidden for real user data.
 
 **Status:** Non-negotiable.
 
@@ -174,9 +160,7 @@ Generic “come back to the app” notifications are not part of the product phi
 
 ## D-015 — Build definition of done
 
-**Decision:** A successful compile or APK generation is not sufficient to call a feature complete.
-
-Feature completion requires behavior, persistence, navigation, states, permissions where relevant, tests, and approved UI fidelity.
+**Decision:** Compile/APK generation alone is insufficient. Completion requires behavior, persistence, navigation, states, permissions, tests, approved UI fidelity and a verified APK.
 
 **Status:** Locked.
 
@@ -184,11 +168,7 @@ Feature completion requires behavior, persistence, navigation, states, permissio
 
 ## D-016 — Premium experience is a product requirement
 
-**Decision:** Personal OS must deliver a premium, rich, calm, peaceful, emotionally warm experience across the complete product — from app icon and launch through setup, Today, deep screens, transitions, empty states and success states.
-
-**Why:** Personal OS is intended to feel like a private digital life space, not a generic productivity utility.
-
-**Implication:** Generic stock-Material presentation is not acceptable as the final visual result. Visual polish and interaction quality are part of the definition of done.
+**Decision:** Personal OS must deliver a premium, rich, calm, peaceful, emotionally warm experience from icon/launch through setup, Today, deep screens, transitions, empty states and success states.
 
 **Status:** Locked founder direction.
 
@@ -196,10 +176,65 @@ Feature completion requires behavior, persistence, navigation, states, permissio
 
 ## D-017 — Calm 2D companion system
 
-**Decision:** Personal OS should be designed to support a small calm 2D companion-character layer. If technically feasible without weakening core reliability, at least one tap-reactive companion should appear on selected high-value surfaces such as Welcome, onboarding, Today, empty states and reflection moments.
+**Decision:** Personal OS supports a small calm 2D companion layer. If technically feasible without weakening core reliability, at least one tap-reactive companion appears on selected high-value surfaces such as Welcome, onboarding, Today, empty states and reflection moments.
 
-**Behavior:** The companion may idle gently, react to taps with varied short actions, respond subtly to meaningful context such as task completion or evening reflection, and then return to idle.
+**Constraints:** Secondary to utility, never blocks workflows, never carries essential information alone, respects reduced motion, and must not feel childish/noisy.
 
-**Constraints:** It must remain secondary to utility, never block workflows, never carry essential information alone, and must not make the product feel childish or noisy.
+**Status:** Direction locked; exact visual identity still pending approval.
 
-**Status:** Direction locked; exact character form and animation technology not yet frozen.
+---
+
+## D-018 — App Lock is part of V1
+
+**Decision:** V1 includes optional local app lock using Android BiometricPrompt/device credential behavior.
+
+**Default:** Off.
+
+**Privacy:** Locked state obscures personal content; notification detail privacy is user-selectable.
+
+**Status:** Locked V1 decision.
+
+---
+
+## D-019 — Attachments are limited but real in V1
+
+**Decision:** V1 supports images and general files through Android-safe picker/storage semantics for selected domains such as Journal, Memory, Idea and Project context.
+
+**Not V1:** media-management suite, OCR, cloud upload, video/audio editing.
+
+**Status:** Locked V1 scope.
+
+---
+
+## D-020 — Memories and Chapters are explicit, not invented
+
+**Decision:** Memory is a first-class curated user record. Chapters are user-created/named periods with explicitly selected or linked real records.
+
+Personal Intelligence may suggest creating a Chapter but cannot silently write autobiographical chapters as fact.
+
+**Status:** Locked.
+
+---
+
+## D-021 — Recurrence must not create punishment debt
+
+**Decision:** Recurring habits/routines record scheduled history; missed days do not accumulate as overdue debt. Recurring tasks surface the latest unresolved occurrence rather than producing unlimited overdue copies.
+
+**Status:** Locked.
+
+---
+
+## D-022 — Android clean-rebuild identity and platform baseline
+
+**Decision:** Working application ID is `com.navin.personalos`.
+
+Freeze candidate as of 2026-09-12:
+- minSdk 26
+- compileSdk 37
+- targetSdk 36 while Android 17/API 37 remains beta
+- JDK 17
+- stable dependency lines only by default
+
+Versions must be rechecked immediately before Astra starts without opportunistically adopting preview dependencies.
+
+**Status:** Working lock pending final pre-build version recheck.
