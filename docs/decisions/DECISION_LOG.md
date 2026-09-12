@@ -176,11 +176,11 @@ Examples allowed:
 
 ## D-017 — Calm 2D companion system
 
-**Decision:** Personal OS supports a small calm 2D companion layer. If technically feasible without weakening core reliability, at least one tap-reactive companion appears on selected high-value surfaces such as Welcome, onboarding, Today, empty states and reflection moments.
+**Decision:** Personal OS supports a small calm 2D companion layer. At least one tap-reactive companion should appear on selected high-value surfaces such as Welcome, onboarding, Today, empty states and reflection moments when it can be implemented without weakening core reliability.
 
 **Constraints:** Secondary to utility, never blocks workflows, never carries essential information alone, respects reduced motion, and must not feel childish/noisy.
 
-**Status:** Direction locked; exact visual identity still pending approval.
+**Status:** Locked.
 
 ---
 
@@ -238,3 +238,19 @@ Freeze candidate as of 2026-09-12:
 Versions must be rechecked immediately before Astra starts without opportunistically adopting preview dependencies.
 
 **Status:** Working lock pending final pre-build version recheck.
+
+---
+
+## D-023 — Companion visual identity: Tiny Observatory Friend
+
+**Decision:** The founder selected **Concept B — Tiny Observatory Friend** from the companion direction sheet on 2026-09-12.
+
+**Visual identity:** A small, peaceful, human-like 2D companion with soft dark hair, calm minimal facial features, moss/sage clothing, warm low-contrast illustration, and a gentle editorial atmosphere.
+
+**Personality:** curious, kind, quiet, patient, non-judgmental and slightly playful when invited.
+
+**Usage:** Welcome, selected onboarding moments, Today, truthful empty states, setup completion, Evening Reflection and Weekly Review moments. It must remain subtle on dense functional screens.
+
+**Interaction:** tap reactions rotate between short gestures such as wave, smile/blink, stretch, nod or curious look, then always return to idle. Contextual states may include morning, attentive/focus, completion, quiet day, reflective and sleepy/evening.
+
+**Status:** Locked character direction. Canonical model/pose sheet still requires visual approval before implementation.
