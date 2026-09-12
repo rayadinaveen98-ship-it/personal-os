@@ -9,7 +9,9 @@ This file is the navigation map for the product-definition package.
 - **Phase 2 UX Flows:** launch/welcome/setup + screen/flow matrix started
 - **Phase 3 Screen Specs:** core primary screens drafted (Today, Plan, Capture, Journey, Me)
 - **Phase 4 Design System:** visual language, brand/icon, motion, and companion-character drafts started
-- **Phase 5+ Behavior / Intelligence / Data / Android / QA:** pending
+- **Phase 5 Behavior:** Tasks/Reminders, Projects/Goals, Habits/Routines, Hobbies/Skills/Sessions, and Journal/Ideas/Memories drafts started
+- **Phase 6 Personal Intelligence:** deterministic V1 draft started
+- **Phase 7+ Data / Android / QA:** pending
 - **Astra build handoff:** not ready yet
 
 ## Foundation
@@ -43,6 +45,18 @@ This file is the navigation map for the product-definition package.
 - [`04-design-system/APP_ICON_BRAND_V0_1.md`](04-design-system/APP_ICON_BRAND_V0_1.md) — app icon, brand-mark, adaptive-icon and splash relationship
 - [`04-design-system/MOTION_MICROINTERACTIONS_V0_1.md`](04-design-system/MOTION_MICROINTERACTIONS_V0_1.md) — premium motion language, timing bands, feedback, task completion and reduced-motion rules
 - [`04-design-system/CHARACTER_SYSTEM_V0_1.md`](04-design-system/CHARACTER_SYSTEM_V0_1.md) — calm 2D companion-character purpose, art direction, interaction model, placement and staged implementation strategy
+
+## Behavior Specifications
+
+- [`05-behavior/TASKS_REMINDERS_V0_1.md`](05-behavior/TASKS_REMINDERS_V0_1.md) — task lifecycle, reminders, alarms, permissions, deep links and recovery
+- [`05-behavior/PROJECTS_GOALS_V0_1.md`](05-behavior/PROJECTS_GOALS_V0_1.md) — project/goal distinction, next actions, milestones, measurable progress and history
+- [`05-behavior/HABITS_ROUTINES_V0_1.md`](05-behavior/HABITS_ROUTINES_V0_1.md) — calm consistency, schedules, history, reminders and non-punitive streak philosophy
+- [`05-behavior/HOBBIES_SKILLS_SESSIONS_V0_1.md`](05-behavior/HOBBIES_SKILLS_SESSIONS_V0_1.md) — hobbies/skills as first-class life areas with real practice/session evidence
+- [`05-behavior/JOURNAL_IDEAS_MEMORIES_V0_1.md`](05-behavior/JOURNAL_IDEAS_MEMORIES_V0_1.md) — journal, reflection, ideas, memory preservation and privacy behavior
+
+## Personal Intelligence
+
+- [`06-intelligence/PERSONAL_INTELLIGENCE_V0_1.md`](06-intelligence/PERSONAL_INTELLIGENCE_V0_1.md) — explainable local-first focus selection, continuation, Morning Brief, weekly evidence and suggestion-vs-fact rules
 
 ## Decisions
 
