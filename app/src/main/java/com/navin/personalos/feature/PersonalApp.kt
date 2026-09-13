@@ -13,6 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import com.navin.personalos.core.data.*
 import com.navin.personalos.core.database.*
 import com.navin.personalos.core.designsystem.*
@@ -43,7 +44,7 @@ fun route(type: EntityType,id: String)="detail/${type.name}/$id"
             if(current in primary) Surface(color=MaterialTheme.colorScheme.surface,shadowElevation=2.dp) {
                 Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal=4.dp,vertical=8.dp),horizontalArrangement=Arrangement.SpaceEvenly) {
                     primary.forEach { tab ->
-                        Column(Modifier.weight(1f).heightIn(min=56.dp).clickable { nav.navigate(tab) { launchSingleTop=true;restoreState=true;popUpTo("today") { saveState=true } } }.padding(vertical=6.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                        Column(Modifier.weight(1f).heightIn(min=56.dp).clickable { nav.navigate(tab) { launchSingleTop=true;if(tab!="capture") {restoreState=true;popUpTo("today") { saveState=true }} } }.padding(vertical=6.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp)) {
                             Text(if(tab=="capture") "+" else when(tab) { "today" -> "◉";"plan" -> "▤";"journey" -> "▥";else -> "○" },style=MaterialTheme.typography.titleLarge,color=if(current==tab) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(tab.replaceFirstChar { it.titlecase() },style=MaterialTheme.typography.labelSmall,color=if(current==tab) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -68,9 +69,9 @@ fun route(type: EntityType,id: String)="detail/${type.name}/$id"
                     val type=EntityType.valueOf(requireNotNull(e.arguments?.getString("type")))
                     RecordList(type,records.filter { it.type==type },open,{create(type)}) { nav.popBackStack() }
                 }
-                composable("create/{type}") { e ->
+                composable("create/{type}?date={date}&reflection={reflection}",arguments=listOf(navArgument("date") {defaultValue=""},navArgument("reflection") {defaultValue="FREE"})) { e ->
                     val type=EntityType.valueOf(requireNotNull(e.arguments?.getString("type")))
-                    Editor(vm,records,remember(type) { Draft(UUID.randomUUID().toString(),type,date=if(type in listOf(EntityType.JOURNAL,EntityType.SESSION,EntityType.MEMORY,EntityType.CHAPTER)) LocalDate.now().toString() else "",frequency=if(type==EntityType.HABIT) Frequency.DAILY else null) },false) { nav.popBackStack() }
+                    Editor(vm,records,remember(type) { Draft(UUID.randomUUID().toString(),type,date=e.arguments?.getString("date").orEmpty().ifBlank {if(type in listOf(EntityType.JOURNAL,EntityType.SESSION,EntityType.MEMORY,EntityType.CHAPTER,EntityType.HABIT)) LocalDate.now().toString() else ""},reflection=ReflectionType.valueOf(e.arguments?.getString("reflection") ?: "FREE"),frequency=if(type==EntityType.HABIT) Frequency.DAILY else null) },false) { nav.popBackStack() }
                 }
                 composable("edit/{type}/{id}") { e ->
                     val type=EntityType.valueOf(requireNotNull(e.arguments?.getString("type")));val id=requireNotNull(e.arguments?.getString("id"))

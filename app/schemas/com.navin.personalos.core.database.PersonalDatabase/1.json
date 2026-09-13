@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 22738)
-Total output lines: 2899
-
 {
   "formatVersion": 1,
   "database": {
@@ -1276,7 +1273,355 @@ Total output lines: 2899
               "state"
             ],
             "orders": [],
-            "cre…2738 tokens truncated…   "createSql": "CREATE INDEX IF NOT EXISTS `index_Session_projectId` ON `${TABLE_NAME}` (`projectId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_HabitEvent_state` ON `${TABLE_NAME}` (`state`)"
+          },
+          {
+            "name": "index_HabitEvent_habitId_localDate",
+            "unique": true,
+            "columnNames": [
+              "habitId",
+              "localDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_HabitEvent_habitId_localDate` ON `${TABLE_NAME}` (`habitId`, `localDate`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Habit",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "habitId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Hobby",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `status` TEXT NOT NULL, `lifeAreaId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Hobby_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Hobby_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_Hobby_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Hobby_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Skill",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `status` TEXT NOT NULL, `hobbyId` TEXT, `lifeAreaId` TEXT, `currentFocus` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`hobbyId`) REFERENCES `Hobby`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hobbyId",
+            "columnName": "hobbyId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "currentFocus",
+            "columnName": "currentFocus",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Skill_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Skill_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_Skill_hobbyId",
+            "unique": false,
+            "columnNames": [
+              "hobbyId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Skill_hobbyId` ON `${TABLE_NAME}` (`hobbyId`)"
+          },
+          {
+            "name": "index_Skill_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Skill_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Hobby",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "hobbyId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Session",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `occurredAt` INTEGER NOT NULL, `localDate` TEXT NOT NULL, `durationMinutes` INTEGER, `notes` TEXT, `hobbyId` TEXT, `skillId` TEXT, `projectId` TEXT, `lifeAreaId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`hobbyId`) REFERENCES `Hobby`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`skillId`) REFERENCES `Skill`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`projectId`) REFERENCES `Project`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "occurredAt",
+            "columnName": "occurredAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localDate",
+            "columnName": "localDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durationMinutes",
+            "columnName": "durationMinutes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "hobbyId",
+            "columnName": "hobbyId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "skillId",
+            "columnName": "skillId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "projectId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Session_occurredAt",
+            "unique": false,
+            "columnNames": [
+              "occurredAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Session_occurredAt` ON `${TABLE_NAME}` (`occurredAt`)"
+          },
+          {
+            "name": "index_Session_localDate",
+            "unique": false,
+            "columnNames": [
+              "localDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Session_localDate` ON `${TABLE_NAME}` (`localDate`)"
+          },
+          {
+            "name": "index_Session_hobbyId",
+            "unique": false,
+            "columnNames": [
+              "hobbyId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Session_hobbyId` ON `${TABLE_NAME}` (`hobbyId`)"
+          },
+          {
+            "name": "index_Session_skillId",
+            "unique": false,
+            "columnNames": [
+              "skillId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Session_skillId` ON `${TABLE_NAME}` (`skillId`)"
+          },
+          {
+            "name": "index_Session_projectId",
+            "unique": false,
+            "columnNames": [
+              "projectId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Session_projectId` ON `${TABLE_NAME}` (`projectId`)"
           },
           {
             "name": "index_Session_lifeAreaId",

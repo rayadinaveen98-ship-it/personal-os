@@ -20,6 +20,7 @@ data class Draft(
     val parentTaskId: String? = null, val duration: String = "", val why: String = "", val success: String = "",
     val current: String = "", val target: String = "", val unit: String = "", val measurement: MeasurementType = MeasurementType.NONE,
     val frequency: Frequency? = null, val interval: Int = 1, val weekdaysMask: Int? = null, val endDate: String = "", val countLimit: String = "",
+    val habitTarget: TargetType = TargetType.CHECK, val reflection: ReflectionType = ReflectionType.FREE,
     val reminderDate: String = "", val reminderTime: String = "", val currentFocus: String = "", val icon: String = "", val accent: String = "",
 ) : java.io.Serializable
 
@@ -44,7 +45,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         dao.observeWeeklyReview().map { rows -> rows.map { Record(EntityType.WEEKLY_REVIEW,it.id,"Week of ${it.periodStartLocalDate}",it.reflectionBody.orEmpty(),date=it.periodStartLocalDate,updatedAt=it.updatedAt) } },
     )) { it.flatMap { list -> list }.sortedByDescending { r -> r.updatedAt } }
 
-    suspend fun save(d: Draft, reflection: ReflectionType = ReflectionType.FREE): String = db.withTransaction {
+    suspend fun save(d: Draft, reflection: ReflectionType = d.reflection): String = db.withTransaction {
         require(d.title.isNotBlank() || d.type in listOf(EntityType.JOURNAL,EntityType.IDEA,EntityType.WEEKLY_REVIEW) && d.body.isNotBlank()) { "Add a title or a thought before saving." }
         require(d.title.length <= 500) { "Keep the title within 500 characters." }
         val date=d.date.takeIf { it.isNotBlank() }?.let(LocalDate::parse)
@@ -96,7 +97,8 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             EntityType.HABIT -> {
                 require(d.frequency!=null) { "Choose when this habit repeats." }
                 val old=dao.getHabit(d.id);val rid=requireNotNull(rule(old?.scheduleRuleId))
-                dao.put((old ?: Habit(id=d.id,title=d.title,scheduleRuleId=rid)).copy(title=d.title.trim(),description=d.body,scheduleRuleId=rid,lifeAreaId=d.lifeAreaId,goalId=d.goalId,updatedAt=now))
+                val target=d.target.toDoubleOrNull();require(d.habitTarget==TargetType.CHECK || target!=null && target.isFinite() && target>0) {"Choose a positive habit target."}
+                dao.put((old ?: Habit(id=d.id,title=d.title,scheduleRuleId=rid)).copy(title=d.title.trim(),description=d.body,scheduleRuleId=rid,targetType=d.habitTarget,targetValue=target,unit=d.unit,preferredTimeMinutes=time?.let {it.hour*60+it.minute},lifeAreaId=d.lifeAreaId,goalId=d.goalId,updatedAt=now))
             }
             EntityType.HOBBY -> dao.put((dao.getHobby(d.id) ?: Hobby(id=d.id,title=d.title)).copy(title=d.title.trim(),description=d.body,lifeAreaId=d.lifeAreaId,updatedAt=now))
             EntityType.SKILL -> dao.put((dao.getSkill(d.id) ?: Skill(id=d.id,title=d.title)).copy(title=d.title.trim(),description=d.body,lifeAreaId=d.lifeAreaId,hobbyId=d.hobbyId,currentFocus=d.currentFocus,updatedAt=now))
@@ -152,7 +154,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             EntityType.PROJECT -> dao.getProject(id)?.let { Draft(id,type,it.title,it.description.orEmpty(),date=it.targetDate.orEmpty(),lifeAreaId=it.lifeAreaId,goalId=it.goalId) }
             EntityType.GOAL -> dao.getGoal(id)?.let { Draft(id,type,it.title,date=it.targetDate.orEmpty(),why=it.whyItMatters.orEmpty(),success=it.successDefinition.orEmpty(),current=it.currentValue?.toString().orEmpty(),target=it.targetValue?.toString().orEmpty(),unit=it.unit.orEmpty(),measurement=it.measurementType,lifeAreaId=it.lifeAreaId) }
             EntityType.MILESTONE -> dao.getMilestone(id)?.let { Draft(id,type,it.title,date=it.targetDate.orEmpty(),projectId=it.projectId,goalId=it.goalId) }
-            EntityType.HABIT -> dao.getHabit(id)?.let { Draft(id,type,it.title,it.description.orEmpty(),lifeAreaId=it.lifeAreaId,goalId=it.goalId) }
+            EntityType.HABIT -> dao.getHabit(id)?.let { Draft(id,type,it.title,it.description.orEmpty(),lifeAreaId=it.lifeAreaId,goalId=it.goalId,habitTarget=it.targetType,target=it.targetValue?.toString().orEmpty(),unit=it.unit,time=it.preferredTimeMinutes?.let {m -> LocalTime.ofSecondOfDay(m*60L).toString()}.orEmpty()) }
             EntityType.HOBBY -> dao.getHobby(id)?.let { Draft(id,type,it.title,it.description.orEmpty(),lifeAreaId=it.lifeAreaId) }
             EntityType.SKILL -> dao.getSkill(id)?.let { Draft(id,type,it.title,it.description.orEmpty(),lifeAreaId=it.lifeAreaId,hobbyId=it.hobbyId,currentFocus=it.currentFocus.orEmpty()) }
             EntityType.SESSION -> dao.getSession(id)?.let { Draft(id,type,it.title,it.notes.orEmpty(),date=it.localDate,lifeAreaId=it.lifeAreaId,projectId=it.projectId,hobbyId=it.hobbyId,skillId=it.skillId,duration=it.durationMinutes?.toString().orEmpty()) }
@@ -180,7 +182,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         val r=t.recurrenceRuleId?.let { dao.getRecurrenceRule(it) }
         if(r==null) dao.put(t.copy(status=TaskStatus.COMPLETED,completedAt=now,pinnedFocus=false,updatedAt=now))
         else {
-            val date=t.dueLocalDate?.let(LocalDate::parse) ?: LocalDate.now(clock)
+            val date=(t.occurrenceLocalDate ?: t.dueLocalDate)?.let(LocalDate::parse) ?: LocalDate.now(clock)
             val next=engine.next(r,maxOf(date,LocalDate.now(clock)),dao.allRecurrenceException().filter { it.recurrenceRuleId==r.id })
             if(next==null) dao.put(t.copy(status=TaskStatus.COMPLETED,completedAt=now,pinnedFocus=false,updatedAt=now))
             else {
@@ -194,6 +196,28 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             }
         }
         index(EntityType.TASK,id)
+    }
+    suspend fun skipOccurrence(id: String,expectedDate: String?) = db.withTransaction {
+        val task=requireNotNull(dao.getTask(id));require(task.status==TaskStatus.OPEN)
+        if(task.dueLocalDate!=expectedDate) return@withTransaction
+        val rule=requireNotNull(task.recurrenceRuleId?.let {dao.getRecurrenceRule(it)})
+        val original=task.occurrenceLocalDate ?: task.dueLocalDate ?: rule.startLocalDate
+        val old=dao.allRecurrenceException().firstOrNull {it.recurrenceRuleId==rule.id && it.occurrenceLocalDate==original}
+        dao.put((old ?: RecurrenceException(recurrenceRuleId=rule.id,occurrenceLocalDate=original)).copy(type=ExceptionType.SKIP,updatedAt=clock.millis()))
+        val next=engine.next(rule,maxOf(LocalDate.parse(original),LocalDate.now(clock)),dao.allRecurrenceException())
+        cancelReminders(EntityType.TASK,id)
+        dao.put(task.copy(dueLocalDate=next?.toString(),occurrenceLocalDate=next?.toString(),dueAt=next?.let {if(rule.localTimeMinutes!=null) engine.instant(rule,it,clock.zone).toEpochMilli() else null},status=if(next==null) TaskStatus.CANCELLED else TaskStatus.OPEN,pinnedFocus=false,updatedAt=clock.millis()))
+        event("OCCURRENCE_SKIPPED",EntityType.TASK,id,task.title);index(EntityType.TASK,id)
+    }
+    suspend fun overrideOccurrence(id: String,date: LocalDate) = db.withTransaction {
+        val task=requireNotNull(dao.getTask(id));require(task.status==TaskStatus.OPEN)
+        val rule=requireNotNull(task.recurrenceRuleId?.let {dao.getRecurrenceRule(it)})
+        val original=task.occurrenceLocalDate ?: task.dueLocalDate ?: rule.startLocalDate
+        val old=dao.allRecurrenceException().firstOrNull {it.recurrenceRuleId==rule.id && it.occurrenceLocalDate==original}
+        val at=engine.instant(rule,date,clock.zone).toEpochMilli()
+        dao.put((old ?: RecurrenceException(recurrenceRuleId=rule.id,occurrenceLocalDate=original)).copy(type=ExceptionType.OVERRIDE,overrideDueAt=at,updatedAt=clock.millis()))
+        dao.put(task.copy(dueLocalDate=date.toString(),dueAt=if(rule.localTimeMinutes!=null) at else null,occurrenceLocalDate=original,updatedAt=clock.millis()))
+        event("OCCURRENCE_RESCHEDULED",EntityType.TASK,id,task.title);index(EntityType.TASK,id)
     }
     suspend fun reopenTask(id: String) = db.withTransaction {
         val t=requireNotNull(dao.getTask(id));if(t.status==TaskStatus.OPEN) return@withTransaction
@@ -229,6 +253,9 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
     }
     suspend fun logHabit(id: String, date: LocalDate, state: HabitEventState, value: Double? = null) = db.withTransaction {
         val h=requireNotNull(dao.getHabit(id));require(h.status==ActiveStatus.ACTIVE)
+        require(date<=LocalDate.now(clock)) {"Log a day that has already begun."}
+        require(value==null || value.isFinite() && value>=0) {"Use a valid non-negative amount."}
+        require(h.targetType==TargetType.CHECK || state==HabitEventState.SKIPPED || value!=null) {"Enter the recorded amount."}
         val r=requireNotNull(dao.getRecurrenceRule(h.scheduleRuleId));require(engine.dates(r,date,date).isNotEmpty()) { "This habit is not scheduled for that day." }
         val old=dao.allHabitEvent().firstOrNull { it.habitId==id && it.localDate==date.toString() }
         dao.put((old ?: HabitEvent(habitId=id,localDate=date.toString())).copy(state=state,value=value,updatedAt=clock.millis()))
@@ -261,6 +288,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
     }
     suspend fun delete(type: EntityType,id: String) = db.withTransaction {
         require(type in setOf(EntityType.TASK,EntityType.JOURNAL,EntityType.IDEA,EntityType.MEMORY,EntityType.SESSION)) { "Archive this item to preserve its history." }
+        if(type==EntityType.TASK) dao.allTask().filter {it.parentTaskId==id}.forEach {delete(EntityType.TASK,it.id)}
         cancelReminders(type,id)
         dao.allEntityLink().filter { (it.fromType==type && it.fromId==id)||(it.toType==type && it.toId==id) }.forEach { dao.deleteEntityLink(it.id) }
         dao.allChapterItem().filter { it.entityType==type && it.entityId==id }.forEach { dao.deleteChapterItem(it.id) }

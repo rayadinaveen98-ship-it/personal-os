@@ -51,7 +51,7 @@ import java.util.UUID
         if(type !in listOf(EntityType.REMINDER,EntityType.MILESTONE)) item {Field(if(type in listOf(EntityType.JOURNAL,EntityType.IDEA,EntityType.MEMORY,EntityType.WEEKLY_REVIEW)) "Your words" else "Notes / description",d.body,{d=d.copy(body=it)},true)}
         if(type in listOf(EntityType.TASK,EntityType.REMINDER,EntityType.PROJECT,EntityType.GOAL,EntityType.MILESTONE,EntityType.JOURNAL,EntityType.SESSION,EntityType.MEMORY,EntityType.CHAPTER,EntityType.HABIT)) item {
             DateField(if(type==EntityType.TASK) "Due date" else if(type==EntityType.CHAPTER) "Start date" else "Date",d.date,{d=d.copy(date=it)})
-            if(type in listOf(EntityType.TASK,EntityType.REMINDER,EntityType.SESSION)) TimeField(if(type==EntityType.TASK) "Due time (optional)" else "Time",d.time,{d=d.copy(time=it)})
+            if(type in listOf(EntityType.TASK,EntityType.REMINDER,EntityType.SESSION,EntityType.HABIT)) TimeField(if(type==EntityType.TASK) "Due time (optional)" else "Time",d.time,{d=d.copy(time=it)})
         }
         if(type==EntityType.TASK) {
             item { Choice("Priority",Priority.entries,d.priority,{d=d.copy(priority=it)}) {it.name.lowercase().replaceFirstChar(Char::titlecase)} }
@@ -70,6 +70,10 @@ import java.util.UUID
                 if(d.frequency==Frequency.MONTHLY) Text("Months without your chosen day use their last valid day.",style=MaterialTheme.typography.labelMedium)
             }
         }
+        if(type==EntityType.HABIT) item {
+            Choice("Daily target",TargetType.entries,d.habitTarget,{d=d.copy(habitTarget=it)}) {it.name.lowercase()}
+            if(d.habitTarget!=TargetType.CHECK) {Field("Target amount",d.target,{d=d.copy(target=it)});Field("Unit",d.unit,{d=d.copy(unit=it)})}
+        }
         if(type==EntityType.GOAL) item {
             Field("Why it matters",d.why,{d=d.copy(why=it)},true);Field("What success looks like",d.success,{d=d.copy(success=it)},true)
             Choice("Progress measurement",MeasurementType.entries,d.measurement,{d=d.copy(measurement=it)}) {it.name.lowercase().replace('_',' ')}
@@ -81,7 +85,7 @@ import java.util.UUID
         if(type !in listOf(EntityType.LIFE_AREA,EntityType.REMINDER,EntityType.WEEKLY_REVIEW,EntityType.MILESTONE)) item {ContextPicker("Life area",EntityType.LIFE_AREA,records,d.lifeAreaId,{d=d.copy(lifeAreaId=it)})}
         if(type in listOf(EntityType.TASK,EntityType.MILESTONE,EntityType.JOURNAL,EntityType.IDEA,EntityType.MEMORY,EntityType.SESSION)) item {ContextPicker("Project",EntityType.PROJECT,records,d.projectId,{d=d.copy(projectId=it)})}
         if(type in listOf(EntityType.TASK,EntityType.PROJECT,EntityType.MILESTONE,EntityType.HABIT,EntityType.JOURNAL)) item {ContextPicker("Goal",EntityType.GOAL,records,d.goalId,{d=d.copy(goalId=it)})}
-        item {PrimaryButton(if(busy) "Saving…" else "Save ${type.label().lowercase()}",!busy && !saved) {vm.act {vm.repository.save(d);saved=true;close()}}}
+        item {PrimaryButton(if(busy) "Saving…" else "Save ${type.label().lowercase()}",!busy && !saved) {vm.act(if(type==EntityType.REMINDER || d.reminderDate.isNotBlank()) "Saved. Delivery depends on Android permissions; check the reminder status." else "Saved") {vm.repository.save(d);saved=true;close()}}}
     }
 }
 @Composable fun CaptureScreen(vm: PersonalViewModel,records: List<Record>,context: EntityType?,close: ()->Unit) {

@@ -35,7 +35,8 @@ import java.time.format.DateTimeFormatter
         if(tasks.isNotEmpty()) item { CalmCard(onClick={go("list/TASK")}) { Text("${tasks.size} open tasks",style=MaterialTheme.typography.titleMedium);Text("See all your captured actions") } }
         val upcoming=records.filter { it.date!=null && it.date>=today && (it.type==EntityType.TASK && it.status=="OPEN" || it.type==EntityType.REMINDER && it.status !in listOf("CANCELLED","DELIVERED")) }.sortedBy { it.date }.take(3)
         if(upcoming.isNotEmpty()) { item { SectionTitle("Coming up") };items(upcoming,key={"up-${it.id}"}) { RecordRow(it,open) };item { TextButton(onClick={go("plan")}) { Text("View all upcoming work") } } }
-        if(p.evening && now.hour>=17) item { CalmCard(tone=2) { Eyebrow("Close the day");Text("What was worth remembering today?",style=MaterialTheme.typography.titleLarge);PrimaryButton("Reflect",onClick={create(EntityType.JOURNAL)}) } }
+        item {DueHabits(vm,now.toLocalDate(),open)}
+        if(p.evening && now.hour>=17) item { CalmCard(tone=2) { Eyebrow("Close the day");Text("What was worth remembering today?",style=MaterialTheme.typography.titleLarge);PrimaryButton("Reflect",onClick={go("create/JOURNAL?date=${now.toLocalDate()}&reflection=EVENING")}) } }
         item { TextButton(onClick={go("search")}) { Text("Find something") } }
     }
 }
@@ -60,6 +61,7 @@ import java.time.format.DateTimeFormatter
                 if(entries.isEmpty()) item { Text("Nothing scheduled.",color=MaterialTheme.colorScheme.onSurfaceVariant) }
                 items(entries,key={"$day-${it.id}"}) { r -> RecordRow(r,open,if(r.type==EntityType.TASK) ({vm.act("Completed") { vm.repository.completeTask(r.id,r.date) }}) else null) }
             }
+            item {DueHabits(vm,today,open)}
             val overdue=tasks.filter { it.status=="OPEN" && it.date!=null && it.date<today.toString() }
             if(overdue.isNotEmpty()) { item { SectionTitle("Still open");Text("Keep, reschedule, complete or cancel when you're ready.") };items(overdue,key={"overdue-${it.id}"}) { r -> RecordRow(r,open) } }
             val undated=tasks.filter { it.status=="OPEN" && it.date==null }
@@ -77,8 +79,8 @@ import java.time.format.DateTimeFormatter
         item { PageTitle("The days that make a life.","Your journey",true) }
         item { Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) { (0..6).forEach { n -> val day=week.plusDays(n.toLong());TextButton(onClick={date=day.toString()}) { Text(day.format(DateTimeFormatter.ofPattern("EEE\nd")),color=if(day==selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant) } } } }
         item { DateField("Choose a date",date,{date=it});Row { TextButton(onClick={date=selected.minusWeeks(1).toString()}) {Text("Previous week")};TextButton(onClick={date=LocalDate.now().toString()}) {Text("Today")};TextButton(onClick={date=selected.plusWeeks(1).toString()}) {Text("Next week")} } }
-        item { PrimaryButton("Write something",onClick={create(EntityType.JOURNAL)}) }
-        if(history.isEmpty()) item { QuietEmpty("A quiet day here.","Nothing has been recorded for this date yet.","Capture a memory",{create(EntityType.MEMORY)},p.companion) }
+        item { PrimaryButton("Write something",onClick={go("create/JOURNAL?date=$selected")}) }
+        if(history.isEmpty()) item { QuietEmpty("A quiet day here.","Nothing has been recorded for this date yet.","Capture a memory",{go("create/MEMORY?date=$selected")},p.companion) }
         items(history,key={it.id}) { r -> RecordRow(r,open) }
         item { SectionTitle("Keep what matters");Row { TextButton(onClick={go("list/MEMORY")}) {Text("Memories")};TextButton(onClick={go("list/CHAPTER")}) {Text("Chapters")} } }
         item { CalmCard(tone=2,onClick={go("review")}) { Text("Your week, truthfully.",style=MaterialTheme.typography.titleLarge);Text("See what moved and choose what to carry forward.") } }

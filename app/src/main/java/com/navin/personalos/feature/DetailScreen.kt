@@ -18,7 +18,7 @@ import java.util.UUID
     var confirm by remember {mutableStateOf<String?>(null)};var child by rememberSaveable {mutableStateOf<Draft?>(null)}
     var draft by remember {mutableStateOf<Draft?>(null)};var events by remember {mutableStateOf<List<TimelineEvent>>(emptyList())};var habitEvents by remember {mutableStateOf<List<HabitEvent>>(emptyList())};var members by remember {mutableStateOf<List<ChapterItem>>(emptyList())}
     var sessions by remember {mutableStateOf<List<Session>>(emptyList())};var children by remember {mutableStateOf<List<Task>>(emptyList())}
-    var revision by remember {mutableIntStateOf(0)}
+    var revision by remember {mutableIntStateOf(0)};var occurrenceDate by rememberSaveable {mutableStateOf("")}
     LaunchedEffect(records,id,revision) {sessions=vm.repository.dao.allSession().filter {it.hobbyId==id || it.skillId==id};children=vm.repository.dao.allTask().filter {it.parentTaskId==id};draft=vm.repository.edit(type,id);events=vm.repository.dao.allTimelineEvent().filter {it.sourceType==type && it.sourceId==id};habitEvents=vm.repository.dao.allHabitEvent().filter {it.habitId==id};members=vm.repository.dao.allChapterItem().filter {it.chapterId==id}.sortedBy {it.orderIndex}}
     val c=child
     if(c!=null) {Editor(vm,records,c,false) {child=null};return}
@@ -32,6 +32,12 @@ import java.util.UUID
             item {PrimaryButton(if(r.status=="COMPLETED") "Reopen task" else "Mark complete",r.status!="CANCELLED") {vm.act(if(r.status=="COMPLETED") "Reopened" else "Completed") {if(r.status=="COMPLETED") vm.repository.reopenTask(id) else vm.repository.completeTask(id,r.date)}}}
             if(r.status=="OPEN") item {TextButton(onClick={vm.act(if(r.pinned) "Focus cleared" else "Focus pinned") {vm.repository.pin(id,!r.pinned)}}) {Text(if(r.pinned) "Clear Today focus" else "Make this Today's focus")}}
             item {SectionTitle("Details");Text("Priority: ${draft?.priority?.name?.lowercase()}");Text("Due: ${draft?.date?.ifBlank {"No date"}} ${draft?.time.orEmpty()}");Text("Reminder: ${draft?.reminderDate?.ifBlank {"None"}} ${draft?.reminderTime.orEmpty()}");draft?.frequency?.let {Text("Repeats ${it.name.lowercase()}")}}
+            if(draft?.frequency!=null && r.status=="OPEN") item {
+                Text("Edit changes the series. These actions change only this occurrence.")
+                DateField("Move this occurrence",occurrenceDate,{occurrenceDate=it})
+                TextButton(enabled=occurrenceDate.isNotBlank(),onClick={vm.act("Occurrence moved") {vm.repository.overrideOccurrence(id,LocalDate.parse(occurrenceDate));occurrenceDate=""}}) {Text("Move occurrence")}
+                TextButton(onClick={vm.act("Occurrence skipped") {vm.repository.skipOccurrence(id,r.date)}}) {Text("Skip this occurrence")}
+            }
             items(children,key={"child-${it.id}"}) { task -> records.firstOrNull {it.type==EntityType.TASK && it.id==task.id}?.let {RecordRow(it,open)} }
             item {TextButton(onClick={childCreate(EntityType.TASK)}) {Text("Add subtask")}}
         }
@@ -51,7 +57,7 @@ import java.util.UUID
         }
         if(type==EntityType.MILESTONE) item {PrimaryButton(if(r.status=="COMPLETED") "Reopen milestone" else "Complete milestone") {vm.act {vm.repository.status(type,id,if(r.status=="COMPLETED") "OPEN" else "COMPLETED")}}}
         if(type==EntityType.HABIT) {
-            item {Text("Repeats ${draft?.frequency?.name?.lowercase() ?: "on its saved schedule"}");PrimaryButton("Log today",r.status=="ACTIVE") {vm.act("Logged") {vm.repository.logHabit(id,LocalDate.now(),HabitEventState.COMPLETED);revision++}};TextButton(onClick={vm.act("Skipped today") {vm.repository.logHabit(id,LocalDate.now(),HabitEventState.SKIPPED);revision++}}) {Text("Skip today")}}
+            item {HabitLogControls(vm,id,r.status=="ACTIVE") {revision++}}
             item {SectionTitle("Recorded days");Text("${habitEvents.count {it.state==HabitEventState.COMPLETED}} completed days. Missed days don't create debt.")}
             items(habitEvents.sortedByDescending {it.localDate},key={it.id}) {Text("${it.localDate} · ${it.state.name.lowercase()}")}
         }
