@@ -13,11 +13,13 @@ import javax.inject.Inject
 @HiltViewModel
 class PersonalViewModel @Inject constructor(val repository: PersonalRepository,val preferences: PreferenceStore,val backup: BackupService,val reminders: com.navin.personalos.core.reminders.ReminderService): ViewModel() {
     init { reminders.enqueue() }
-    val records=repository.records.stateIn(viewModelScope,SharingStarted.WhileSubscribed(5000),emptyList())
+    val recordsReady=MutableStateFlow(false)
+    val records=repository.records.onEach {recordsReady.value=true}.stateIn(viewModelScope,SharingStarted.WhileSubscribed(5000),emptyList())
     val prefs=preferences.flow.stateIn(viewModelScope,SharingStarted.Eagerly,null)
     val events=Channel<String>(Channel.BUFFERED)
     val busy=MutableStateFlow(false)
     val unlocked=MutableStateFlow(false)
+    val pendingScreen=MutableStateFlow<String?>(null)
     val pendingDestination=MutableStateFlow<Pair<EntityType,String>?>(null)
     var backgroundAt: Long? = null
     fun act(message: String = "Saved", block: suspend () -> Unit) {

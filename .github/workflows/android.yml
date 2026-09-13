@@ -9,7 +9,7 @@ permissions:
   contents: read
 concurrency:
   group: android-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -31,6 +31,7 @@ jobs:
           name: PersonalOS-verification-reports
           path: app/build/reports/
       - uses: actions/upload-artifact@v4
+        if: always() && hashFiles('app/build/outputs/apk/debug/app-debug.apk') != ''
         with:
           name: PersonalOS-v0.1.0-foundation-alpha-debug
           path: app/build/outputs/apk/debug/app-debug.apk

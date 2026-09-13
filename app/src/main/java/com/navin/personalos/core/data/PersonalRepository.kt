@@ -172,6 +172,25 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         }
         return d
     }
+    suspend fun refreshCalendar() = db.withTransaction {
+        val today=LocalDate.now(clock)
+        for(task in dao.allTask().filter {it.status==TaskStatus.OPEN && it.recurrenceRuleId!=null}) {
+            val rule=dao.getRecurrenceRule(requireNotNull(task.recurrenceRuleId)) ?: continue
+            val oldDate=task.dueLocalDate?.let(LocalDate::parse) ?: LocalDate.parse(rule.startLocalDate)
+            if(oldDate>=today) continue
+            val exceptions=dao.allRecurrenceException().filter {it.recurrenceRuleId==rule.id}
+            val latest=engine.latestDue(rule,today,exceptions) ?: continue
+            if(latest<=oldDate) continue
+            dao.put(task.copy(dueLocalDate=latest.toString(),occurrenceLocalDate=latest.toString(),dueAt=rule.localTimeMinutes?.let {engine.instant(rule,latest,clock.zone).toEpochMilli()},updatedAt=clock.millis()))
+            val days=java.time.temporal.ChronoUnit.DAYS.between(oldDate,latest)
+            dao.allReminder().filter {it.ownerType==OwnerType.TASK && it.ownerId==task.id && it.state!=ReminderState.CANCELLED}.forEach {reminder ->
+                reminder.triggerAt?.let {old -> val next=Instant.ofEpochMilli(old).atZone(clock.zone).plusDays(days).toInstant().toEpochMilli()
+                    dao.put(reminder.copy(triggerAt=next,state=ReminderState.SCHEDULED,deliveryState=if(next>clock.millis()) DeliveryState.PENDING else DeliveryState.EXPIRED,scheduledAt=null,updatedAt=clock.millis()))
+                }
+            }
+            index(EntityType.TASK,task.id)
+        }
+    }
     suspend fun completeTask(id: String, expectedDate: String? = null, confirmOpenChildren: Boolean = false) = db.withTransaction {
         val t=requireNotNull(dao.getTask(id));if(t.status!=TaskStatus.OPEN) return@withTransaction
         require(confirmOpenChildren || dao.allTask().none { it.parentTaskId==id && it.status==TaskStatus.OPEN }) { "Complete or cancel the open subtasks first." }

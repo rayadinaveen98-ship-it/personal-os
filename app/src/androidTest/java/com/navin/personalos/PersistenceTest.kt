@@ -76,4 +76,14 @@ class PersistenceTest {
         repo.save(repo.edit(EntityType.SESSION,id)!!.copy(body="Edited note"))
         assertEquals(original,db.dao().getSession(id)!!.occurredAt)
     }
+    @Test fun rolloverKeepsOneRecurringOccurrenceWithoutMovingOneOffTasks() = runBlocking {
+        val recurring=Draft(UUID.randomUUID().toString(),EntityType.TASK,title="Synthetic daily",date="2026-09-01",frequency=Frequency.DAILY)
+        val oneOff=Draft(UUID.randomUUID().toString(),EntityType.TASK,title="Synthetic one-off",date="2026-09-01")
+        repo.save(recurring);repo.save(oneOff);repo.refreshCalendar();repo.refreshCalendar()
+        assertEquals(2,db.dao().allTask().size)
+        assertEquals("2026-09-13",db.dao().getTask(recurring.id)!!.dueLocalDate)
+        assertEquals("2026-09-01",db.dao().getTask(oneOff.id)!!.dueLocalDate)
+        assertTrue(db.dao().allTimelineEvent().none {it.eventType=="TASK_COMPLETED"})
+    }
+
 }

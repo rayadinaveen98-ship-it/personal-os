@@ -70,6 +70,32 @@ class AppFlowTest {
             }
         } finally {shell("wm size reset");shell("wm density reset");shell("settings put system font_scale 1.0")}
     }
+    @Test fun reminderPermissionStateAndRealAlarmDelivery() {
+        setupEmpty()
+        val automation=InstrumentationRegistry.getInstrumentation().uiAutomation
+        val context=ui.activity.applicationContext
+        val id=java.util.UUID.randomUUID().toString()
+        if(android.os.Build.VERSION.SDK_INT>=31) automation.executeShellCommand("appops set ${context.packageName} SCHEDULE_EXACT_ALARM allow").use {android.os.ParcelFileDescriptor.AutoCloseInputStream(it).use {stream -> stream.readBytes()}}
+        runBlocking {
+            vm.repository.dao.put(com.navin.personalos.core.database.Reminder(id=id,title="Synthetic alarm verification",triggerAt=System.currentTimeMillis()+60_000,exactRequired=true))
+            vm.reminders.reconcile()
+            if(android.os.Build.VERSION.SDK_INT>=33 && context.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)!=android.content.pm.PackageManager.PERMISSION_GRANTED)
+                Assert.assertEquals(com.navin.personalos.core.database.DeliveryState.NOTIFICATIONS_BLOCKED,vm.repository.dao.getReminder(id)!!.deliveryState)
+        }
+        if(android.os.Build.VERSION.SDK_INT>=33) automation.grantRuntimePermission(context.packageName,android.Manifest.permission.POST_NOTIFICATIONS)
+        runBlocking {
+            val reminder=vm.repository.dao.getReminder(id)!!
+            vm.repository.dao.put(reminder.copy(triggerAt=System.currentTimeMillis()+5000))
+            vm.reminders.reconcile()
+            Assert.assertEquals(com.navin.personalos.core.database.DeliveryState.SCHEDULED,vm.repository.dao.getReminder(id)!!.deliveryState)
+        }
+        ui.waitUntil(30_000) {runBlocking {vm.repository.dao.getReminder(id)?.state==com.navin.personalos.core.database.ReminderState.DELIVERED}}
+        val notifications=context.getSystemService(android.app.NotificationManager::class.java).activeNotifications
+        Assert.assertTrue(notifications.any {it.tag==id})
+        notifications.first {it.tag==id}.notification.contentIntent.send()
+        ui.waitUntil(10_000) {ui.onAllNodesWithText("Synthetic alarm verification").fetchSemanticsNodes().isNotEmpty()}
+        runBlocking {vm.reminders.cancelAll()}
+    }
     private fun snapshot(name: String) {
         val instrumentation=InstrumentationRegistry.getInstrumentation()
         val bitmap=instrumentation.uiAutomation.takeScreenshot() ?: return

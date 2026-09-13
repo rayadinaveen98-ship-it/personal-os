@@ -81,9 +81,9 @@ class ReminderService @Inject constructor(@ApplicationContext private val contex
     private suspend fun syncRhythms() {
         val p=preferences.flow.first()
         for((key,enabled,minutes) in listOf(Triple("morning",p.morning,p.morningMinutes),Triple("evening",p.evening,p.eveningMinutes))) {
-            val id="rhythm-$key";val old=dao.getReminder(id)
+            val id=java.util.UUID.nameUUIDFromBytes("personal-os/rhythm/$key".toByteArray()).toString();val old=dao.getReminder(id)
             if(!enabled) {if(old!=null && old.state!=ReminderState.CANCELLED) dao.put(old.copy(state=ReminderState.CANCELLED,updatedAt=clock.millis()));continue}
-            val rid="rhythm-rule-$key";val current=dao.getRecurrenceRule(rid)
+            val rid=java.util.UUID.nameUUIDFromBytes("personal-os/rhythm-rule/$key".toByteArray()).toString();val current=dao.getRecurrenceRule(rid)
             val rule=(current ?: RecurrenceRule(id=rid,startLocalDate=LocalDate.now(clock).toString())).copy(localTimeMinutes=minutes)
             if(rule!=current) dao.put(rule)
             val changed=current?.localTimeMinutes!=minutes || old?.state==ReminderState.CANCELLED
@@ -102,6 +102,7 @@ class ReminderService @Inject constructor(@ApplicationContext private val contex
             val type=when(r.ownerType) {OwnerType.TASK -> EntityType.TASK;OwnerType.HABIT -> EntityType.HABIT;else -> EntityType.REMINDER}
             val target=if(type==EntityType.REMINDER) r.id else r.ownerId ?: r.id
             val intent=Intent(context,MainActivity::class.java).setData(Uri.parse("personalos://open/${type.name}/$target")).putExtra("entityType",type.name).putExtra("entityId",target).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            if(r.ownerType==OwnerType.JOURNAL_PROMPT) intent.action=if(r.ownerId=="morning") "com.navin.personalos.MORNING" else "com.navin.personalos.EVENING"
             val open=PendingIntent.getActivity(context,0,intent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             val title=if(p.hideNotificationText) "A reminder you set" else r.title
             try {

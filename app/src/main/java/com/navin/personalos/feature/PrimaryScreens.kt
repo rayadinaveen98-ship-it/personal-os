@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
     var now by remember { mutableStateOf(ZonedDateTime.now()) }
     LaunchedEffect(Unit) { while(true) { now=ZonedDateTime.now();kotlinx.coroutines.delay(30000) } }
     var focus by remember { mutableStateOf<FocusSuggestion?>(null) }
-    LaunchedEffect(records,now) { val dao=vm.repository.dao;focus=PersonalIntelligence().suggest(dao.allTask(),dao.allProject(),dao.allReminder(),dao.allHabit(),dao.allRecurrenceRule(),dao.allEntityLink(),now) }
+    LaunchedEffect(records,now) { vm.repository.refreshCalendar();val dao=vm.repository.dao;val completedHabits=dao.allHabitEvent().filter {it.localDate==now.toLocalDate().toString() && it.state in listOf(HabitEventState.COMPLETED,HabitEventState.SKIPPED)}.map {it.habitId}.toSet();focus=PersonalIntelligence().suggest(dao.allTask(),dao.allProject(),dao.allReminder(),dao.allHabit().filter {it.id !in completedHabits},dao.allRecurrenceRule(),dao.allEntityLink(),now) }
     val tasks=records.filter { it.type==EntityType.TASK && it.status=="OPEN" };val today=now.toLocalDate().toString()
     val greeting=when(now.hour) { in 5..11 -> "Good morning";in 12..16 -> "Good afternoon";in 17..22 -> "Good evening";else -> "A quiet moment" }
     LazyColumn(contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {

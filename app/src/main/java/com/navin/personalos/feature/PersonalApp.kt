@@ -1,6 +1,8 @@
 package com.navin.personalos.feature
 
 import androidx.compose.foundation.*
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,7 +29,7 @@ fun EntityType.label(): String = name.lowercase().replace('_',' ').replaceFirstC
 fun route(type: EntityType,id: String)="detail/${type.name}/$id"
 
 @Composable fun PersonalApp(vm: PersonalViewModel) {
-    val prefs by vm.prefs.collectAsStateWithLifecycle();val records by vm.records.collectAsStateWithLifecycle()
+    val prefs by vm.prefs.collectAsStateWithLifecycle();val records by vm.records.collectAsStateWithLifecycle();val recordsReady by vm.recordsReady.collectAsStateWithLifecycle()
     PersonalTheme(prefs?.theme ?: "SYSTEM") {
         val snackbar=remember { SnackbarHostState() }
         LaunchedEffect(Unit) { for(message in vm.events) snackbar.showSnackbar(message) }
@@ -36,7 +38,10 @@ fun route(type: EntityType,id: String)="detail/${type.name}/$id"
         val unlocked by vm.unlocked.collectAsStateWithLifecycle()
         if(p.locked && !unlocked) { LockScreen(vm);return@PersonalTheme }
         if(!p.ready) { Scaffold(snackbarHost={SnackbarHost(snackbar)}) { padding -> Onboarding(vm,Modifier.padding(padding)) };return@PersonalTheme }
+        if(!recordsReady) {Box(Modifier.fillMaxSize(),contentAlignment=Alignment.Center) {CircularProgressIndicator()};return@PersonalTheme}
         val nav=rememberNavController();val entry by nav.currentBackStackEntryAsState();val current=entry?.destination?.route
+        val screen by vm.pendingScreen.collectAsStateWithLifecycle()
+        LaunchedEffect(screen) {screen?.let {destination -> nav.navigate(if(destination=="evening") "create/JOURNAL?date=${LocalDate.now()}&reflection=EVENING" else "today") {launchSingleTop=true};vm.pendingScreen.value=null}}
         val destination by vm.pendingDestination.collectAsStateWithLifecycle()
         LaunchedEffect(destination) { destination?.let { (type,id) -> nav.navigate(route(type,id)) { launchSingleTop=true };vm.pendingDestination.value=null } }
         val primary=listOf("today","plan","capture","journey","me")
@@ -45,7 +50,7 @@ fun route(type: EntityType,id: String)="detail/${type.name}/$id"
                 Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal=4.dp,vertical=8.dp),horizontalArrangement=Arrangement.SpaceEvenly) {
                     primary.forEach { tab ->
                         Column(Modifier.weight(1f).heightIn(min=56.dp).clickable { nav.navigate(tab) { launchSingleTop=true;if(tab!="capture") {restoreState=true;popUpTo("today") { saveState=true }} } }.padding(vertical=6.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp)) {
-                            Text(if(tab=="capture") "+" else when(tab) { "today" -> "◉";"plan" -> "▤";"journey" -> "▥";else -> "○" },style=MaterialTheme.typography.titleLarge,color=if(current==tab) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
+                            NavigationSymbol(tab,current==tab)
                             Text(tab.replaceFirstChar { it.titlecase() },style=MaterialTheme.typography.labelSmall,color=if(current==tab) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
@@ -55,7 +60,7 @@ fun route(type: EntityType,id: String)="detail/${type.name}/$id"
             val page=Modifier.padding(padding).fillMaxSize()
             val open:(EntityType,String)->Unit={type,id -> nav.navigate(route(type,id))}
             val create:(EntityType)->Unit={type -> nav.navigate("create/${type.name}")}
-            NavHost(nav,startDestination="today",modifier=page) {
+            NavHost(nav,startDestination="today",modifier=page,enterTransition={if(p.reducedMotion) EnterTransition.None else fadeIn(tween(160))},exitTransition={if(p.reducedMotion) ExitTransition.None else fadeOut(tween(120))}) {
                 composable("today") { TodayScreen(vm,p,records,open,create,{nav.navigate(it)}) }
                 composable("plan") { PlanScreen(vm,records,open,create,{nav.navigate(it)}) }
                 composable("capture") { CaptureScreen(vm,records,null) { nav.popBackStack() } }

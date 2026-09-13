@@ -143,6 +143,6 @@ Astra should append final production assets here as they are created:
 | Tiny Observatory Friend state set | `core/designsystem/Components.kt` | Kotlin Canvas paths and pose state machine in the same file | Personal OS original recreation from approved direction | Eight source states; fidelity/motion QA pending |
 | Manrope | `app/src/main/res/font/manrope.ttf` | Google Fonts `google/fonts`, `ofl/manrope/Manrope[wght].ttf` | SIL OFL 1.1, bundled at `app/src/main/assets/licenses/Manrope-OFL.txt` | Bundled |
 | Newsreader | `app/src/main/res/font/newsreader.ttf` | Google Fonts `google/fonts`, `ofl/newsreader/Newsreader[opsz,wght].ttf` | SIL OFL 1.1, bundled at `app/src/main/assets/licenses/Newsreader-OFL.txt` | Bundled |
-| UI symbols | Native text/Compose controls | Kotlin UI source | Platform text rendering; no downloaded icon pack | Coherence/accessibility polish pending |
+| UI symbols | `core/designsystem/NavigationSymbol.kt` | Original 24-unit Kotlin Canvas vector paths | Personal OS original; no downloaded icon pack | Implemented; runtime QA pending |
 
 Implementation paths under `core/` are relative to `app/src/main/java/com/navin/personalos/`. No Canva stock artwork or opaque screen mockups are bundled in the app. External attachments remain user content.

@@ -31,11 +31,15 @@ class MainActivity : FragmentActivity() {
         if(p?.locked==true && model.backgroundAt?.let { SystemClock.elapsedRealtime()-it>=p.timeoutMinutes*60000L }==true) model.unlocked.value=false
         model.backgroundAt=null
         super.onStart()
-        model.reminders.enqueue()
+        lifecycleScope.launch {model.repository.refreshCalendar();model.reminders.enqueue()}
     }
     override fun onStop() { model.backgroundAt=SystemClock.elapsedRealtime();super.onStop() }
     override fun onNewIntent(intent: Intent) { super.onNewIntent(intent);setIntent(intent);handleIntent(intent) }
     private fun handleIntent(intent: Intent) {
+        when(intent.action) {
+            "com.navin.personalos.MORNING" -> {model.pendingScreen.value="today";return}
+            "com.navin.personalos.EVENING" -> {model.pendingScreen.value="evening";return}
+        }
         val type=intent.getStringExtra("entityType")?.let { runCatching { EntityType.valueOf(it) }.getOrNull() }
         val id=intent.getStringExtra("entityId")
         if(type!=null && !id.isNullOrBlank()) model.pendingDestination.value=type to id

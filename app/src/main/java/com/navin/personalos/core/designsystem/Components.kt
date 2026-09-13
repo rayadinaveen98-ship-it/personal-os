@@ -45,8 +45,8 @@ import kotlinx.coroutines.delay
     val motion = !reducedMotion && ValueAnimator.areAnimatorsEnabled()
     val colors=MaterialTheme.colorScheme
     Canvas(modifier.size(180.dp,165.dp).semantics { contentDescription="Tiny Observatory Friend. Tap for a gentle greeting.";role=Role.Button;stateDescription=if(reacting) state else "Resting" }.clickable { tap++ }) {
-        val scale=size.width/180f
-        scale(scale,scale,pivot=Offset.Zero) {
+        val fit=minOf(size.width/180f,size.height/165f)
+        withTransform({translate((size.width-180f*fit)/2f,(size.height-165f*fit)/2f);scale(fit,fit,pivot=Offset.Zero)}) {
             drawOval(colors.primary.copy(alpha=.10f),Offset(14f,135f),Size(152f,22f))
             val skin=Color(0xFFE9B99B);val hair=Color(0xFF3C302C);val sage=Color(0xFF667A61);val trousers=Color(0xFFD8CFBF)
             drawRoundRect(trousers,Offset(49f,122f),Size(46f,22f),CornerRadius(12f));drawRoundRect(trousers,Offset(91f,122f),Size(43f,22f),CornerRadius(12f))

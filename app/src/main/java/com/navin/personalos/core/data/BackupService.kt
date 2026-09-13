@@ -107,5 +107,26 @@ data class RestorePreview internal constructor(internal val payload: String,val 
         d.allRecurrenceRule().forEach { RecurrenceEngine().validate(it) }
         d.allAttachment().forEach { require(it.storageMode==StorageMode.EXTERNAL_URI && Uri.parse(it.uri).scheme=="content") { "Unsupported attachment storage. Files have not been imported." } }
         d.allSession().forEach { require(it.durationMinutes==null || it.durationMinutes in 1..1440) }
+        val ids=mapOf(
+            EntityType.LIFE_AREA to d.allLifeArea().map {it.id}.toSet(),EntityType.GOAL to d.allGoal().map {it.id}.toSet(),
+            EntityType.PROJECT to d.allProject().map {it.id}.toSet(),EntityType.MILESTONE to d.allMilestone().map {it.id}.toSet(),
+            EntityType.TASK to d.allTask().map {it.id}.toSet(),EntityType.REMINDER to d.allReminder().map {it.id}.toSet(),
+            EntityType.HABIT to d.allHabit().map {it.id}.toSet(),EntityType.HOBBY to d.allHobby().map {it.id}.toSet(),
+            EntityType.SKILL to d.allSkill().map {it.id}.toSet(),EntityType.SESSION to d.allSession().map {it.id}.toSet(),
+            EntityType.JOURNAL to d.allJournalEntry().map {it.id}.toSet(),EntityType.IDEA to d.allIdea().map {it.id}.toSet(),
+            EntityType.MEMORY to d.allMemory().map {it.id}.toSet(),EntityType.CHAPTER to d.allChapter().map {it.id}.toSet(),
+            EntityType.DAILY_REVIEW to d.allDailyReview().map {it.id}.toSet(),EntityType.WEEKLY_REVIEW to d.allWeeklyReview().map {it.id}.toSet())
+        fun exists(type: EntityType,id: String)=id in ids.getValue(type)
+        require(ids.values.all {set -> set.all {it.isNotBlank() && it.length<=256}}) {"Invalid record identity in backup."}
+        d.allEntityLink().forEach {require(exists(it.fromType,it.fromId) && exists(it.toType,it.toId)) {"Backup contains a broken record connection."}}
+        d.allChapterItem().forEach {require(exists(it.entityType,it.entityId)) {"Backup contains an unavailable chapter member."}}
+        d.allTags().forEach {require(exists(it.entityType,it.entityId)) {"Backup contains a tag for an unavailable record."}}
+        d.allAttachment().forEach {require(exists(it.ownerType,it.ownerId)) {"Backup contains an attachment without an owner."}}
+        d.allReminder().filter {it.state==ReminderState.SCHEDULED}.forEach {r ->
+            if(r.ownerType==OwnerType.TASK) require(r.ownerId!=null && exists(EntityType.TASK,r.ownerId)) {"Reminder task is missing."}
+            if(r.ownerType==OwnerType.HABIT) require(r.ownerId!=null && exists(EntityType.HABIT,r.ownerId)) {"Reminder habit is missing."}
+        }
+        target.openHelper.readableDatabase.query("SELECT entityType,entityId FROM SearchDocument").use {c -> while(c.moveToNext()) require(exists(EntityType.valueOf(c.getString(0)),c.getString(1))) {"Search references an unavailable record."} }
+
     }
 }
