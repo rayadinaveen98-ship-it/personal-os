@@ -95,7 +95,14 @@ import java.util.UUID
         if(type in listOf(EntityType.JOURNAL,EntityType.MEMORY,EntityType.IDEA,EntityType.PROJECT)) item {AttachmentSection(vm,type,id)}
         item {ConnectionsSection(vm,type,id,records,open)}
         val contextIds=listOfNotNull(r.projectId?.let {EntityType.PROJECT to it},r.goalId?.let {EntityType.GOAL to it},r.lifeAreaId?.let {EntityType.LIFE_AREA to it})
-        if(contextIds.isNotEmpty()) item {SectionTitle("Connected to");contextIds.forEach {(t,i) -> records.firstOrNull {it.type==t && it.id==i}?.let {record -> TextButton(onClick={open(t,i)}) {Text(record.title)}}}
+        if(contextIds.isNotEmpty()) item {
+            SectionTitle("Connected to")
+            contextIds.forEach { (t,i) ->
+                records.firstOrNull {it.type==t && it.id==i}?.let { record ->
+                    TextButton(onClick={open(t,i)}) {Text(record.title)}
+                }
+            }
+        }
         if(events.isNotEmpty()) {item {SectionTitle("History")};items(events.sortedByDescending {it.occurredAt},key={it.id}) {Text("${it.localDate} · ${it.eventType.lowercase().replace('_',' ')}")}}
         if(type in listOf(EntityType.PROJECT,EntityType.GOAL,EntityType.HABIT,EntityType.HOBBY,EntityType.SKILL)) item {
             if(r.status in listOf("ACTIVE","PAUSED")) TextButton(onClick={vm.act {vm.repository.status(type,id,if(r.status=="PAUSED") "ACTIVE" else "PAUSED")}}) {Text(if(r.status=="PAUSED") "Resume" else "Pause")}

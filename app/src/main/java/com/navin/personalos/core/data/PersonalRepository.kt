@@ -154,7 +154,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             EntityType.PROJECT -> dao.getProject(id)?.let { Draft(id,type,it.title,it.description.orEmpty(),date=it.targetDate.orEmpty(),lifeAreaId=it.lifeAreaId,goalId=it.goalId) }
             EntityType.GOAL -> dao.getGoal(id)?.let { Draft(id,type,it.title,date=it.targetDate.orEmpty(),why=it.whyItMatters.orEmpty(),success=it.successDefinition.orEmpty(),current=it.currentValue?.toString().orEmpty(),target=it.targetValue?.toString().orEmpty(),unit=it.unit.orEmpty(),measurement=it.measurementType,lifeAreaId=it.lifeAreaId) }
             EntityType.MILESTONE -> dao.getMilestone(id)?.let { Draft(id,type,it.title,date=it.targetDate.orEmpty(),projectId=it.projectId,goalId=it.goalId) }
-            EntityType.HABIT -> dao.getHabit(id)?.let { Draft(id,type,it.title,it.description.orEmpty(),lifeAreaId=it.lifeAreaId,goalId=it.goalId,habitTarget=it.targetType,target=it.targetValue?.toString().orEmpty(),unit=it.unit,time=it.preferredTimeMinutes?.let {m -> LocalTime.ofSecondOfDay(m*60L).toString()}.orEmpty()) }
+            EntityType.HABIT -> dao.getHabit(id)?.let { Draft(id,type,it.title,it.description.orEmpty(),lifeAreaId=it.lifeAreaId,goalId=it.goalId,habitTarget=it.targetType,target=it.targetValue?.toString().orEmpty(),unit=it.unit.orEmpty(),time=it.preferredTimeMinutes?.let {m -> LocalTime.ofSecondOfDay(m*60L).toString()}.orEmpty()) }
             EntityType.HOBBY -> dao.getHobby(id)?.let { Draft(id,type,it.title,it.description.orEmpty(),lifeAreaId=it.lifeAreaId) }
             EntityType.SKILL -> dao.getSkill(id)?.let { Draft(id,type,it.title,it.description.orEmpty(),lifeAreaId=it.lifeAreaId,hobbyId=it.hobbyId,currentFocus=it.currentFocus.orEmpty()) }
             EntityType.SESSION -> dao.getSession(id)?.let { Draft(id,type,it.title,it.notes.orEmpty(),date=it.localDate,lifeAreaId=it.lifeAreaId,projectId=it.projectId,hobbyId=it.hobbyId,skillId=it.skillId,duration=it.durationMinutes?.toString().orEmpty()) }
@@ -286,7 +286,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         val members=dao.allChapterItem().filter { it.chapterId==chapterId };require(ids.toSet()==members.map { it.id }.toSet() && ids.size==members.size)
         ids.forEachIndexed { i,id -> dao.put(members.first { it.id==id }.copy(orderIndex=i)) }
     }
-    suspend fun delete(type: EntityType,id: String) = db.withTransaction {
+    suspend fun delete(type: EntityType,id: String): Unit = db.withTransaction {
         require(type in setOf(EntityType.TASK,EntityType.JOURNAL,EntityType.IDEA,EntityType.MEMORY,EntityType.SESSION)) { "Archive this item to preserve its history." }
         if(type==EntityType.TASK) dao.allTask().filter {it.parentTaskId==id}.forEach {delete(EntityType.TASK,it.id)}
         cancelReminders(type,id)
