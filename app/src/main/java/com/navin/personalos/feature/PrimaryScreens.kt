@@ -108,3 +108,4 @@ import java.time.format.DateTimeFormatter
         items(shown,key={it.id}) { RecordRow(it,open) }
     }
 }
+

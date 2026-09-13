@@ -32,8 +32,12 @@ fun route(type: EntityType,id: String)="detail/${type.name}/$id"
         LaunchedEffect(Unit) { for(message in vm.events) snackbar.showSnackbar(message) }
         val p=prefs
         if(p==null) { Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),contentAlignment=Alignment.Center) { CircularProgressIndicator() };return@PersonalTheme }
+        val unlocked by vm.unlocked.collectAsStateWithLifecycle()
+        if(p.locked && !unlocked) { LockScreen(vm);return@PersonalTheme }
         if(!p.ready) { Scaffold(snackbarHost={SnackbarHost(snackbar)}) { padding -> Onboarding(vm,Modifier.padding(padding)) };return@PersonalTheme }
         val nav=rememberNavController();val entry by nav.currentBackStackEntryAsState();val current=entry?.destination?.route
+        val destination by vm.pendingDestination.collectAsStateWithLifecycle()
+        LaunchedEffect(destination) { destination?.let { (type,id) -> nav.navigate(route(type,id)) { launchSingleTop=true };vm.pendingDestination.value=null } }
         val primary=listOf("today","plan","capture","journey","me")
         Scaffold(snackbarHost={SnackbarHost(snackbar)},bottomBar={
             if(current in primary) Surface(color=MaterialTheme.colorScheme.surface,shadowElevation=2.dp) {
@@ -131,3 +135,4 @@ fun route(type: EntityType,id: String)="detail/${type.name}/$id"
         Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) { Eyebrow(r.type.label());Text(r.title,style=MaterialTheme.typography.titleMedium);Text(listOfNotNull(r.status.takeIf { it.isNotEmpty() }?.lowercase()?.replace('_',' '),r.date).joinToString(" · "),style=MaterialTheme.typography.labelMedium,color=MaterialTheme.colorScheme.onSurfaceVariant) }
     } }
 }
+

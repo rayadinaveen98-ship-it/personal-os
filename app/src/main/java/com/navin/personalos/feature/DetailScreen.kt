@@ -74,6 +74,7 @@ import java.util.UUID
                 SelectRow(candidate.title,selected) {vm.act("Chapter updated") {vm.repository.chapterMember(id,candidate.type,candidate.id,!selected);revision++}}
             }
         }
+        if(type in listOf(EntityType.JOURNAL,EntityType.MEMORY,EntityType.IDEA,EntityType.PROJECT)) item {AttachmentSection(vm,type,id)}
         val contextIds=listOfNotNull(r.projectId?.let {EntityType.PROJECT to it},r.goalId?.let {EntityType.GOAL to it},r.lifeAreaId?.let {EntityType.LIFE_AREA to it})
         if(contextIds.isNotEmpty()) item {SectionTitle("Connected to");contextIds.forEach {(t,i) -> records.firstOrNull {it.type==t && it.id==i}?.let {record -> TextButton(onClick={open(t,i)}) {Text(record.title)}}}
         if(events.isNotEmpty()) {item {SectionTitle("History")};items(events.sortedByDescending {it.occurredAt},key={it.id}) {Text("${it.localDate} · ${it.eventType.lowercase().replace('_',' ')}")}}
@@ -89,3 +90,4 @@ import java.util.UUID
     }
     confirm?.let {action -> AlertDialog(onDismissRequest={confirm=null},title={Text(if(action=="DELETE") "Delete this record?" else "${action.lowercase().replaceFirstChar(Char::titlecase)} this record?")},text={Text(if(action=="DELETE") "This removes the record and its links. Your original external files are not deleted." else "Related records and history are preserved.")},confirmButton={TextButton(onClick={vm.act {if(action=="DELETE") {vm.repository.delete(type,id);back()} else vm.repository.status(type,id,action);confirm=null}}) {Text("Confirm")}},dismissButton={TextButton(onClick={confirm=null}) {Text("Keep as it is")}})}
 }
+

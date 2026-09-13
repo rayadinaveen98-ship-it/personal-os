@@ -267,7 +267,7 @@ data class ChapterItem(
     val updatedAt: Long = createdAt
 )
 
-@Entity(tableName = "DailyReview", indices = [Index("localDate"), Index(value = ["localDate"], unique = true)])
+@Entity(tableName = "DailyReview", indices = [Index(value = ["localDate"], unique = true)])
 data class DailyReview(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val localDate: String,

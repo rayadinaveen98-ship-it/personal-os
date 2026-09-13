@@ -10,6 +10,6 @@
     <style name="Theme.PersonalOS.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/ivory</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/leaf</item>
-        <item name="postSplashScreenTheme">Theme.PersonalOS</item>
+        <item name="postSplashScreenTheme">@style/Theme.PersonalOS</item>
     </style>
 </resources>
