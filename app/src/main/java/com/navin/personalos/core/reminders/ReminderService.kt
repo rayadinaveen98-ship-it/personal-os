@@ -51,16 +51,18 @@ class ReminderService @Inject constructor(@ApplicationContext private val contex
             if(r.state!=ReminderState.SCHEDULED) {alarms.cancel(pending(r.id));continue}
             val ownerActive=when(r.ownerType) {OwnerType.TASK -> r.ownerId?.let {dao.getTask(it)?.status==TaskStatus.OPEN} ?: false;OwnerType.HABIT -> r.ownerId?.let {dao.getHabit(it)?.status==ActiveStatus.ACTIVE} ?: false;else -> true}
             if(!ownerActive) {alarms.cancel(pending(r.id));dao.put(r.copy(state=ReminderState.CANCELLED,updatedAt=now));continue}
-            if((r.triggerAt ?: 0)<=now) {
-                val rule=r.recurrenceRuleId?.let {dao.getRecurrenceRule(it)}
-                if(rule!=null) {
-                    val localNow=Instant.ofEpochMilli(now).atZone(clock.zone)
-                    val candidates=engine.dates(rule,localNow.toLocalDate(),localNow.toLocalDate().plusYears(8))
-                    val skips=dao.allRecurrenceException().filter {it.recurrenceRuleId==rule.id && it.type==ExceptionType.SKIP}.map {it.occurrenceLocalDate}.toSet()
-                    val next=candidates.firstOrNull {it.toString() !in skips && engine.instant(rule,it,clock.zone).toEpochMilli()>now}
-                    if(next!=null) {r=r.copy(triggerAt=engine.instant(rule,next,clock.zone).toEpochMilli(),deliveryState=DeliveryState.PENDING,updatedAt=now);dao.put(r)}
-                    else {dao.put(r.copy(state=ReminderState.SKIPPED,deliveryState=DeliveryState.EXPIRED,updatedAt=now));alarms.cancel(pending(r.id));continue}
-                } else {dao.put(r.copy(deliveryState=DeliveryState.EXPIRED,updatedAt=now));alarms.cancel(pending(r.id));continue}
+            val rule=r.recurrenceRuleId?.let {dao.getRecurrenceRule(it)}
+            if(rule!=null) {
+                val today=Instant.ofEpochMilli(now).atZone(clock.zone).toLocalDate()
+                val exceptions=dao.allRecurrenceException().filter {it.recurrenceRuleId==rule.id}
+                fun at(date: LocalDate): Long = exceptions.firstOrNull {it.occurrenceLocalDate==date.toString() && it.type==ExceptionType.OVERRIDE}?.overrideDueAt ?: engine.instant(rule,date,clock.zone).toEpochMilli()
+                val todayDue=engine.dates(rule,today,today).firstOrNull {date -> exceptions.none {it.occurrenceLocalDate==date.toString() && it.type==ExceptionType.SKIP} && at(date)>now}
+                val next=todayDue ?: engine.next(rule,today,exceptions)
+                if(next==null) {dao.put(r.copy(state=ReminderState.SKIPPED,deliveryState=DeliveryState.EXPIRED,updatedAt=now));alarms.cancel(pending(r.id));continue}
+                val trigger=at(next)
+                if(trigger!=r.triggerAt) {r=r.copy(triggerAt=trigger,deliveryState=DeliveryState.PENDING,scheduledAt=null,updatedAt=now);dao.put(r)}
+            } else if((r.triggerAt ?: 0)<=now) {
+                dao.put(r.copy(deliveryState=DeliveryState.EXPIRED,updatedAt=now));alarms.cancel(pending(r.id));continue
             }
             val delivery=when {
                 !notificationsAllowed() -> DeliveryState.NOTIFICATIONS_BLOCKED
@@ -103,7 +105,7 @@ class ReminderService @Inject constructor(@ApplicationContext private val contex
             val open=PendingIntent.getActivity(context,0,intent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             val title=if(p.hideNotificationText) "A reminder you set" else r.title
             try {
-                notifications.notify(r.id.hashCode(),NotificationCompat.Builder(context,"intent-reminders").setSmallIcon(R.drawable.leaf).setContentTitle(title).setContentText(if(p.hideNotificationText) "Open Personal OS to view it." else "Open your saved reminder.").setContentIntent(open).setAutoCancel(true).setVisibility(if(p.hideNotificationText) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PRIVATE).build())
+                notifications.notify(r.id,0,NotificationCompat.Builder(context,"intent-reminders").setSmallIcon(R.drawable.leaf).setContentTitle(title).setContentText(if(p.hideNotificationText) "Open Personal OS to view it." else "Open your saved reminder.").setContentIntent(open).setAutoCancel(true).setVisibility(if(p.hideNotificationText) NotificationCompat.VISIBILITY_SECRET else NotificationCompat.VISIBILITY_PRIVATE).build())
                 dao.put(r.copy(state=if(r.recurrenceRuleId==null) ReminderState.DELIVERED else ReminderState.SCHEDULED,deliveredAt=expectedTrigger,deliveryState=DeliveryState.PENDING,updatedAt=clock.millis()))
             } catch(_: SecurityException) {dao.put(r.copy(deliveryState=DeliveryState.NOTIFICATIONS_BLOCKED))}
         }
@@ -118,6 +120,7 @@ class ReminderReceiver: BroadcastReceiver() {
         val pending=goAsync()
         CoroutineScope(SupervisorJob()+Dispatchers.IO).launch {
             try {withTimeout(8500) {EntryPointAccessors.fromApplication(context.applicationContext,ReminderEntryPoint::class.java).reminders().deliver(intent.getStringExtra("id") ?: return@withTimeout,intent.getLongExtra("triggerAt",-1))}}
+            catch(_: Exception) {EntryPointAccessors.fromApplication(context.applicationContext,ReminderEntryPoint::class.java).reminders().enqueue()}
             finally {pending.finish()}
         }
     }

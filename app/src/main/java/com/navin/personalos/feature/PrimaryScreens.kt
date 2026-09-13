@@ -18,8 +18,8 @@ import java.time.format.DateTimeFormatter
 @Composable fun TodayScreen(vm: PersonalViewModel,p: PersonalPreferences,records: List<Record>,open: (EntityType,String)->Unit,create: (EntityType)->Unit,go: (String)->Unit) {
     var now by remember { mutableStateOf(ZonedDateTime.now()) }
     LaunchedEffect(Unit) { while(true) { now=ZonedDateTime.now();kotlinx.coroutines.delay(30000) } }
-    var focus by remember { mutableStateOf<Focus?>(null) }
-    LaunchedEffect(records,now.toLocalDate()) { focus=PersonalIntelligence().focus(vm.repository.dao.allTask(),vm.repository.dao.allProject(),now.toLocalDate()) }
+    var focus by remember { mutableStateOf<FocusSuggestion?>(null) }
+    LaunchedEffect(records,now) { val dao=vm.repository.dao;focus=PersonalIntelligence().suggest(dao.allTask(),dao.allProject(),dao.allReminder(),dao.allHabit(),dao.allRecurrenceRule(),dao.allEntityLink(),now) }
     val tasks=records.filter { it.type==EntityType.TASK && it.status=="OPEN" };val today=now.toLocalDate().toString()
     val greeting=when(now.hour) { in 5..11 -> "Good morning";in 12..16 -> "Good afternoon";in 17..22 -> "Good evening";else -> "A quiet moment" }
     LazyColumn(contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
@@ -27,11 +27,19 @@ import java.time.format.DateTimeFormatter
         if(p.morning && now.hour in 5..11) item { CalmCard { Text("${tasks.count { it.date==today }} tasks are due today.");Text("Your brief is based on your saved commitments.",style=MaterialTheme.typography.labelMedium) } }
         item { val f=focus
             if(f==null) QuietEmpty("Nothing is asking for your attention right now.","Choose what deserves focus, or simply leave the day open.","Capture something",{go("capture")},p.companion)
-            else CalmCard(tone=1,onClick={open(EntityType.TASK,f.task.id)}) { Eyebrow("Today's focus");Text(f.task.title,style=MaterialTheme.typography.titleLarge);Text(f.reason);if(p.companion) Friend(Modifier.align(Alignment.End),p.reducedMotion,"focused") }
+            else CalmCard(tone=1,onClick={open(f.type,f.id)}) { Eyebrow("Today's focus");Text(f.title,style=MaterialTheme.typography.titleLarge);Text(f.reason);if(p.companion) Friend(Modifier.align(Alignment.End),p.reducedMotion,"focused") }
         }
         item { SectionTitle("Keep moving");TextButton(onClick={go("plan")}) { Text("See your plan") } }
         val continuation=records.filter { it.type==EntityType.PROJECT && it.status=="ACTIVE" }.take(2)
-        items(continuation,key={it.id}) { RecordRow(it,open) }
+        items(continuation,key={it.id}) { project ->
+            val next=tasks.filter {it.projectId==project.id}.minByOrNull {it.date ?: "9999"}
+            CalmCard(onClick={open(project.type,project.id)}) {
+                Eyebrow("Pick up where you left off");Text(project.title,style=MaterialTheme.typography.titleMedium)
+                Text("Last updated ${Instant.ofEpochMilli(project.updatedAt).atZone(now.zone).toLocalDate()}")
+                if(next!=null) TextButton(onClick={open(next.type,next.id)}) {Text("Next: ${next.title}")} else Text("Choose the next action in this project.")
+                if(project.updatedAt<now.minusDays(14).toInstant().toEpochMilli()) TextButton(onClick={vm.act("Project paused") {vm.repository.status(EntityType.PROJECT,project.id,"PAUSED")}}) {Text("Pause for now")}
+            }
+        }
         if(tasks.isNotEmpty()) item { CalmCard(onClick={go("list/TASK")}) { Text("${tasks.size} open tasks",style=MaterialTheme.typography.titleMedium);Text("See all your captured actions") } }
         val upcoming=records.filter { it.date!=null && it.date>=today && (it.type==EntityType.TASK && it.status=="OPEN" || it.type==EntityType.REMINDER && it.status !in listOf("CANCELLED","DELIVERED")) }.sortedBy { it.date }.take(3)
         if(upcoming.isNotEmpty()) { item { SectionTitle("Coming up") };items(upcoming,key={"up-${it.id}"}) { RecordRow(it,open) };item { TextButton(onClick={go("plan")}) { Text("View all upcoming work") } } }

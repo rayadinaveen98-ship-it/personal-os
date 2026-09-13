@@ -296,6 +296,12 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         dao.removeTags(type,id);dao.removeDocument(type,id)
         when(type) { EntityType.TASK -> dao.deleteTask(id);EntityType.JOURNAL -> dao.deleteJournalEntry(id);EntityType.IDEA -> dao.deleteIdea(id);EntityType.MEMORY -> dao.deleteMemory(id);EntityType.SESSION -> dao.deleteSession(id);else -> Unit }
     }
+    suspend fun nextAction(projectId: String,taskId: String) = db.withTransaction {
+        requireNotNull(dao.getProject(projectId));val task=requireNotNull(dao.getTask(taskId));require(task.projectId==projectId && task.status==TaskStatus.OPEN)
+        dao.allEntityLink().filter {it.fromType==EntityType.PROJECT && it.fromId==projectId && it.relationType=="NEXT_ACTION"}.forEach {dao.deleteEntityLink(it.id)}
+        dao.put(EntityLink(fromType=EntityType.PROJECT,fromId=projectId,toType=EntityType.TASK,toId=taskId,relationType="NEXT_ACTION"))
+        event("NEXT_ACTION_SELECTED",EntityType.PROJECT,projectId,task.title)
+    }
     suspend fun tag(type: EntityType,id: String,name: String,add: Boolean) = db.withTransaction {
         requireNotNull(edit(type,id));val clean=name.trim();require(clean.isNotBlank() && clean.length<=60) {"Use a tag between 1 and 60 characters."}
         val normalized=java.text.Normalizer.normalize(clean,java.text.Normalizer.Form.NFKC).lowercase(java.util.Locale.ROOT)

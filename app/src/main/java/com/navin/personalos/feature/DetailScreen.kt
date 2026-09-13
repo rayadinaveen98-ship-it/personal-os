@@ -18,8 +18,9 @@ import java.util.UUID
     var confirm by remember {mutableStateOf<String?>(null)};var child by rememberSaveable {mutableStateOf<Draft?>(null)}
     var draft by remember {mutableStateOf<Draft?>(null)};var events by remember {mutableStateOf<List<TimelineEvent>>(emptyList())};var habitEvents by remember {mutableStateOf<List<HabitEvent>>(emptyList())};var members by remember {mutableStateOf<List<ChapterItem>>(emptyList())}
     var sessions by remember {mutableStateOf<List<Session>>(emptyList())};var children by remember {mutableStateOf<List<Task>>(emptyList())}
+    var links by remember {mutableStateOf<List<EntityLink>>(emptyList())}
     var revision by remember {mutableIntStateOf(0)};var occurrenceDate by rememberSaveable {mutableStateOf("")}
-    LaunchedEffect(records,id,revision) {sessions=vm.repository.dao.allSession().filter {it.hobbyId==id || it.skillId==id};children=vm.repository.dao.allTask().filter {it.parentTaskId==id};draft=vm.repository.edit(type,id);events=vm.repository.dao.allTimelineEvent().filter {it.sourceType==type && it.sourceId==id};habitEvents=vm.repository.dao.allHabitEvent().filter {it.habitId==id};members=vm.repository.dao.allChapterItem().filter {it.chapterId==id}.sortedBy {it.orderIndex}}
+    LaunchedEffect(records,id,revision) {links=vm.repository.dao.allEntityLink();sessions=vm.repository.dao.allSession().filter {it.hobbyId==id || it.skillId==id};children=vm.repository.dao.allTask().filter {it.parentTaskId==id};draft=vm.repository.edit(type,id);events=vm.repository.dao.allTimelineEvent().filter {it.sourceType==type && it.sourceId==id};habitEvents=vm.repository.dao.allHabitEvent().filter {it.habitId==id};members=vm.repository.dao.allChapterItem().filter {it.chapterId==id}.sortedBy {it.orderIndex}}
     val c=child
     if(c!=null) {Editor(vm,records,c,false) {child=null};return}
     fun childCreate(t: EntityType) {child=Draft(UUID.randomUUID().toString(),t,projectId=if(type==EntityType.PROJECT) id else r?.projectId,goalId=if(type==EntityType.GOAL) id else r?.goalId,lifeAreaId=if(type==EntityType.LIFE_AREA) id else r?.lifeAreaId,parentTaskId=if(type==EntityType.TASK && t==EntityType.TASK) id else null,hobbyId=if(type==EntityType.HOBBY) id else null,skillId=if(type==EntityType.SKILL) id else null,date=if(t==EntityType.SESSION) LocalDate.now().toString() else "",frequency=if(t==EntityType.HABIT) Frequency.DAILY else null)}
@@ -41,6 +42,7 @@ import java.util.UUID
             items(children,key={"child-${it.id}"}) { task -> records.firstOrNull {it.type==EntityType.TASK && it.id==task.id}?.let {RecordRow(it,open)} }
             item {TextButton(onClick={childCreate(EntityType.TASK)}) {Text("Add subtask")}}
         }
+        if(type in listOf(EntityType.REMINDER,EntityType.TASK)) item {ReminderDeliverySection(vm,type,id)}
         if(type==EntityType.REMINDER) item {CalmCard(tone=1) {Text("Delivery: ${r.status.lowercase().replace('_',' ')}");Text("Saved intent and Android delivery are tracked separately.");TextButton(onClick=edit) {Text("Change reminder time")}}}
         if(type==EntityType.GOAL) item {
             draft?.let { d ->
@@ -50,10 +52,13 @@ import java.util.UUID
         }
         if(type in listOf(EntityType.PROJECT,EntityType.GOAL)) {
             val linked=records.filter {if(type==EntityType.PROJECT) it.projectId==id else it.goalId==id}
-            val next=linked.firstOrNull {it.type==EntityType.TASK && it.status=="OPEN" && it.pinned} ?: linked.filter {it.type==EntityType.TASK && it.status=="OPEN"}.minByOrNull {it.date ?: "9999"}
+            val next=links.firstOrNull {it.fromType==EntityType.PROJECT && it.fromId==id && it.relationType=="NEXT_ACTION"}?.let {link -> linked.firstOrNull {it.id==link.toId && it.status=="OPEN"}} ?: linked.firstOrNull {it.type==EntityType.TASK && it.status=="OPEN" && it.pinned} ?: linked.filter {it.type==EntityType.TASK && it.status=="OPEN"}.minByOrNull {it.date ?: "9999"}
             item {SectionTitle("Next action");if(next!=null) RecordRow(next,open) else Text("Choose a real next action when you're ready.")}
             item {Row {TextButton(onClick={childCreate(EntityType.TASK)}) {Text("Add task")};TextButton(onClick={childCreate(EntityType.MILESTONE)}) {Text("Add milestone")}}}
-            items(linked,key={it.id}) {RecordRow(it,open)}
+            items(linked,key={it.id}) {linkedRecord ->
+                RecordRow(linkedRecord,open)
+                if(type==EntityType.PROJECT && linkedRecord.type==EntityType.TASK && linkedRecord.status=="OPEN") TextButton(onClick={vm.act("Next action selected") {vm.repository.nextAction(id,linkedRecord.id);revision++}}) {Text("Choose as next action")}
+            }
         }
         if(type==EntityType.MILESTONE) item {PrimaryButton(if(r.status=="COMPLETED") "Reopen milestone" else "Complete milestone") {vm.act {vm.repository.status(type,id,if(r.status=="COMPLETED") "OPEN" else "COMPLETED")}}}
         if(type==EntityType.HABIT) {
