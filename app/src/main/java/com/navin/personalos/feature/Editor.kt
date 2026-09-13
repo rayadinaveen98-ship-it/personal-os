@@ -49,7 +49,7 @@ import java.util.UUID
         item { HeaderBack(if(editing) "Edit ${type.label().lowercase()}" else "New ${type.label().lowercase()}",close) }
         item { Field(if(type==EntityType.JOURNAL) "Title (optional)" else "Title",d.title,{d=d.copy(title=it)}) }
         if(type !in listOf(EntityType.REMINDER,EntityType.MILESTONE)) item {Field(if(type in listOf(EntityType.JOURNAL,EntityType.IDEA,EntityType.MEMORY,EntityType.WEEKLY_REVIEW)) "Your words" else "Notes / description",d.body,{d=d.copy(body=it)},true)}
-        if(type in listOf(EntityType.TASK,EntityType.REMINDER,EntityType.PROJECT,EntityType.GOAL,EntityType.MILESTONE,EntityType.JOURNAL,EntityType.SESSION,EntityType.MEMORY,EntityType.CHAPTER)) item {
+        if(type in listOf(EntityType.TASK,EntityType.REMINDER,EntityType.PROJECT,EntityType.GOAL,EntityType.MILESTONE,EntityType.JOURNAL,EntityType.SESSION,EntityType.MEMORY,EntityType.CHAPTER,EntityType.HABIT)) item {
             DateField(if(type==EntityType.TASK) "Due date" else if(type==EntityType.CHAPTER) "Start date" else "Date",d.date,{d=d.copy(date=it)})
             if(type in listOf(EntityType.TASK,EntityType.REMINDER,EntityType.SESSION)) TimeField(if(type==EntityType.TASK) "Due time (optional)" else "Time",d.time,{d=d.copy(time=it)})
         }

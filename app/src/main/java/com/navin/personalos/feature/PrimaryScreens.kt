@@ -45,7 +45,7 @@ import java.time.format.DateTimeFormatter
     val today=LocalDate.now();val tasks=records.filter { it.type==EntityType.TASK }
     LazyColumn(contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         item { PageTitle("Make room for what matters.","Your plan");Choice("Plan view",listOf("Today","Week","Projects"),mode,{mode=it}) }
-        item { Row(Modifier.horizontalScroll(rememberScrollState())) { listOf(EntityType.TASK,EntityType.GOAL,EntityType.HABIT,EntityType.REMINDER).forEach { t -> TextButton(onClick={go("list/${t.name}")}) { Text(t.label()+"s") } } }
+        item { Row(Modifier.horizontalScroll(rememberScrollState())) { listOf(EntityType.TASK,EntityType.GOAL,EntityType.HABIT,EntityType.REMINDER).forEach { t -> TextButton(onClick={go("list/${t.name}")}) { Text(t.label()+"s") } } } }
         if(mode=="Projects") {
             val projects=records.filter { it.type==EntityType.PROJECT && it.status!="ARCHIVED" }
             item { PrimaryButton("Create project",onClick={create(EntityType.PROJECT)}) }
@@ -75,12 +75,12 @@ import java.time.format.DateTimeFormatter
     val history=records.filter { it.date==selected.toString() && it.type in listOf(EntityType.JOURNAL,EntityType.MEMORY,EntityType.SESSION,EntityType.IDEA) }
     LazyColumn(contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         item { PageTitle("The days that make a life.","Your journey",true) }
-        item { Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) { (0..6).forEach { n -> val day=week.plusDays(n.toLong());TextButton(onClick={date=day.toString()}) { Text(day.format(DateTimeFormatter.ofPattern("EEE\nd")),color=if(day==selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant) } } }
+        item { Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) { (0..6).forEach { n -> val day=week.plusDays(n.toLong());TextButton(onClick={date=day.toString()}) { Text(day.format(DateTimeFormatter.ofPattern("EEE\nd")),color=if(day==selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant) } } } }
         item { DateField("Choose a date",date,{date=it});Row { TextButton(onClick={date=selected.minusWeeks(1).toString()}) {Text("Previous week")};TextButton(onClick={date=LocalDate.now().toString()}) {Text("Today")};TextButton(onClick={date=selected.plusWeeks(1).toString()}) {Text("Next week")} } }
         item { PrimaryButton("Write something",onClick={create(EntityType.JOURNAL)}) }
         if(history.isEmpty()) item { QuietEmpty("A quiet day here.","Nothing has been recorded for this date yet.","Capture a memory",{create(EntityType.MEMORY)},p.companion) }
         items(history,key={it.id}) { r -> RecordRow(r,open) }
-        item { SectionTitle("Keep what matters");Row { TextButton(onClick={go("list/MEMORY")}) {Text("Memories")};TextButton(onClick={go("list/CHAPTER")}) {Text("Chapters")} }
+        item { SectionTitle("Keep what matters");Row { TextButton(onClick={go("list/MEMORY")}) {Text("Memories")};TextButton(onClick={go("list/CHAPTER")}) {Text("Chapters")} } }
         item { CalmCard(tone=2,onClick={go("review")}) { Text("Your week, truthfully.",style=MaterialTheme.typography.titleLarge);Text("See what moved and choose what to carry forward.") } }
         item { TextButton(onClick={go("timeline")}) {Text("Life timeline & archive")};TextButton(onClick={go("search")}) {Text("Search your history")} }
     }

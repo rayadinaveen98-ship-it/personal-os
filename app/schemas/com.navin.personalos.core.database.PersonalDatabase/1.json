@@ -1,0 +1,2554 @@
+Warning: truncated output (original token count: 22738)
+Total output lines: 2899
+
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "7adc0a4b77d0fe0a5106db4af33b654e",
+    "entities": [
+      {
+        "tableName": "LifeArea",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `iconKey` TEXT, `accentKey` TEXT, `status` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "iconKey",
+            "columnName": "iconKey",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "accentKey",
+            "columnName": "accentKey",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_LifeArea_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_LifeArea_status` ON `${TABLE_NAME}` (`status`)"
+          }
+        ]
+      },
+      {
+        "tableName": "Goal",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `whyItMatters` TEXT, `successDefinition` TEXT, `status` TEXT NOT NULL, `targetDate` TEXT, `measurementType` TEXT NOT NULL, `currentValue` REAL, `targetValue` REAL, `unit` TEXT, `lifeAreaId` TEXT, `achievedAt` INTEGER, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whyItMatters",
+            "columnName": "whyItMatters",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "successDefinition",
+            "columnName": "successDefinition",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetDate",
+            "columnName": "targetDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "measurementType",
+            "columnName": "measurementType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "currentValue",
+            "columnName": "currentValue",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "targetValue",
+            "columnName": "targetValue",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "unit",
+            "columnName": "unit",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "achievedAt",
+            "columnName": "achievedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Goal_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Goal_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_Goal_targetDate",
+            "unique": false,
+            "columnNames": [
+              "targetDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Goal_targetDate` ON `${TABLE_NAME}` (`targetDate`)"
+          },
+          {
+            "name": "index_Goal_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Goal_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Project",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `status` TEXT NOT NULL, `lifeAreaId` TEXT, `goalId` TEXT, `targetDate` TEXT, `completedAt` INTEGER, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`goalId`) REFERENCES `Goal`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "goalId",
+            "columnName": "goalId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "targetDate",
+            "columnName": "targetDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "completedAt",
+            "columnName": "completedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Project_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Project_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_Project_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Project_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          },
+          {
+            "name": "index_Project_goalId",
+            "unique": false,
+            "columnNames": [
+              "goalId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Project_goalId` ON `${TABLE_NAME}` (`goalId`)"
+          },
+          {
+            "name": "index_Project_targetDate",
+            "unique": false,
+            "columnNames": [
+              "targetDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Project_targetDate` ON `${TABLE_NAME}` (`targetDate`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Goal",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "goalId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Milestone",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `projectId` TEXT, `goalId` TEXT, `orderIndex` INTEGER NOT NULL, `targetDate` TEXT, `status` TEXT NOT NULL, `completedAt` INTEGER, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`projectId`) REFERENCES `Project`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`goalId`) REFERENCES `Goal`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "projectId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "goalId",
+            "columnName": "goalId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "orderIndex",
+            "columnName": "orderIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetDate",
+            "columnName": "targetDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "completedAt",
+            "columnName": "completedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Milestone_projectId",
+            "unique": false,
+            "columnNames": [
+              "projectId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Milestone_projectId` ON `${TABLE_NAME}` (`projectId`)"
+          },
+          {
+            "name": "index_Milestone_goalId",
+            "unique": false,
+            "columnNames": [
+              "goalId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Milestone_goalId` ON `${TABLE_NAME}` (`goalId`)"
+          },
+          {
+            "name": "index_Milestone_targetDate",
+            "unique": false,
+            "columnNames": [
+              "targetDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Milestone_targetDate` ON `${TABLE_NAME}` (`targetDate`)"
+          },
+          {
+            "name": "index_Milestone_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Milestone_status` ON `${TABLE_NAME}` (`status`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Project",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "projectId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Goal",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "goalId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Task",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `notes` TEXT, `status` TEXT NOT NULL, `priority` TEXT NOT NULL, `dueAt` INTEGER, `dueLocalDate` TEXT, `projectId` TEXT, `goalId` TEXT, `lifeAreaId` TEXT, `parentTaskId` TEXT, `recurrenceRuleId` TEXT, `pinnedFocus` INTEGER NOT NULL, `orderIndex` INTEGER, `completedAt` INTEGER, `occurrenceLocalDate` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`projectId`) REFERENCES `Project`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`goalId`) REFERENCES `Goal`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`parentTaskId`) REFERENCES `Task`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`recurrenceRuleId`) REFERENCES `RecurrenceRule`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dueAt",
+            "columnName": "dueAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "dueLocalDate",
+            "columnName": "dueLocalDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "projectId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "goalId",
+            "columnName": "goalId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "parentTaskId",
+            "columnName": "parentTaskId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "recurrenceRuleId",
+            "columnName": "recurrenceRuleId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "pinnedFocus",
+            "columnName": "pinnedFocus",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderIndex",
+            "columnName": "orderIndex",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "completedAt",
+            "columnName": "completedAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "occurrenceLocalDate",
+            "columnName": "occurrenceLocalDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Task_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Task_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_Task_dueAt",
+            "unique": false,
+            "columnNames": [
+              "dueAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Task_dueAt` ON `${TABLE_NAME}` (`dueAt`)"
+          },
+          {
+            "name": "index_Task_dueLocalDate",
+            "unique": false,
+            "columnNames": [
+              "dueLocalDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Task_dueLocalDate` ON `${TABLE_NAME}` (`dueLocalDate`)"
+          },
+          {
+            "name": "index_Task_projectId",
+            "unique": false,
+            "columnNames": [
+              "projectId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Task_projectId` ON `${TABLE_NAME}` (`projectId`)"
+          },
+          {
+            "name": "index_Task_goalId",
+            "unique": false,
+            "columnNames": [
+              "goalId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Task_goalId` ON `${TABLE_NAME}` (`goalId`)"
+          },
+          {
+            "name": "index_Task_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Task_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          },
+          {
+            "name": "index_Task_parentTaskId",
+            "unique": false,
+            "columnNames": [
+              "parentTaskId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Task_parentTaskId` ON `${TABLE_NAME}` (`parentTaskId`)"
+          },
+          {
+            "name": "index_Task_recurrenceRuleId",
+            "unique": false,
+            "columnNames": [
+              "recurrenceRuleId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Task_recurrenceRuleId` ON `${TABLE_NAME}` (`recurrenceRuleId`)"
+          },
+          {
+            "name": "index_Task_pinnedFocus",
+            "unique": false,
+            "columnNames": [
+              "pinnedFocus"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Task_pinnedFocus` ON `${TABLE_NAME}` (`pinnedFocus`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Project",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "projectId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Goal",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "goalId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Task",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "parentTaskId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "RecurrenceRule",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "recurrenceRuleId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Reminder",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `ownerType` TEXT NOT NULL, `ownerId` TEXT, `title` TEXT NOT NULL, `triggerAt` INTEGER, `localTimeMinutes` INTEGER, `recurrenceRuleId` TEXT, `state` TEXT NOT NULL, `deliveryState` TEXT NOT NULL, `exactRequired` INTEGER NOT NULL, `deliveredAt` INTEGER, `scheduledAt` INTEGER, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`recurrenceRuleId`) REFERENCES `RecurrenceRule`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ownerType",
+            "columnName": "ownerType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ownerId",
+            "columnName": "ownerId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "triggerAt",
+            "columnName": "triggerAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "localTimeMinutes",
+            "columnName": "localTimeMinutes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "recurrenceRuleId",
+            "columnName": "recurrenceRuleId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deliveryState",
+            "columnName": "deliveryState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exactRequired",
+            "columnName": "exactRequired",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "deliveredAt",
+            "columnName": "deliveredAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "scheduledAt",
+            "columnName": "scheduledAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Reminder_triggerAt",
+            "unique": false,
+            "columnNames": [
+              "triggerAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Reminder_triggerAt` ON `${TABLE_NAME}` (`triggerAt`)"
+          },
+          {
+            "name": "index_Reminder_recurrenceRuleId",
+            "unique": false,
+            "columnNames": [
+              "recurrenceRuleId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Reminder_recurrenceRuleId` ON `${TABLE_NAME}` (`recurrenceRuleId`)"
+          },
+          {
+            "name": "index_Reminder_state",
+            "unique": false,
+            "columnNames": [
+              "state"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Reminder_state` ON `${TABLE_NAME}` (`state`)"
+          },
+          {
+            "name": "index_Reminder_ownerType_ownerId",
+            "unique": false,
+            "columnNames": [
+              "ownerType",
+              "ownerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Reminder_ownerType_ownerId` ON `${TABLE_NAME}` (`ownerType`, `ownerId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "RecurrenceRule",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "recurrenceRuleId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "RecurrenceRule",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `frequency` TEXT NOT NULL, `interval` INTEGER NOT NULL, `weekdaysMask` INTEGER, `dayOfMonth` INTEGER, `monthOfYear` INTEGER, `localTimeMinutes` INTEGER, `startLocalDate` TEXT NOT NULL, `endLocalDate` TEXT, `occurrenceCountLimit` INTEGER, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "frequency",
+            "columnName": "frequency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "interval",
+            "columnName": "interval",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weekdaysMask",
+            "columnName": "weekdaysMask",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "dayOfMonth",
+            "columnName": "dayOfMonth",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "monthOfYear",
+            "columnName": "monthOfYear",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "localTimeMinutes",
+            "columnName": "localTimeMinutes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "startLocalDate",
+            "columnName": "startLocalDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endLocalDate",
+            "columnName": "endLocalDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "occurrenceCountLimit",
+            "columnName": "occurrenceCountLimit",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_RecurrenceRule_startLocalDate",
+            "unique": false,
+            "columnNames": [
+              "startLocalDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_RecurrenceRule_startLocalDate` ON `${TABLE_NAME}` (`startLocalDate`)"
+          }
+        ]
+      },
+      {
+        "tableName": "RecurrenceException",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `recurrenceRuleId` TEXT NOT NULL, `occurrenceLocalDate` TEXT NOT NULL, `type` TEXT NOT NULL, `overrideDueAt` INTEGER, `overrideTitle` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`recurrenceRuleId`) REFERENCES `RecurrenceRule`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recurrenceRuleId",
+            "columnName": "recurrenceRuleId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "occurrenceLocalDate",
+            "columnName": "occurrenceLocalDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "overrideDueAt",
+            "columnName": "overrideDueAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "overrideTitle",
+            "columnName": "overrideTitle",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_RecurrenceException_recurrenceRuleId",
+            "unique": false,
+            "columnNames": [
+              "recurrenceRuleId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_RecurrenceException_recurrenceRuleId` ON `${TABLE_NAME}` (`recurrenceRuleId`)"
+          },
+          {
+            "name": "index_RecurrenceException_recurrenceRuleId_occurrenceLocalDate",
+            "unique": true,
+            "columnNames": [
+              "recurrenceRuleId",
+              "occurrenceLocalDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_RecurrenceException_recurrenceRuleId_occurrenceLocalDate` ON `${TABLE_NAME}` (`recurrenceRuleId`, `occurrenceLocalDate`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "RecurrenceRule",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "recurrenceRuleId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Habit",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `status` TEXT NOT NULL, `scheduleRuleId` TEXT NOT NULL, `targetType` TEXT NOT NULL, `targetValue` REAL, `unit` TEXT, `preferredTimeMinutes` INTEGER, `goalId` TEXT, `lifeAreaId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`scheduleRuleId`) REFERENCES `RecurrenceRule`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`goalId`) REFERENCES `Goal`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduleRuleId",
+            "columnName": "scheduleRuleId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetType",
+            "columnName": "targetType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetValue",
+            "columnName": "targetValue",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "unit",
+            "columnName": "unit",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "preferredTimeMinutes",
+            "columnName": "preferredTimeMinutes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "goalId",
+            "columnName": "goalId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Habit_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Habit_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_Habit_scheduleRuleId",
+            "unique": false,
+            "columnNames": [
+              "scheduleRuleId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Habit_scheduleRuleId` ON `${TABLE_NAME}` (`scheduleRuleId`)"
+          },
+          {
+            "name": "index_Habit_goalId",
+            "unique": false,
+            "columnNames": [
+              "goalId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Habit_goalId` ON `${TABLE_NAME}` (`goalId`)"
+          },
+          {
+            "name": "index_Habit_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Habit_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "RecurrenceRule",
+            "onDelete": "RESTRICT",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "scheduleRuleId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Goal",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "goalId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "HabitEvent",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `habitId` TEXT NOT NULL, `localDate` TEXT NOT NULL, `state` TEXT NOT NULL, `value` REAL, `note` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`habitId`) REFERENCES `Habit`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "habitId",
+            "columnName": "habitId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localDate",
+            "columnName": "localDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_HabitEvent_habitId",
+            "unique": false,
+            "columnNames": [
+              "habitId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_HabitEvent_habitId` ON `${TABLE_NAME}` (`habitId`)"
+          },
+          {
+            "name": "index_HabitEvent_localDate",
+            "unique": false,
+            "columnNames": [
+              "localDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_HabitEvent_localDate` ON `${TABLE_NAME}` (`localDate`)"
+          },
+          {
+            "name": "index_HabitEvent_state",
+            "unique": false,
+            "columnNames": [
+              "state"
+            ],
+            "orders": [],
+            "cre…2738 tokens truncated…   "createSql": "CREATE INDEX IF NOT EXISTS `index_Session_projectId` ON `${TABLE_NAME}` (`projectId`)"
+          },
+          {
+            "name": "index_Session_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Session_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Hobby",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "hobbyId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Skill",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "skillId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Project",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "projectId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "JournalEntry",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT, `body` TEXT NOT NULL, `entryLocalDate` TEXT NOT NULL, `occurredAt` INTEGER NOT NULL, `reflectionType` TEXT NOT NULL, `lifeAreaId` TEXT, `projectId` TEXT, `goalId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`projectId`) REFERENCES `Project`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`goalId`) REFERENCES `Goal`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "body",
+            "columnName": "body",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entryLocalDate",
+            "columnName": "entryLocalDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "occurredAt",
+            "columnName": "occurredAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reflectionType",
+            "columnName": "reflectionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "projectId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "goalId",
+            "columnName": "goalId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_JournalEntry_entryLocalDate",
+            "unique": false,
+            "columnNames": [
+              "entryLocalDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_JournalEntry_entryLocalDate` ON `${TABLE_NAME}` (`entryLocalDate`)"
+          },
+          {
+            "name": "index_JournalEntry_occurredAt",
+            "unique": false,
+            "columnNames": [
+              "occurredAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_JournalEntry_occurredAt` ON `${TABLE_NAME}` (`occurredAt`)"
+          },
+          {
+            "name": "index_JournalEntry_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_JournalEntry_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          },
+          {
+            "name": "index_JournalEntry_projectId",
+            "unique": false,
+            "columnNames": [
+              "projectId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_JournalEntry_projectId` ON `${TABLE_NAME}` (`projectId`)"
+          },
+          {
+            "name": "index_JournalEntry_goalId",
+            "unique": false,
+            "columnNames": [
+              "goalId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_JournalEntry_goalId` ON `${TABLE_NAME}` (`goalId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Project",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "projectId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Goal",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "goalId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Idea",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT, `body` TEXT NOT NULL, `status` TEXT NOT NULL, `projectId` TEXT, `lifeAreaId` TEXT, `convertedToType` TEXT, `convertedToId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`projectId`) REFERENCES `Project`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "body",
+            "columnName": "body",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "projectId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "convertedToType",
+            "columnName": "convertedToType",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "convertedToId",
+            "columnName": "convertedToId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Idea_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Idea_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_Idea_projectId",
+            "unique": false,
+            "columnNames": [
+              "projectId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Idea_projectId` ON `${TABLE_NAME}` (`projectId`)"
+          },
+          {
+            "name": "index_Idea_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Idea_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Project",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "projectId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Memory",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `body` TEXT, `memoryLocalDate` TEXT NOT NULL, `occurredAt` INTEGER, `sourceType` TEXT, `sourceId` TEXT, `lifeAreaId` TEXT, `projectId` TEXT, `isFavorite` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL , FOREIGN KEY(`projectId`) REFERENCES `Project`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "body",
+            "columnName": "body",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "memoryLocalDate",
+            "columnName": "memoryLocalDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "occurredAt",
+            "columnName": "occurredAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "sourceType",
+            "columnName": "sourceType",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sourceId",
+            "columnName": "sourceId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "projectId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "isFavorite",
+            "columnName": "isFavorite",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Memory_memoryLocalDate",
+            "unique": false,
+            "columnNames": [
+              "memoryLocalDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Memory_memoryLocalDate` ON `${TABLE_NAME}` (`memoryLocalDate`)"
+          },
+          {
+            "name": "index_Memory_occurredAt",
+            "unique": false,
+            "columnNames": [
+              "occurredAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Memory_occurredAt` ON `${TABLE_NAME}` (`occurredAt`)"
+          },
+          {
+            "name": "index_Memory_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Memory_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          },
+          {
+            "name": "index_Memory_projectId",
+            "unique": false,
+            "columnNames": [
+              "projectId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Memory_projectId` ON `${TABLE_NAME}` (`projectId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "Project",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "projectId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Chapter",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `startLocalDate` TEXT NOT NULL, `endLocalDate` TEXT, `status` TEXT NOT NULL, `lifeAreaId` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`lifeAreaId`) REFERENCES `LifeArea`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "startLocalDate",
+            "columnName": "startLocalDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endLocalDate",
+            "columnName": "endLocalDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lifeAreaId",
+            "columnName": "lifeAreaId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Chapter_startLocalDate",
+            "unique": false,
+            "columnNames": [
+              "startLocalDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Chapter_startLocalDate` ON `${TABLE_NAME}` (`startLocalDate`)"
+          },
+          {
+            "name": "index_Chapter_status",
+            "unique": false,
+            "columnNames": [
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Chapter_status` ON `${TABLE_NAME}` (`status`)"
+          },
+          {
+            "name": "index_Chapter_lifeAreaId",
+            "unique": false,
+            "columnNames": [
+              "lifeAreaId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Chapter_lifeAreaId` ON `${TABLE_NAME}` (`lifeAreaId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "LifeArea",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lifeAreaId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ChapterItem",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `chapterId` TEXT NOT NULL, `entityType` TEXT NOT NULL, `entityId` TEXT NOT NULL, `orderIndex` INTEGER, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`chapterId`) REFERENCES `Chapter`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chapterId",
+            "columnName": "chapterId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entityType",
+            "columnName": "entityType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entityId",
+            "columnName": "entityId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderIndex",
+            "columnName": "orderIndex",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ChapterItem_chapterId",
+            "unique": false,
+            "columnNames": [
+              "chapterId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ChapterItem_chapterId` ON `${TABLE_NAME}` (`chapterId`)"
+          },
+          {
+            "name": "index_ChapterItem_chapterId_entityType_entityId",
+            "unique": true,
+            "columnNames": [
+              "chapterId",
+              "entityType",
+              "entityId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ChapterItem_chapterId_entityType_entityId` ON `${TABLE_NAME}` (`chapterId`, `entityType`, `entityId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Chapter",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "chapterId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "DailyReview",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `localDate` TEXT NOT NULL, `reflectionBody` TEXT, `highlight` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localDate",
+            "columnName": "localDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reflectionBody",
+            "columnName": "reflectionBody",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "highlight",
+            "columnName": "highlight",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_DailyReview_localDate",
+            "unique": true,
+            "columnNames": [
+              "localDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_DailyReview_localDate` ON `${TABLE_NAME}` (`localDate`)"
+          }
+        ]
+      },
+      {
+        "tableName": "WeeklyReview",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `periodStartLocalDate` TEXT NOT NULL, `periodEndLocalDate` TEXT NOT NULL, `reflectionBody` TEXT, `highlight` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "periodStartLocalDate",
+            "columnName": "periodStartLocalDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "periodEndLocalDate",
+            "columnName": "periodEndLocalDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reflectionBody",
+            "columnName": "reflectionBody",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "highlight",
+            "columnName": "highlight",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_WeeklyReview_periodStartLocalDate",
+            "unique": true,
+            "columnNames": [
+              "periodStartLocalDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_WeeklyReview_periodStartLocalDate` ON `${TABLE_NAME}` (`periodStartLocalDate`)"
+          }
+        ]
+      },
+      {
+        "tableName": "Tag",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `normalizedName` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "normalizedName",
+            "columnName": "normalizedName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Tag_normalizedName",
+            "unique": true,
+            "columnNames": [
+              "normalizedName"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Tag_normalizedName` ON `${TABLE_NAME}` (`normalizedName`)"
+          }
+        ]
+      },
+      {
+        "tableName": "EntityLink",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `fromType` TEXT NOT NULL, `fromId` TEXT NOT NULL, `toType` TEXT NOT NULL, `toId` TEXT NOT NULL, `relationType` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fromType",
+            "columnName": "fromType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fromId",
+            "columnName": "fromId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "toType",
+            "columnName": "toType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "toId",
+            "columnName": "toId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relationType",
+            "columnName": "relationType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_EntityLink_fromType_fromId",
+            "unique": false,
+            "columnNames": [
+              "fromType",
+              "fromId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_EntityLink_fromType_fromId` ON `${TABLE_NAME}` (`fromType`, `fromId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "Attachment",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `ownerType` TEXT NOT NULL, `ownerId` TEXT NOT NULL, `uri` TEXT NOT NULL, `storageMode` TEXT NOT NULL, `mimeType` TEXT NOT NULL, `displayName` TEXT, `sizeBytes` INTEGER, `checksum` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ownerType",
+            "columnName": "ownerType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ownerId",
+            "columnName": "ownerId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uri",
+            "columnName": "uri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storageMode",
+            "columnName": "storageMode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mimeType",
+            "columnName": "mimeType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sizeBytes",
+            "columnName": "sizeBytes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "checksum",
+            "columnName": "checksum",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_Attachment_ownerType_ownerId",
+            "unique": false,
+            "columnNames": [
+              "ownerType",
+              "ownerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Attachment_ownerType_ownerId` ON `${TABLE_NAME}` (`ownerType`, `ownerId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "TimelineEvent",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `eventType` TEXT NOT NULL, `occurredAt` INTEGER NOT NULL, `localDate` TEXT NOT NULL, `sourceType` TEXT, `sourceId` TEXT, `titleSnapshot` TEXT, `metadataJson` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventType",
+            "columnName": "eventType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "occurredAt",
+            "columnName": "occurredAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localDate",
+            "columnName": "localDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceType",
+            "columnName": "sourceType",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sourceId",
+            "columnName": "sourceId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "titleSnapshot",
+            "columnName": "titleSnapshot",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "metadataJson",
+            "columnName": "metadataJson",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_TimelineEvent_occurredAt",
+            "unique": false,
+            "columnNames": [
+              "occurredAt"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TimelineEvent_occurredAt` ON `${TABLE_NAME}` (`occurredAt`)"
+          },
+          {
+            "name": "index_TimelineEvent_localDate",
+            "unique": false,
+            "columnNames": [
+              "localDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TimelineEvent_localDate` ON `${TABLE_NAME}` (`localDate`)"
+          },
+          {
+            "name": "index_TimelineEvent_sourceType_sourceId",
+            "unique": false,
+            "columnNames": [
+              "sourceType",
+              "sourceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TimelineEvent_sourceType_sourceId` ON `${TABLE_NAME}` (`sourceType`, `sourceId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "EntityTagCrossRef",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tagId` TEXT NOT NULL, `entityType` TEXT NOT NULL, `entityId` TEXT NOT NULL, PRIMARY KEY(`tagId`, `entityType`, `entityId`), FOREIGN KEY(`tagId`) REFERENCES `Tag`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "tagId",
+            "columnName": "tagId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entityType",
+            "columnName": "entityType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entityId",
+            "columnName": "entityId",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "tagId",
+            "entityType",
+            "entityId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_EntityTagCrossRef_tagId",
+            "unique": false,
+            "columnNames": [
+              "tagId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_EntityTagCrossRef_tagId` ON `${TABLE_NAME}` (`tagId`)"
+          },
+          {
+            "name": "index_EntityTagCrossRef_entityType_entityId",
+            "unique": false,
+            "columnNames": [
+              "entityType",
+              "entityId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_EntityTagCrossRef_entityType_entityId` ON `${TABLE_NAME}` (`entityType`, `entityId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Tag",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "tagId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "SearchDocument",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rowId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `entityType` TEXT NOT NULL, `entityId` TEXT NOT NULL, `title` TEXT, `body` TEXT, `keywords` TEXT, `updatedAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "rowId",
+            "columnName": "rowId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entityType",
+            "columnName": "entityType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "entityId",
+            "columnName": "entityId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "body",
+            "columnName": "body",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "keywords",
+            "columnName": "keywords",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "rowId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_SearchDocument_entityType_entityId",
+            "unique": true,
+            "columnNames": [
+              "entityType",
+              "entityId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_SearchDocument_entityType_entityId` ON `${TABLE_NAME}` (`entityType`, `entityId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "SearchDocumentFts",
+        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`title` TEXT, `body` TEXT, `keywords` TEXT, content=`SearchDocument`)",
+        "fields": [
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "body",
+            "columnName": "body",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "keywords",
+            "columnName": "keywords",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": []
+        },
+        "ftsVersion": "FTS4",
+        "ftsOptions": {
+          "tokenizer": "simple",
+          "tokenizerArgs": [],
+          "contentTable": "SearchDocument",
+          "languageIdColumnName": "",
+          "matchInfo": "FTS4",
+          "notIndexedColumns": [],
+          "prefixSizes": [],
+          "preferredOrder": "ASC"
+        },
+        "contentSyncTriggers": [
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_SearchDocumentFts_BEFORE_UPDATE BEFORE UPDATE ON `SearchDocument` BEGIN DELETE FROM `SearchDocumentFts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_SearchDocumentFts_BEFORE_DELETE BEFORE DELETE ON `SearchDocument` BEGIN DELETE FROM `SearchDocumentFts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_SearchDocumentFts_AFTER_UPDATE AFTER UPDATE ON `SearchDocument` BEGIN INSERT INTO `SearchDocumentFts`(`docid`, `title`, `body`, `keywords`) VALUES (NEW.`rowid`, NEW.`title`, NEW.`body`, NEW.`keywords`); END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_SearchDocumentFts_AFTER_INSERT AFTER INSERT ON `SearchDocument` BEGIN INSERT INTO `SearchDocumentFts`(`docid`, `title`, `body`, `keywords`) VALUES (NEW.`rowid`, NEW.`title`, NEW.`body`, NEW.`keywords`); END"
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7adc0a4b77d0fe0a5106db4af33b654e')"
+    ]
+  }
+}

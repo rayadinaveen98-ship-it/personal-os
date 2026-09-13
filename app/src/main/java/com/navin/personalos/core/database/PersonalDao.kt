@@ -132,5 +132,7 @@ interface PersonalDao {
     @Query("DELETE FROM EntityTagCrossRef WHERE entityType = :type AND entityId = :id") suspend fun removeTags(type: EntityType, id: String)
     @Query("SELECT * FROM EntityTagCrossRef") suspend fun allTags(): List<EntityTagCrossRef>
     @Query("DELETE FROM SearchDocument") suspend fun clearIndex()
+    @Query("SELECT * FROM EntityTagCrossRef") fun observeTagLinks(): kotlinx.coroutines.flow.Flow<List<EntityTagCrossRef>>
+    @Delete suspend fun remove(value: EntityTagCrossRef)
 
 }

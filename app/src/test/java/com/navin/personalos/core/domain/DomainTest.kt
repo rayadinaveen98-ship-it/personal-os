@@ -54,4 +54,14 @@ class DomainTest {
         val result=PersonalIntelligence().week(LocalDate.parse("2026-09-13"),emptyList(),emptyList(),emptyList(),emptyList(),emptyList(),ZoneId.of("UTC"))
         assertEquals("2026-09-07",result.start.toString());assertEquals(0,result.completedTasks);assertEquals(0,result.minutes)
     }
+    @Test fun distantYearlyRuleHasNoArtificialEightYearCutoff() {
+        val r=RecurrenceRule(frequency=Frequency.YEARLY,interval=10,startLocalDate="2026-09-13")
+        assertEquals(LocalDate.parse("2036-09-13"),recurrence.next(r,LocalDate.parse("2026-09-13")))
+    }
+    @Test fun unrelatedExceptionDoesNotSkipThisSeries() {
+        val r=RecurrenceRule(startLocalDate="2026-09-13")
+        val other=RecurrenceException(recurrenceRuleId="other",occurrenceLocalDate="2026-09-14")
+        assertEquals(LocalDate.parse("2026-09-14"),recurrence.next(r,LocalDate.parse("2026-09-13"),listOf(other)))
+    }
+
 }

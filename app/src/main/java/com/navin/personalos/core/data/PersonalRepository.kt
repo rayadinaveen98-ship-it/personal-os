@@ -50,6 +50,8 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         val date=d.date.takeIf { it.isNotBlank() }?.let(LocalDate::parse)
         val time=d.time.takeIf { it.isNotBlank() }?.let(LocalTime::parse)
         val now=clock.millis(); val today=LocalDate.now(clock)
+        val existed=edit(d.type,d.id)!=null
+        var savedId=d.id
         val at=date?.let { if(time!=null) it.atTime(time).atZone(clock.zone).toInstant().toEpochMilli() else null }
         d.lifeAreaId?.let { requireNotNull(dao.getLifeArea(it)) { "Choose an existing life area." } }
         d.projectId?.let { requireNotNull(dao.getProject(it)) { "Choose an existing project." } }
@@ -58,8 +60,11 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         require(d.duration.isBlank() || duration != null && duration in 1..1440) { "Duration must be between 1 and 1440 minutes." }
         suspend fun rule(oldId: String?): String? {
             if(d.frequency==null) return null
-            val start=date ?: today
-            val r=(oldId?.let { dao.getRecurrenceRule(it) } ?: RecurrenceRule(startLocalDate=start.toString())).copy(
+            val existing=oldId?.let {dao.getRecurrenceRule(it)}
+            val task=if(d.type==EntityType.TASK) dao.getTask(d.id) else null
+            val keepAnchor=existing!=null && task!=null && task.dueLocalDate==d.date && existing.frequency==d.frequency && existing.interval==d.interval
+            val start=if(keepAnchor) LocalDate.parse(existing!!.startLocalDate) else date ?: today
+            val r=(existing ?: RecurrenceRule(startLocalDate=start.toString())).copy(
                 frequency=d.frequency,interval=d.interval,weekdaysMask=d.weekdaysMask,dayOfMonth=start.dayOfMonth,monthOfYear=start.monthValue,
                 localTimeMinutes=time?.let { it.hour*60+it.minute },startLocalDate=start.toString(),endLocalDate=d.endDate.takeIf { it.isNotBlank() },
                 occurrenceCountLimit=d.countLimit.takeIf { it.isNotBlank() }?.toInt(),updatedAt=now)
@@ -95,7 +100,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             }
             EntityType.HOBBY -> dao.put((dao.getHobby(d.id) ?: Hobby(id=d.id,title=d.title)).copy(title=d.title.trim(),description=d.body,lifeAreaId=d.lifeAreaId,updatedAt=now))
             EntityType.SKILL -> dao.put((dao.getSkill(d.id) ?: Skill(id=d.id,title=d.title)).copy(title=d.title.trim(),description=d.body,lifeAreaId=d.lifeAreaId,hobbyId=d.hobbyId,currentFocus=d.currentFocus,updatedAt=now))
-            EntityType.SESSION -> dao.put((dao.getSession(d.id) ?: Session(id=d.id,title=d.title,occurredAt=at ?: now,localDate=(date ?: today).toString())).copy(title=d.title.trim(),notes=d.body,durationMinutes=duration,localDate=(date ?: today).toString(),occurredAt=at ?: now,lifeAreaId=d.lifeAreaId,projectId=d.projectId,hobbyId=d.hobbyId,skillId=d.skillId,updatedAt=now))
+            EntityType.SESSION -> dao.put((dao.getSession(d.id) ?: Session(id=d.id,title=d.title,occurredAt=at ?: now,localDate=(date ?: today).toString())).copy(title=d.title.trim(),notes=d.body,durationMinutes=duration,localDate=(date ?: today).toString(),occurredAt=at ?: dao.getSession(d.id)?.occurredAt ?: (date ?: today).atStartOfDay(clock.zone).toInstant().toEpochMilli(),lifeAreaId=d.lifeAreaId,projectId=d.projectId,hobbyId=d.hobbyId,skillId=d.skillId,updatedAt=now))
             EntityType.JOURNAL -> {
                 require(d.body.isNotBlank()) { "Write something before saving." }
                 val old=dao.getJournalEntry(d.id)
@@ -110,6 +115,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             EntityType.WEEKLY_REVIEW -> {
                 val start=(date ?: today).with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                 val old=dao.allWeeklyReview().firstOrNull { it.periodStartLocalDate==start.toString() }
+                savedId=old?.id ?: d.id
                 dao.put((old ?: WeeklyReview(id=d.id,periodStartLocalDate=start.toString(),periodEndLocalDate=start.plusDays(6).toString())).copy(reflectionBody=d.body,highlight=d.title,updatedAt=now))
             }
             EntityType.DAILY_REVIEW -> error("Daily reflection is captured as a journal entry.")
@@ -120,14 +126,18 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             val old=dao.allReminder().firstOrNull { it.ownerType==OwnerType.TASK && it.ownerId==d.id }
             dao.put((old ?: Reminder(title=d.title,ownerType=OwnerType.TASK,ownerId=d.id)).copy(title=d.title,triggerAt=trigger,state=ReminderState.SCHEDULED,deliveryState=DeliveryState.PENDING,updatedAt=now))
         }
-        index(d.type,d.id)
-        d.id
+        if(d.type==EntityType.TASK && d.reminderDate.isBlank()) cancelReminders(EntityType.TASK,d.id)
+        index(d.type,savedId)
+        if(!existed) event("CREATED",d.type,savedId,d.title.ifBlank {d.body.take(100)})
+        savedId
     }
     suspend fun index(type: EntityType, id: String) {
         if(type in setOf(EntityType.REMINDER,EntityType.HABIT,EntityType.MILESTONE,EntityType.DAILY_REVIEW)) return
         val d=edit(type,id) ?: return
         val old=dao.document(type,id)
-        val keywords=listOfNotNull(d.projectId?.let { dao.getProject(it)?.title },d.goalId?.let { dao.getGoal(it)?.title },d.lifeAreaId?.let { dao.getLifeArea(it)?.name }).joinToString(" ")
+        val tagIds=dao.allTags().filter {it.entityType==type && it.entityId==id}.map {it.tagId}.toSet()
+        val tags=dao.allTag().filter {it.id in tagIds}.map {it.name}
+        val keywords=(tags+listOfNotNull(d.projectId?.let { dao.getProject(it)?.title },d.goalId?.let { dao.getGoal(it)?.title },d.lifeAreaId?.let { dao.getLifeArea(it)?.name })).joinToString(" ")
         dao.put(SearchDocument(rowId=old?.rowId ?: 0,entityType=type,entityId=id,title=d.title,body=listOf(d.body,d.why,d.success,d.currentFocus).joinToString(" "),keywords=keywords,updatedAt=clock.millis()))
     }
     suspend fun search(query: String): List<SearchDocument> {
@@ -161,9 +171,10 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         return d
     }
     suspend fun completeTask(id: String, expectedDate: String? = null, confirmOpenChildren: Boolean = false) = db.withTransaction {
-        val t=requireNotNull(dao.getTask(id));if(t.status==TaskStatus.COMPLETED) return@withTransaction
+        val t=requireNotNull(dao.getTask(id));if(t.status!=TaskStatus.OPEN) return@withTransaction
         require(confirmOpenChildren || dao.allTask().none { it.parentTaskId==id && it.status==TaskStatus.OPEN }) { "Complete or cancel the open subtasks first." }
         if(expectedDate!=null && t.dueLocalDate!=expectedDate) return@withTransaction
+        val previousReminders=dao.allReminder().filter {it.ownerType==OwnerType.TASK && it.ownerId==id && it.state!=ReminderState.CANCELLED}
         val now=clock.millis();event("TASK_COMPLETED",EntityType.TASK,id,t.title)
         cancelReminders(EntityType.TASK,id)
         val r=t.recurrenceRuleId?.let { dao.getRecurrenceRule(it) }
@@ -172,7 +183,15 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             val date=t.dueLocalDate?.let(LocalDate::parse) ?: LocalDate.now(clock)
             val next=engine.next(r,maxOf(date,LocalDate.now(clock)),dao.allRecurrenceException().filter { it.recurrenceRuleId==r.id })
             if(next==null) dao.put(t.copy(status=TaskStatus.COMPLETED,completedAt=now,pinnedFocus=false,updatedAt=now))
-            else dao.put(t.copy(dueLocalDate=next.toString(),dueAt=r.localTimeMinutes?.let { engine.instant(r,next,clock.zone).toEpochMilli() },completedAt=null,pinnedFocus=false,updatedAt=now))
+            else {
+                dao.put(t.copy(dueLocalDate=next.toString(),dueAt=r.localTimeMinutes?.let { engine.instant(r,next,clock.zone).toEpochMilli() },occurrenceLocalDate=next.toString(),completedAt=null,pinnedFocus=false,updatedAt=now))
+                previousReminders.forEach { reminder -> reminder.triggerAt?.let { trigger ->
+                    val oldTime=Instant.ofEpochMilli(trigger).atZone(clock.zone)
+                    val dayOffset=java.time.temporal.ChronoUnit.DAYS.between(date,oldTime.toLocalDate())
+                    val nextTrigger=next.plusDays(dayOffset).atTime(oldTime.toLocalTime()).atZone(clock.zone).toInstant().toEpochMilli()
+                    if(nextTrigger>now) dao.put(reminder.copy(triggerAt=nextTrigger,state=ReminderState.SCHEDULED,deliveryState=DeliveryState.PENDING,deliveredAt=null,scheduledAt=null,updatedAt=now))
+                } }
+            }
         }
         index(EntityType.TASK,id)
     }
@@ -193,15 +212,15 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
     suspend fun status(type: EntityType, id: String, status: String) = db.withTransaction {
         val now=clock.millis();var title=""
         when(type) {
-            EntityType.PROJECT -> { val r=requireNotNull(dao.getProject(id));title=r.title;dao.put(r.copy(status=ProjectStatus.valueOf(status),completedAt=if(status=="COMPLETED") now else null,updatedAt=now)) }
-            EntityType.GOAL -> { val r=requireNotNull(dao.getGoal(id));title=r.title;dao.put(r.copy(status=GoalStatus.valueOf(status),achievedAt=if(status=="ACHIEVED") now else null,updatedAt=now)) }
+            EntityType.PROJECT -> { val r=requireNotNull(dao.getProject(id));title=r.title;dao.put(r.copy(status=ProjectStatus.valueOf(status),completedAt=if(status=="COMPLETED") r.completedAt ?: now else if(status=="ARCHIVED") r.completedAt else null,updatedAt=now)) }
+            EntityType.GOAL -> { val r=requireNotNull(dao.getGoal(id));title=r.title;dao.put(r.copy(status=GoalStatus.valueOf(status),achievedAt=if(status=="ACHIEVED") r.achievedAt ?: now else if(status=="ARCHIVED") r.achievedAt else null,updatedAt=now)) }
             EntityType.LIFE_AREA -> { val r=requireNotNull(dao.getLifeArea(id));title=r.name;dao.put(r.copy(status=LifeAreaStatus.valueOf(status),updatedAt=now)) }
             EntityType.HABIT -> { val r=requireNotNull(dao.getHabit(id));title=r.title;dao.put(r.copy(status=ActiveStatus.valueOf(status),updatedAt=now));if(status!="ACTIVE") cancelReminders(type,id) }
             EntityType.HOBBY -> { val r=requireNotNull(dao.getHobby(id));title=r.title;dao.put(r.copy(status=ActiveStatus.valueOf(status),updatedAt=now)) }
             EntityType.SKILL -> { val r=requireNotNull(dao.getSkill(id));title=r.title;dao.put(r.copy(status=ActiveStatus.valueOf(status),updatedAt=now)) }
             EntityType.CHAPTER -> { val r=requireNotNull(dao.getChapter(id));title=r.title;dao.put(r.copy(status=ChapterStatus.valueOf(status),updatedAt=now)) }
             EntityType.IDEA -> { val r=requireNotNull(dao.getIdea(id));title=r.title.orEmpty();dao.put(r.copy(status=IdeaStatus.valueOf(status),updatedAt=now)) }
-            EntityType.MILESTONE -> { val r=requireNotNull(dao.getMilestone(id));title=r.title;dao.put(r.copy(status=MilestoneStatus.valueOf(status),completedAt=if(status=="COMPLETED") now else null,updatedAt=now)) }
+            EntityType.MILESTONE -> { val r=requireNotNull(dao.getMilestone(id));title=r.title;dao.put(r.copy(status=MilestoneStatus.valueOf(status),completedAt=if(status=="COMPLETED") r.completedAt ?: now else if(status=="ARCHIVED") r.completedAt else null,updatedAt=now)) }
             EntityType.TASK -> { val r=requireNotNull(dao.getTask(id));title=r.title;require(status=="CANCELLED");dao.put(r.copy(status=TaskStatus.CANCELLED,pinnedFocus=false,updatedAt=now));cancelReminders(type,id) }
             EntityType.REMINDER -> { val r=requireNotNull(dao.getReminder(id));title=r.title;dao.put(r.copy(state=ReminderState.CANCELLED,updatedAt=now)) }
             else -> error("This record does not have that status action.")
@@ -248,6 +267,21 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         dao.allAttachment().filter { it.ownerType==type && it.ownerId==id }.forEach { dao.deleteAttachment(it.id) }
         dao.removeTags(type,id);dao.removeDocument(type,id)
         when(type) { EntityType.TASK -> dao.deleteTask(id);EntityType.JOURNAL -> dao.deleteJournalEntry(id);EntityType.IDEA -> dao.deleteIdea(id);EntityType.MEMORY -> dao.deleteMemory(id);EntityType.SESSION -> dao.deleteSession(id);else -> Unit }
+    }
+    suspend fun tag(type: EntityType,id: String,name: String,add: Boolean) = db.withTransaction {
+        requireNotNull(edit(type,id));val clean=name.trim();require(clean.isNotBlank() && clean.length<=60) {"Use a tag between 1 and 60 characters."}
+        val normalized=java.text.Normalizer.normalize(clean,java.text.Normalizer.Form.NFKC).lowercase(java.util.Locale.ROOT)
+        val old=dao.allTag().firstOrNull {it.normalizedName==normalized}
+        if(add) {
+            val tag=old ?: Tag(name=clean,normalizedName=normalized);if(old==null) dao.put(tag)
+            dao.put(EntityTagCrossRef(tag.id,type,id))
+        } else if(old!=null) dao.remove(EntityTagCrossRef(old.id,type,id))
+        index(type,id)
+    }
+    suspend fun link(fromType: EntityType,fromId: String,toType: EntityType,toId: String) = db.withTransaction {
+        require(fromType!=toType || fromId!=toId) {"Choose another record."};requireNotNull(edit(fromType,fromId));requireNotNull(edit(toType,toId))
+        if(dao.allEntityLink().none {it.fromType==fromType && it.fromId==fromId && it.toType==toType && it.toId==toId || it.fromType==toType && it.fromId==toId && it.toType==fromType && it.toId==fromId})
+            dao.put(EntityLink(fromType=fromType,fromId=fromId,toType=toType,toId=toId,relationType="RELATED"))
     }
     private suspend fun cancelReminders(type: EntityType,id: String) {
         val owner=when(type) { EntityType.TASK -> OwnerType.TASK;EntityType.HABIT -> OwnerType.HABIT;else -> null }

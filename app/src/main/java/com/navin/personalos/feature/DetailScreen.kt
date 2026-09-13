@@ -64,10 +64,22 @@ import java.util.UUID
         if(type in listOf(EntityType.JOURNAL,EntityType.SESSION)) item {PrimaryButton("Save as memory") {vm.act("Memory saved") {val target=vm.repository.saveMemory(type,id);open(EntityType.MEMORY,target)}}}
         if(type==EntityType.IDEA) item {SectionTitle("Turn this into something");Text("The original idea stays here.");TextButton(onClick={vm.act {open(EntityType.TASK,vm.repository.convertIdea(id,EntityType.TASK))}}) {Text("Create a task")};TextButton(onClick={vm.act {open(EntityType.PROJECT,vm.repository.convertIdea(id,EntityType.PROJECT))}}) {Text("Create a project")}}
         if(type==EntityType.LIFE_AREA) {
-            item {SectionTitle("Active in this area");Row {listOf(EntityType.PROJECT,EntityType.GOAL,EntityType.TASK).forEach {t -> TextButton(onClick={childCreate(t)}) {Text("Add ${t.label().lowercase()}")}}}
+            item {SectionTitle("Active in this area");Row {listOf(EntityType.PROJECT,EntityType.GOAL,EntityType.TASK).forEach {t -> TextButton(onClick={childCreate(t)}) {Text("Add ${t.label().lowercase()}")}}} }
             items(records.filter {it.lifeAreaId==id},key={it.id}) {RecordRow(it,open)}
         }
         if(type==EntityType.CHAPTER) {
+            items(members,key={"member-${it.id}"}) { member ->
+                val record=records.firstOrNull {it.type==member.entityType && it.id==member.entityId}
+                CalmCard {
+                    if(record!=null) TextButton(onClick={open(record.type,record.id)}) {Text(record.title)} else Text("Original item unavailable")
+                    Row {
+                        val position=members.indexOf(member)
+                        TextButton(enabled=position>0,onClick={vm.act("Order updated") {val order=members.map {it.id}.toMutableList();java.util.Collections.swap(order,position,position-1);vm.repository.reorderChapter(id,order);revision++}}) {Text("Move up")}
+                        TextButton(enabled=position<members.lastIndex,onClick={vm.act("Order updated") {val order=members.map {it.id}.toMutableList();java.util.Collections.swap(order,position,position+1);vm.repository.reorderChapter(id,order);revision++}}) {Text("Move down")}
+                    }
+                }
+            }
+            item {PrimaryButton(if(r.status=="COMPLETED") "Reopen chapter" else "Complete chapter") {vm.act {vm.repository.status(type,id,if(r.status=="COMPLETED") "ACTIVE" else "COMPLETED")}}}
             item {SectionTitle("Chosen moments");Text("Select the records you want this chapter to hold.")}
             items(records.filter {it.type in listOf(EntityType.MEMORY,EntityType.JOURNAL,EntityType.SESSION,EntityType.PROJECT,EntityType.GOAL,EntityType.MILESTONE)},key={it.id}) {candidate ->
                 val selected=members.any {it.entityType==candidate.type && it.entityId==candidate.id}
@@ -75,6 +87,7 @@ import java.util.UUID
             }
         }
         if(type in listOf(EntityType.JOURNAL,EntityType.MEMORY,EntityType.IDEA,EntityType.PROJECT)) item {AttachmentSection(vm,type,id)}
+        item {ConnectionsSection(vm,type,id,records,open)}
         val contextIds=listOfNotNull(r.projectId?.let {EntityType.PROJECT to it},r.goalId?.let {EntityType.GOAL to it},r.lifeAreaId?.let {EntityType.LIFE_AREA to it})
         if(contextIds.isNotEmpty()) item {SectionTitle("Connected to");contextIds.forEach {(t,i) -> records.firstOrNull {it.type==t && it.id==i}?.let {record -> TextButton(onClick={open(t,i)}) {Text(record.title)}}}
         if(events.isNotEmpty()) {item {SectionTitle("History")};items(events.sortedByDescending {it.occurredAt},key={it.id}) {Text("${it.localDate} · ${it.eventType.lowercase().replace('_',' ')}")}}
