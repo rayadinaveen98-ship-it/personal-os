@@ -1,31 +1,38 @@
-# Personal OS V1 implementation
+# Personal OS V1 implementation status
 
-Status: in progress — no APK or release acceptance claimed.
+Status: **in progress; not release ready**. Updated 2026-09-13.
 
-## Specification intake
+The complete specification package was read in the prescribed order, with the final execution brief last. The frozen dependency baseline and product contract remain unchanged. Work is tracked on `build/v1-foundation` and draft PR #1.
 
-Read `START_HERE_FOR_ASTRA.md` first, followed by `docs/INDEX.md`, the decision/frozen precedence layer, all foundation, UX, screen, behavior, intelligence, data/privacy, Android, QA and visual-reference documents, including the source HTML. Read the consistency audit and final authorized execution brief last. Baseline source commit: `65e8173f07b61a85c1f9bfe523aefed5a5802de4`.
+## Source implemented
 
-Frozen product/design scope remains unchanged. Implementation branch: `build/v1-foundation`.
+- Native Kotlin/Compose application, Hilt, Room schema version 1, DataStore, original leaf vectors and bundled licensed fonts.
+- Typed V1 entities, explicit relationships, FTS indexing and search, CRUD/archive controls, structured editors, deterministic Capture and optional voice.
+- Onboarding and Today/Plan/Capture/Journey/Me; entity details, timeline, dated reflection, weekly review, tags, links and chapter ordering.
+- Calendar recurrence, occurrence skipping/rescheduling, habit recording, session evidence, explicit project next actions and explainable focus suggestions.
+- AlarmManager scheduling, WorkManager reconciliation, persisted delivery states, permission repair, recovery receivers and entity notification intents.
+- Device authentication gate, secure-window App Lock, SAF attachments, version/checksum validation and staging database verification before backup replacement.
 
-## Environment verification
+“Source implemented” is not a claim that runtime acceptance has passed.
 
-Java 17 is available. Android SDK and Gradle are being installed into temporary build storage. Initial official artifact requests for AGP 9.4.0, Gradle 9.6.0 and Kotlin 2.4.20 returned HTTP 200; full dependency resolution remains a build gate. Direct Git push has no credential in this workspace; connected GitHub write operations are available.
+## Verification evidence
 
-## Required checkpoints
+- Specification validation has passed on implementation PR commits.
+- Android CI has exposed and driven fixes to Room indexes, splash resource references, import ambiguity, Compose scopes, Kotlin nullability and recursive return types.
+- A schema transfer was truncated during publication; it was replaced with the intact local schema. Subsequent publishing checks chunked reads and exact character counts.
+- Unit tests cover recurrence, Capture ambiguity/context, focus precedence and empty evidence.
+- Instrumentation regression tests cover persistence across reopen, FTS deletion, idempotent saves/completion, relationship rollback, session timestamps and backup corruption/round trip.
+- CI device jobs are configured for APIs 26, 30, 33, 34 and 36, after unit/lint/assembly gates.
 
-- [ ] Android foundation, CI, semantic design system
-- [ ] Explicit Room schema v1, repositories, preferences
-- [ ] Brand, onboarding and personalization
-- [ ] Today, Plan, tasks and reminders
-- [ ] Capture parser, correction and voice
-- [ ] Projects, goals, milestones and habits
-- [ ] Journey, journals, ideas, memories, chapters and archive
-- [ ] Me, life areas, hobbies, skills and sessions
-- [ ] Search, reviews and deterministic intelligence
-- [ ] Android delivery, permissions and recovery
-- [ ] App lock, privacy, backup/restore and attachments
-- [ ] Companion, dark mode, motion and accessibility
-- [ ] Full QA matrix, verified final APK and implementation report
+No verified APK, passing device matrix, final visual review, or final V1 readiness is claimed yet.
 
-No milestone is complete until its behavior, tests, persistence, navigation, visual fidelity and practical APK delivery have been verified. Test fixtures must be synthetic and must never seed production user data.
+## Remaining acceptance work
+
+1. Make compilation, unit tests, lint, assembly and instrumented tests green; preserve generated schema and real reports.
+2. Audit and harden date rollover, recurrence exceptions/reminder behavior, exact-once interactions, backup replacement/recovery and relationship cleanup.
+3. Verify navigation, notification deep links, permission denial/repair, reboot/time/timezone behavior, App Lock cold/resume behavior and attachment persistence on devices.
+4. Exercise the complete creation/edit/archive/delete flows and evidence on all required API levels.
+5. Inspect runtime visuals at 360/390/411dp and font scales 1.0/1.3/1.5, light/dark/system, reduced motion, offline and privacy states; fix layout and accessibility failures.
+6. Produce milestone APKs when buildable. Finish source on main, green required CI, a verified final APK with version/size/SHA-256/integrity evidence and a complete QA report.
+
+No fake personal history is seeded in production code. Synthetic records belong only to instrumentation/unit tests.

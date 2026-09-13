@@ -19,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : FragmentActivity() {
     private val model: PersonalViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen();super.onCreate(savedInstanceState);enableEdgeToEdge()
+        installSplashScreen();super.onCreate(savedInstanceState);window.addFlags(WindowManager.LayoutParams.FLAG_SECURE);enableEdgeToEdge()
         handleIntent(intent)
         lifecycleScope.launch { model.preferences.flow.collect { p ->
             if(p.locked) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE) else window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)

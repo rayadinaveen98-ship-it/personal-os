@@ -70,7 +70,7 @@ data class RestorePreview internal constructor(internal val payload: String,val 
     }
     suspend fun deleteAll() = withContext(Dispatchers.IO) {
         reminders.cancelAll();val old=preferences.export()
-        try { db.withTransaction { val empty=JSONObject();tables.forEach { empty.put(it,JSONArray()) };replace(db,empty);preferences.clear() } }
+        try { db.withTransaction { val empty=JSONObject();tables.forEach { empty.put(it,JSONArray()) };replace(db,empty);preferences.clear() };context.contentResolver.persistedUriPermissions.forEach {grant -> runCatching {context.contentResolver.releasePersistableUriPermission(grant.uri,android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)}} }
         catch(e: Exception) { preferences.restore(old,preserveSecurity=false);throw e }
         finally { reminders.enqueue() }
     }
@@ -90,7 +90,7 @@ data class RestorePreview internal constructor(internal val payload: String,val 
                     val value=row.get(name)
                     if(value===JSONObject.NULL) null else {
                         require(when(type) { "INTEGER" -> value is Int || value is Long;"REAL" -> value is Number;"TEXT" -> value is String;else -> false }) { "Invalid field type in $table." }
-                        if(value is String && (name=="localDate" || name.endsWith("LocalDate"))) LocalDate.parse(value)
+                        if(value is String && (name=="localDate" || name.endsWith("LocalDate") || name=="targetDate")) LocalDate.parse(value)
                         value
                     }
                 }.toTypedArray()

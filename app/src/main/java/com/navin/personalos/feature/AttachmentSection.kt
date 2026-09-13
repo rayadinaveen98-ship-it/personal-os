@@ -38,5 +38,7 @@ import kotlinx.coroutines.withContext
         TextButton(onClick={remove=a}) {Text("Remove link")}
     } }
     TextButton(onClick={picker.launch(arrayOf("image/*"))}) {Text("Add image")};TextButton(onClick={picker.launch(arrayOf("*/*"))}) {Text("Add file")}
-    remove?.let { a -> AlertDialog(onDismissRequest={remove=null},title={Text("Remove attachment link?")},text={Text("The original file stays in its current location.")},confirmButton={TextButton(onClick={vm.act("Attachment link removed") {vm.repository.dao.deleteAttachment(a.id);remove=null}}) {Text("Remove link")}},dismissButton={TextButton(onClick={remove=null}) {Text("Keep")}}) }
+    remove?.let { a -> AlertDialog(onDismissRequest={remove=null},title={Text("Remove attachment link?")},text={Text("The original file stays in its current location.")},confirmButton={TextButton(onClick={vm.act("Attachment link removed") {vm.repository.dao.deleteAttachment(a.id)
+            if(vm.repository.dao.allAttachment().none {it.uri==a.uri}) runCatching {context.contentResolver.releasePersistableUriPermission(Uri.parse(a.uri),Intent.FLAG_GRANT_READ_URI_PERMISSION)}
+            remove=null}}) {Text("Remove link")}},dismissButton={TextButton(onClick={remove=null}) {Text("Keep")}}) }
 }

@@ -10,7 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.activity.compose.LocalActivity
 import androidx.compose.ui.unit.dp
 import com.navin.personalos.core.designsystem.*
 
@@ -24,7 +24,7 @@ fun authenticate(activity: FragmentActivity,onSuccess: ()->Unit,onError: (String
     prompt.authenticate(BiometricPrompt.PromptInfo.Builder().setTitle("Unlock Personal OS").setSubtitle("Use your device's secure authentication").setAllowedAuthenticators(AUTH).build())
 }
 @Composable fun LockScreen(vm: PersonalViewModel) {
-    val activity=LocalContext.current as FragmentActivity
+    val activity=LocalActivity.current as FragmentActivity
     var error by remember { mutableStateOf<String?>(null) }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding().padding(24.dp),contentAlignment=Alignment.Center) {
         Column(verticalArrangement=Arrangement.spacedBy(20.dp)) {

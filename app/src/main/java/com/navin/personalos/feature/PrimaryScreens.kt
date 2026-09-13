@@ -90,7 +90,7 @@ import java.time.format.DateTimeFormatter
         item { PrimaryButton("Write something",onClick={go("create/JOURNAL?date=$selected")}) }
         if(history.isEmpty()) item { QuietEmpty("A quiet day here.","Nothing has been recorded for this date yet.","Capture a memory",{go("create/MEMORY?date=$selected")},p.companion) }
         items(history,key={it.id}) { r -> RecordRow(r,open) }
-        item { SectionTitle("Keep what matters");Row { TextButton(onClick={go("list/MEMORY")}) {Text("Memories")};TextButton(onClick={go("list/CHAPTER")}) {Text("Chapters")} } }
+        item { SectionTitle("Keep what matters");Row { TextButton(onClick={go("list/MEMORY")}) {Text("Memories")};TextButton(onClick={go("list/CHAPTER")}) {Text("Chapters")};TextButton(onClick={go("list/IDEA")}) {Text("Ideas")} } }
         item { CalmCard(tone=2,onClick={go("review")}) { Text("Your week, truthfully.",style=MaterialTheme.typography.titleLarge);Text("See what moved and choose what to carry forward.") } }
         item { TextButton(onClick={go("timeline")}) {Text("Life timeline & archive")};TextButton(onClick={go("search")}) {Text("Search your history")} }
     }

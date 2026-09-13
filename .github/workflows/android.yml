@@ -63,6 +63,9 @@ jobs:
           adb shell input keyevent 82
       - name: Test Room, backup, domain persistence and app interactions
         run: ./gradlew connectedDebugAndroidTest --stacktrace
+      - name: Collect runtime screenshots
+        if: always()
+        run: adb pull /sdcard/Android/data/com.navin.personalos/files/qa-screenshots qa-screenshots || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -71,3 +74,4 @@ jobs:
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/
             emulator.log
+            qa-screenshots/

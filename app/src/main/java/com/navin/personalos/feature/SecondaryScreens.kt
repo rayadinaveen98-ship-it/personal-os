@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -81,6 +82,7 @@ import java.util.UUID
 }
 @Composable fun SettingsScreen(vm: PersonalViewModel,p: PersonalPreferences,back: ()->Unit) {
     val context=LocalContext.current
+    val activity=LocalActivity.current as androidx.fragment.app.FragmentActivity
     var name by rememberSaveable { mutableStateOf(p.name) };var description by rememberSaveable { mutableStateOf(p.description) }
     val permission=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { vm.act("Notification delivery status refreshed") {} }
     val busy by vm.busy.collectAsStateWithLifecycle()
@@ -102,6 +104,6 @@ import java.util.UUID
             TextButton(onClick={vm.act("Delivery status refreshed") {}}) { Text("Check reminder delivery") }
         } }
         item { CalmCard { Eyebrow("Your data");Text("Backups contain private writing in readable JSON. Choose a destination you trust. External files are not embedded.");if(p.lastBackup>0) Text("Last export: ${Instant.ofEpochMilli(p.lastBackup).atZone(ZoneId.systemDefault()).toLocalDate()}");PrimaryButton("Export full backup",!busy) {export.launch("Personal-OS-${LocalDate.now()}.json")};OutlinedButton(enabled=!busy,onClick={restore.launch(arrayOf("application/json","text/plain","application/octet-stream"))}) {Text("Restore a backup")};TextButton(enabled=!busy,onClick={deleteConfirmation=true}) {Text("Delete all local data",color=MaterialTheme.colorScheme.error)} } }
-        item { CalmCard { Eyebrow("Privacy");Toggle("App Lock",p.locked,{ enabled -> authenticate(context as androidx.fragment.app.FragmentActivity,{vm.unlocked.value=true;flag("locked",enabled)},{ message -> vm.act(message) {} }) });if(p.locked) Choice("Lock after leaving",listOf(0,1,5,15),p.timeoutMinutes,{vm.act { vm.preferences.number("timeoutMinutes",it) }}) { if(it==0) "Immediately" else "$it minutes" };Toggle("Hide notification content",p.hideNotificationText,{flag("hideNotificationText",it)});Text("Your records remain on this device. Personal OS has no Internet permission. Voice availability depends on your device's recognition service.") } }
+        item { CalmCard { Eyebrow("Privacy");Toggle("App Lock",p.locked,{ enabled -> authenticate(activity,{vm.unlocked.value=true;flag("locked",enabled)},{ message -> vm.act(message) {} }) });if(p.locked) Choice("Lock after leaving",listOf(0,1,5,15),p.timeoutMinutes,{vm.act { vm.preferences.number("timeoutMinutes",it) }}) { if(it==0) "Immediately" else "$it minutes" };Toggle("Hide notification content",p.hideNotificationText,{flag("hideNotificationText",it)});Text("Your records remain on this device. Personal OS has no Internet permission. Voice availability depends on your device's recognition service.") } }
     }
 }

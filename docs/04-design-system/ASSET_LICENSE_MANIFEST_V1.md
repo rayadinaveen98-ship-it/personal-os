@@ -138,9 +138,11 @@ Astra should append final production assets here as they are created:
 
 | Asset | Runtime path | Editable/source path | Provenance/license | Status |
 |---|---|---|---|---|
-| Minimal Leaf adaptive icon | TBD | TBD | Personal OS original | Pending implementation |
-| Minimal Leaf monochrome icon | TBD | TBD | Personal OS original | Pending implementation |
-| Tiny Observatory Friend state set | TBD | TBD | Personal OS original recreation from approved direction | Pending implementation |
-| Manrope | TBD | upstream source | SIL OFL 1.1 | Pending implementation |
-| Newsreader | TBD | upstream source | SIL OFL 1.1 | Pending implementation |
-| UI icon set | TBD | Material/project-owned | applicable open license/project original | Pending implementation |
+| Minimal Leaf adaptive icon | `app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml` | `app/src/main/res/drawable/leaf.xml` | Personal OS original vector | Implemented; device appearance pending QA |
+| Minimal Leaf monochrome/splash | `app/src/main/res/drawable/leaf.xml` | Same editable Android vector | Personal OS original | Implemented; device appearance pending QA |
+| Tiny Observatory Friend state set | `core/designsystem/Components.kt` | Kotlin Canvas paths and pose state machine in the same file | Personal OS original recreation from approved direction | Eight source states; fidelity/motion QA pending |
+| Manrope | `app/src/main/res/font/manrope.ttf` | Google Fonts `google/fonts`, `ofl/manrope/Manrope[wght].ttf` | SIL OFL 1.1, bundled at `app/src/main/assets/licenses/Manrope-OFL.txt` | Bundled |
+| Newsreader | `app/src/main/res/font/newsreader.ttf` | Google Fonts `google/fonts`, `ofl/newsreader/Newsreader[opsz,wght].ttf` | SIL OFL 1.1, bundled at `app/src/main/assets/licenses/Newsreader-OFL.txt` | Bundled |
+| UI symbols | Native text/Compose controls | Kotlin UI source | Platform text rendering; no downloaded icon pack | Coherence/accessibility polish pending |
+
+Implementation paths under `core/` are relative to `app/src/main/java/com/navin/personalos/`. No Canva stock artwork or opaque screen mockups are bundled in the app. External attachments remain user content.
