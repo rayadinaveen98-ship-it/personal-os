@@ -31,18 +31,18 @@ import java.util.UUID
     var query by rememberSaveable { mutableStateOf("") };var filter by rememberSaveable { mutableStateOf<EntityType?>(null) }
     var results by remember { mutableStateOf<List<SearchDocument>>(emptyList()) };var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) };var limit by rememberSaveable { mutableIntStateOf(50) }
-    LaunchedEffect(query,limit) {
+    LaunchedEffect(query,limit,filter) {
         results=emptyList();error=null
         val tokens=Regex("[\\p{L}\\p{N}_]+").findAll(query).map { it.value }.take(20).toList()
         if(tokens.isEmpty()) { loading=false;return@LaunchedEffect }
         loading=true;delay(200)
-        try { results=vm.repository.dao.search(tokens.joinToString(" AND ") { "\"$it\"*" },limit) }
+        try { results=vm.repository.dao.searchFiltered(tokens.joinToString(" AND ") { "\"$it\"*" },filter,limit) }
         catch(e: kotlinx.coroutines.CancellationException) { throw e }
         catch(e: Exception) { error="Search couldn't load. Try again." }
         finally { loading=false }
     }
     LazyColumn(contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
-        item { HeaderBack("Find something in your world",back);Field("Search your records",query,{query=it;limit=50});Choice("Type",listOf(null)+listOf(EntityType.TASK,EntityType.PROJECT,EntityType.GOAL,EntityType.JOURNAL,EntityType.IDEA,EntityType.MEMORY,EntityType.CHAPTER,EntityType.HOBBY,EntityType.SKILL,EntityType.SESSION,EntityType.LIFE_AREA,EntityType.WEEKLY_REVIEW),filter,{filter=it}) { it?.label() ?: "All types" } }
+        item { HeaderBack("Find something in your world",back);Field("Search your records",query,{query=it;limit=50});Choice("Type",listOf(null)+listOf(EntityType.TASK,EntityType.PROJECT,EntityType.GOAL,EntityType.JOURNAL,EntityType.IDEA,EntityType.MEMORY,EntityType.CHAPTER,EntityType.HOBBY,EntityType.SKILL,EntityType.SESSION,EntityType.LIFE_AREA,EntityType.WEEKLY_REVIEW),filter,{filter=it;limit=50}) { it?.label() ?: "All types" } }
         if(loading) item { CircularProgressIndicator() }
         if(error!=null) item { Text(error!!) }
         if(query.isBlank()) item { Text("Search titles, writing, and linked contexts. Everything stays on this device.") }

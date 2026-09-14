@@ -108,4 +108,15 @@ class PersistenceTest {
         assertEquals(ReminderState.SCHEDULED,db.dao().allReminder().single().state)
     }
 
+    @Test fun searchUpdatesLinkedContextAndFiltersBeforeLimiting() = runBlocking {
+        val project=Draft(UUID.randomUUID().toString(),EntityType.PROJECT,title="Synthetic orchard")
+        repo.save(project)
+        val task=Draft(UUID.randomUUID().toString(),EntityType.TASK,title="Synthetic action",projectId=project.id)
+        repo.save(task)
+        assertTrue(repo.search("orchard").any {it.entityId==task.id})
+        repo.save(project.copy(title="Synthetic garden"))
+        assertFalse(repo.search("orchard").any {it.entityId==task.id})
+        assertEquals(task.id,db.dao().searchFiltered("garden*",EntityType.TASK,1).single().entityId)
+    }
+
 }

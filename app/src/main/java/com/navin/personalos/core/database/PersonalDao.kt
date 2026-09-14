@@ -131,6 +131,8 @@ interface PersonalDao {
     @Query("SELECT SearchDocument.* FROM SearchDocument JOIN SearchDocumentFts ON SearchDocument.rowId = SearchDocumentFts.rowid WHERE SearchDocumentFts MATCH :query ORDER BY SearchDocument.updatedAt DESC LIMIT :limit OFFSET :offset") suspend fun search(query: String, limit: Int = 100, offset: Int = 0): List<SearchDocument>
     @Query("DELETE FROM EntityTagCrossRef WHERE entityType = :type AND entityId = :id") suspend fun removeTags(type: EntityType, id: String)
     @Query("SELECT * FROM EntityTagCrossRef") suspend fun allTags(): List<EntityTagCrossRef>
+    @Query("SELECT SearchDocument.* FROM SearchDocument JOIN SearchDocumentFts ON SearchDocument.rowId = SearchDocumentFts.rowid WHERE SearchDocumentFts MATCH :query AND (:type IS NULL OR SearchDocument.entityType = :type) ORDER BY SearchDocument.updatedAt DESC, SearchDocument.rowId DESC LIMIT :limit") suspend fun searchFiltered(query: String, type: EntityType?, limit: Int): List<SearchDocument>
+    @Query("SELECT * FROM SearchDocument") suspend fun allDocuments(): List<SearchDocument>
     @Query("DELETE FROM SearchDocument") suspend fun clearIndex()
     @Query("SELECT * FROM EntityTagCrossRef") fun observeTagLinks(): kotlinx.coroutines.flow.Flow<List<EntityTagCrossRef>>
     @Delete suspend fun remove(value: EntityTagCrossRef)

@@ -139,6 +139,13 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         }
         if(d.type==EntityType.TASK && d.reminderDate.isBlank()) cancelReminders(EntityType.TASK,d.id)
         index(d.type,savedId)
+        if(existed && d.type in setOf(EntityType.LIFE_AREA,EntityType.PROJECT,EntityType.GOAL)) {
+            for(document in dao.allDocuments()) {
+                val linked=edit(document.entityType,document.entityId) ?: continue
+                val depends=when(d.type) {EntityType.LIFE_AREA -> linked.lifeAreaId==savedId;EntityType.PROJECT -> linked.projectId==savedId;EntityType.GOAL -> linked.goalId==savedId;else -> false}
+                if(depends) index(document.entityType,document.entityId)
+            }
+        }
         if(!existed) event("CREATED",d.type,savedId,d.title.ifBlank {d.body.take(100)})
         savedId
     }

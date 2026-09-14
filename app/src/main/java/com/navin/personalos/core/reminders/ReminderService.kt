@@ -48,9 +48,9 @@ class ReminderService @Inject constructor(@ApplicationContext private val contex
         channel();val now=clock.millis();syncRhythms()
         for(record in dao.allReminder()) {
             var r=record
-            if(r.state!=ReminderState.SCHEDULED) {alarms.cancel(pending(r.id));continue}
+            if(r.state!=ReminderState.SCHEDULED) {alarms.cancel(pending(r.id));if(r.state!=ReminderState.DELIVERED) notifications.cancel(r.id,0);continue}
             val ownerActive=when(r.ownerType) {OwnerType.TASK -> r.ownerId?.let {dao.getTask(it)?.status==TaskStatus.OPEN} ?: false;OwnerType.HABIT -> r.ownerId?.let {dao.getHabit(it)?.status==ActiveStatus.ACTIVE} ?: false;else -> true}
-            if(!ownerActive) {alarms.cancel(pending(r.id));dao.put(r.copy(state=ReminderState.CANCELLED,updatedAt=now));continue}
+            if(!ownerActive) {alarms.cancel(pending(r.id));notifications.cancel(r.id,0);dao.put(r.copy(state=ReminderState.CANCELLED,updatedAt=now));continue}
             val rule=r.recurrenceRuleId?.let {dao.getRecurrenceRule(it)}
             if(rule!=null) {
                 val today=Instant.ofEpochMilli(now).atZone(clock.zone).toLocalDate()
