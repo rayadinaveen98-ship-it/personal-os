@@ -95,6 +95,11 @@ jobs:
                       print(case.attrib)
                       print(failure.text)
           PY
+      - name: Collect app failure diagnostics
+        if: always()
+        run: |
+          timeout 30 adb logcat -d -v threadtime -s PersonalOS-QA:E AndroidRuntime:E > qa-logcat.txt || true
+          cat qa-logcat.txt
       - name: Collect runtime screenshots
         if: always()
         run: timeout 30 adb pull /sdcard/Download/personal-os-qa qa-screenshots || true
@@ -106,4 +111,5 @@ jobs:
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/
             emulator.log
+            qa-logcat.txt
             qa-screenshots/
