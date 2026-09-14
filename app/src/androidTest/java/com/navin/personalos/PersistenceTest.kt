@@ -144,4 +144,26 @@ class PersistenceTest {
         assertTrue(db.dao().history().first().any {it.entityId==task.id && it.title=="Completed synthetic action"})
     }
 
+    @Test fun deletingParentPreservesSubtasksAndTheirReminderIntent() = runBlocking {
+        val parent=Draft(UUID.randomUUID().toString(),EntityType.TASK,title="Synthetic parent")
+        repo.save(parent)
+        val child=Draft(UUID.randomUUID().toString(),EntityType.TASK,title="Synthetic child",parentTaskId=parent.id,reminderDate="2026-09-14",reminderTime="09:00")
+        repo.save(child);repo.delete(EntityType.TASK,parent.id)
+        assertNull(db.dao().getTask(parent.id))
+        assertNull(db.dao().getTask(child.id)!!.parentTaskId)
+        assertEquals(child.id,repo.search("child").single().entityId)
+        assertEquals(ReminderState.SCHEDULED,db.dao().allReminder().single().state)
+    }
+
+    @Test fun editingMonthlyReminderDoesNotDriftItsOriginalMonthEndAnchor() = runBlocking {
+        val rule=RecurrenceRule(startLocalDate="2026-08-31",frequency=Frequency.MONTHLY,dayOfMonth=31,localTimeMinutes=540)
+        db.dao().put(rule)
+        val reminder=Reminder(title="Synthetic month end",triggerAt=Instant.parse("2026-09-30T09:00:00Z").toEpochMilli(),recurrenceRuleId=rule.id)
+        db.dao().put(reminder)
+        repo.save(repo.edit(EntityType.REMINDER,reminder.id)!!.copy(title="Edited month end"))
+        val saved=db.dao().getRecurrenceRule(rule.id)!!
+        assertEquals("2026-08-31",saved.startLocalDate)
+        assertEquals(LocalDate.parse("2026-10-31"),com.navin.personalos.core.domain.RecurrenceEngine().next(saved,LocalDate.parse("2026-09-30")))
+    }
+
 }

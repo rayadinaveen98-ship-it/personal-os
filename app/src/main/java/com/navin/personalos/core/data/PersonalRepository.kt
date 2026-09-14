@@ -62,8 +62,13 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         suspend fun rule(oldId: String?): String? {
             if(d.frequency==null) return null
             val existing=oldId?.let {dao.getRecurrenceRule(it)}
-            val task=if(d.type==EntityType.TASK) dao.getTask(d.id) else null
-            val keepAnchor=existing!=null && task!=null && task.dueLocalDate==d.date && existing.frequency==d.frequency && existing.interval==d.interval
+            val displayedDate=when(d.type) {
+                EntityType.TASK -> dao.getTask(d.id)?.dueLocalDate
+                EntityType.REMINDER -> dao.getReminder(d.id)?.triggerAt?.let {Instant.ofEpochMilli(it).atZone(clock.zone).toLocalDate().toString()}
+                EntityType.HABIT -> existing?.startLocalDate
+                else -> null
+            }
+            val keepAnchor=existing!=null && displayedDate==d.date && existing.frequency==d.frequency && existing.interval==d.interval
             val start=if(keepAnchor) LocalDate.parse(existing!!.startLocalDate) else date ?: today
             val r=(existing ?: RecurrenceRule(startLocalDate=start.toString())).copy(
                 frequency=d.frequency,interval=d.interval,weekdaysMask=d.weekdaysMask,dayOfMonth=start.dayOfMonth,monthOfYear=start.monthValue,
@@ -340,7 +345,6 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
     }
     suspend fun delete(type: EntityType,id: String): Unit = db.withTransaction {
         require(type in setOf(EntityType.TASK,EntityType.JOURNAL,EntityType.IDEA,EntityType.MEMORY,EntityType.SESSION)) { "Archive this item to preserve its history." }
-        if(type==EntityType.TASK) dao.allTask().filter {it.parentTaskId==id}.forEach {delete(EntityType.TASK,it.id)}
         cancelReminders(type,id)
         dao.allEntityLink().filter { (it.fromType==type && it.fromId==id)||(it.toType==type && it.toId==id) }.forEach { dao.deleteEntityLink(it.id) }
         dao.allChapterItem().filter { it.entityType==type && it.entityId==id }.forEach { dao.deleteChapterItem(it.id) }
