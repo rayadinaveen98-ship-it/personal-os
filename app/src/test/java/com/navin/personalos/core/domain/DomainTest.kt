@@ -64,4 +64,13 @@ class DomainTest {
         assertEquals(LocalDate.parse("2026-09-14"),recurrence.next(r,LocalDate.parse("2026-09-13"),listOf(other)))
     }
 
+    @org.junit.Test fun captureKeepsChosenWeeklyDays() {
+        val now=java.time.ZonedDateTime.parse("2026-09-14T10:00:00Z")
+        val weekdays=CaptureParser().parse("Read every weekday",now)
+        org.junit.Assert.assertEquals(Frequency.WEEKLY,weekdays.frequency)
+        org.junit.Assert.assertEquals(31,weekdays.weekdaysMask)
+        val selected=CaptureParser().parse("Practice every Monday and Thursday",now)
+        org.junit.Assert.assertEquals(9,selected.weekdaysMask)
+    }
+
 }

@@ -64,7 +64,7 @@ import java.util.UUID
                 Field("Every N ${d.frequency!!.name.lowercase().removeSuffix("ly")} periods",d.interval.toString(),{it.toIntOrNull()?.let {n -> d=d.copy(interval=n)}})
                 if(d.frequency==Frequency.WEEKLY) DayOfWeek.entries.forEach { day ->
                     val selected=(d.weekdaysMask ?: (1 shl ((runCatching { LocalDate.parse(d.date) }.getOrDefault(LocalDate.now())).dayOfWeek.value-1))) and (1 shl (day.value-1))!=0
-                    Toggle(day.name.lowercase().replaceFirstChar(Char::titlecase),selected,{checked -> val mask=d.weekdaysMask ?: (1 shl (LocalDate.now().dayOfWeek.value-1));d=d.copy(weekdaysMask=if(checked) mask or (1 shl(day.value-1)) else mask and (1 shl(day.value-1)).inv())})
+                    Toggle(day.name.lowercase().replaceFirstChar(Char::titlecase),selected,{checked -> val mask=d.weekdaysMask ?: (1 shl ((runCatching {LocalDate.parse(d.date)}.getOrDefault(LocalDate.now())).dayOfWeek.value-1));d=d.copy(weekdaysMask=if(checked) mask or (1 shl(day.value-1)) else mask and (1 shl(day.value-1)).inv())})
                 }
                 DateField("Ends on (optional)",d.endDate,{d=d.copy(endDate=it)});Field("Occurrence limit (optional)",d.countLimit,{d=d.copy(countLimit=it)})
                 if(d.frequency==Frequency.MONTHLY) Text("Months without your chosen day use their last valid day.",style=MaterialTheme.typography.labelMedium)
@@ -121,7 +121,7 @@ import java.util.UUID
         item {PrimaryButton("Understand",text.isNotBlank()) {
             vm.act("") {
                 val p=CaptureParser().parse(text,ZonedDateTime.now(),vm.repository.dao.allProject(),vm.repository.dao.allLifeArea());ambiguity=p.ambiguity
-                draft=Draft(id,context ?: p.type,p.title,p.body,p.date?.toString().orEmpty(),p.time?.toString().orEmpty(),p.priority,p.lifeAreaId,p.projectId,duration=p.durationMinutes?.toString().orEmpty(),frequency=p.frequency)
+                draft=Draft(id,context ?: p.type,p.title,p.body,p.date?.toString().orEmpty(),p.time?.toString().orEmpty(),p.priority,p.lifeAreaId,p.projectId,duration=p.durationMinutes?.toString().orEmpty(),frequency=p.frequency,weekdaysMask=p.weekdaysMask)
             }
         }}
         item {Text("You can correct every detail before saving. Nothing is saved automatically.",style=MaterialTheme.typography.labelMedium)}

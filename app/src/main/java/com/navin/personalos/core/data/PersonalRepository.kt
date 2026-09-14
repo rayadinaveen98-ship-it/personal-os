@@ -156,7 +156,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         val tagIds=dao.allTags().filter {it.entityType==type && it.entityId==id}.map {it.tagId}.toSet()
         val tags=dao.allTag().filter {it.id in tagIds}.map {it.name}
         val keywords=(tags+listOfNotNull(d.projectId?.let { dao.getProject(it)?.title },d.goalId?.let { dao.getGoal(it)?.title },d.lifeAreaId?.let { dao.getLifeArea(it)?.name })).joinToString(" ")
-        dao.put(SearchDocument(rowId=old?.rowId ?: 0,entityType=type,entityId=id,title=d.title,body=listOf(d.body,d.why,d.success,d.currentFocus).joinToString(" "),keywords=keywords,updatedAt=clock.millis()))
+        dao.put(SearchDocument(rowId=old?.rowId ?: 0,entityType=type,entityId=id,title=if(type==EntityType.WEEKLY_REVIEW) "Week of ${d.date}: ${d.title}" else d.title,body=listOf(d.body,d.why,d.success,d.currentFocus).joinToString(" "),keywords=keywords,updatedAt=clock.millis()))
     }
     suspend fun search(query: String): List<SearchDocument> {
         val tokens=Regex("[\\p{L}\\p{N}]+").findAll(query).map { "\"${it.value}\"*" }.toList()

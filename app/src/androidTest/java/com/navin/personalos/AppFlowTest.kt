@@ -7,6 +7,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.navin.personalos.feature.PersonalViewModel
+import com.navin.personalos.feature.label
+import com.navin.personalos.core.database.EntityType
+import com.navin.personalos.core.data.Draft
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -109,6 +112,40 @@ class AppFlowTest {
         ui.waitUntil(10_000) {ui.onAllNodesWithText("Your space is private.").fetchSemanticsNodes().isNotEmpty()}
         ui.onAllNodesWithText("Synthetic private action").assertCountEquals(0)
         ui.onNodeWithText("Unlock").assertIsDisplayed()
+    }
+    @Test fun allEntityDetailsAndEditorsWorkOfflineOnCompactLargeText() {
+        if(android.os.Build.VERSION.SDK_INT!=36) return
+        setupEmpty()
+        val automation=InstrumentationRegistry.getInstrumentation().uiAutomation
+        fun shell(command: String) {automation.executeShellCommand(command).use {android.os.ParcelFileDescriptor.AutoCloseInputStream(it).use {stream -> stream.readBytes()}}}
+        val fixtures=runBlocking {
+            val project=Draft(java.util.UUID.randomUUID().toString(),EntityType.PROJECT,title="Synthetic context project")
+            vm.repository.save(project)
+            EntityType.entries.filter {it!=EntityType.DAILY_REVIEW}.map {type ->
+                Draft(java.util.UUID.randomUUID().toString(),type,title="Synthetic ${type.label()}",body="Synthetic recorded writing for device acceptance.",
+                    date=java.time.LocalDate.now().plusDays(2).toString(),time=if(type==EntityType.REMINDER) "18:00" else "",
+                    projectId=if(type==EntityType.MILESTONE) project.id else null,
+                    frequency=if(type==EntityType.HABIT) com.navin.personalos.core.database.Frequency.DAILY else null).also {vm.repository.save(it)}
+            }
+        }
+        try {
+            shell("cmd connectivity airplane-mode enable")
+            shell("wm size 1080x1920");shell("wm density 480");shell("settings put system font_scale 1.5")
+            ui.activityRule.scenario.recreate();ui.waitForIdle()
+            for(draft in fixtures) {
+                ui.runOnUiThread {vm.pendingDestination.value=draft.type to draft.id}
+                ui.waitUntil(10_000) {ui.onAllNodesWithText("Edit").fetchSemanticsNodes().isNotEmpty()}
+                snapshot("compact-large-text-${draft.type.name.lowercase()}-detail")
+                tap("Edit")
+                val titleLabel=if(draft.type==EntityType.JOURNAL) "Title (optional)" else "Title"
+                ui.onNodeWithText(titleLabel).performScrollTo().performTextReplacement("Edited synthetic ${draft.type.label()}")
+                tap("Save ${draft.type.label().lowercase()}")
+                ui.waitUntil(10_000) {runBlocking {vm.repository.edit(draft.type,draft.id)?.title=="Edited synthetic ${draft.type.label()}"}}
+                ui.waitUntil(10_000) {ui.onAllNodesWithText("Edit").fetchSemanticsNodes().isNotEmpty()}
+                snapshot("compact-large-text-${draft.type.name.lowercase()}-saved")
+                tap("Back")
+            }
+        } finally {shell("cmd connectivity airplane-mode disable");shell("wm size reset");shell("wm density reset");shell("settings put system font_scale 1.0")}
     }
     private fun snapshot(name: String) {
         val instrumentation=InstrumentationRegistry.getInstrumentation()

@@ -16,6 +16,7 @@ data class CaptureProposal(
     val projectId: String?,
     val lifeAreaId: String?,
     val ambiguity: String?,
+    val weekdaysMask: Int? = null,
 )
 class CaptureParser {
     fun parse(input: String, now: ZonedDateTime, projects: List<Project> = emptyList(), areas: List<LifeArea> = emptyList()): CaptureProposal {
@@ -68,7 +69,10 @@ class CaptureParser {
                 date = future.toLocalDate(); time = future.toLocalTime().withSecond(0).withNano(0)
             }
         }
+        val namedDays=DayOfWeek.entries.filter {Regex("\\b${it.name.lowercase()}\\b").containsMatchIn(lower)}
+        val weekdaysMask=when {"every weekday" in lower -> 31;"every" in lower && namedDays.isNotEmpty() -> namedDays.fold(0) {mask,day -> mask or (1 shl(day.value-1))};else -> null}
         val frequency = when {
+            weekdaysMask!=null -> Frequency.WEEKLY
             "daily" in lower || "every day" in lower -> Frequency.DAILY
             "weekly" in lower || "every week" in lower || "every weekday" in lower -> Frequency.WEEKLY
             "monthly" in lower || "every month" in lower -> Frequency.MONTHLY
@@ -82,6 +86,6 @@ class CaptureParser {
         if (type == EntityType.REMINDER && (date == null || time == null)) ambiguity = ambiguity ?: "Choose the reminder date and time."
         if (type == EntityType.TASK && date == null && frequency == null) ambiguity = ambiguity ?: "Choose what this should be if Task isn't right."
         val title = text.replace(Regex("^(idea|memory|journal|reflection)\\s*:\\s*", RegexOption.IGNORE_CASE), "").take(500)
-        return CaptureProposal(type, title, text, date, time, priority, duration, frequency, matches.singleOrNull()?.id, areaMatches.singleOrNull()?.id, ambiguity)
+        return CaptureProposal(type, title, text, date, time, priority, duration, frequency, matches.singleOrNull()?.id, areaMatches.singleOrNull()?.id, ambiguity, weekdaysMask)
     }
 }
