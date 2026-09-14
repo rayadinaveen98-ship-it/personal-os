@@ -20,7 +20,7 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
-data class RestorePreview internal constructor(internal val payload: String,val records: Int,val externalAttachments: Int,val exportedAt: Long)
+class RestorePreview internal constructor(internal val payload: String,val records: Int,val externalAttachments: Int,val exportedAt: Long)
 
 /** Versioned JSON transport; Room remains the typed live domain store. */
 @Singleton class BackupService @Inject constructor(@ApplicationContext private val context: Context,private val db: PersonalDatabase,private val preferences: PreferenceStore,private val reminders: ReminderService) {

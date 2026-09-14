@@ -2,6 +2,7 @@ package com.navin.personalos
 
 import android.graphics.Bitmap
 import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -27,7 +28,10 @@ class AppFlowTest {
         runBlocking {vm.reminders.cancelAll();withContext(Dispatchers.IO) {vm.repository.db.clearAllTables()};vm.preferences.clear();vm.unlocked.value=false}
         ui.waitForIdle()
     }
-    private fun tap(text: String) {ui.onNodeWithText(text).performScrollTo().performClick();ui.waitForIdle()}
+    private fun tap(text: String) {
+        ui.onNode(SemanticsMatcher.keyIsDefined(SemanticsActions.ScrollToIndex)).performScrollToNode(hasText(text))
+        ui.onNodeWithText(text).performClick();ui.waitForIdle()
+    }
     private fun setupEmpty() {
         tap("Make this space mine")
         repeat(4) {tap("Skip for now")}
