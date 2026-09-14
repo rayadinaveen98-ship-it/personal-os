@@ -96,6 +96,20 @@ class AppFlowTest {
         ui.waitUntil(10_000) {ui.onAllNodesWithText("Synthetic alarm verification").fetchSemanticsNodes().isNotEmpty()}
         runBlocking {vm.reminders.cancelAll()}
     }
+    @Test fun lockedSpaceHidesRecordsAndSecuresWindowAcrossRecreation() {
+        setupEmpty()
+        runBlocking {
+            vm.repository.save(com.navin.personalos.core.data.Draft(java.util.UUID.randomUUID().toString(),com.navin.personalos.core.database.EntityType.TASK,title="Synthetic private action"))
+            vm.preferences.flag("locked",true);vm.unlocked.value=false
+        }
+        ui.waitUntil(10_000) {ui.onAllNodesWithText("Your space is private.").fetchSemanticsNodes().isNotEmpty()}
+        ui.onAllNodesWithText("Synthetic private action").assertCountEquals(0)
+        ui.runOnUiThread {Assert.assertTrue(ui.activity.window.attributes.flags and android.view.WindowManager.LayoutParams.FLAG_SECURE != 0)}
+        ui.activityRule.scenario.recreate()
+        ui.waitUntil(10_000) {ui.onAllNodesWithText("Your space is private.").fetchSemanticsNodes().isNotEmpty()}
+        ui.onAllNodesWithText("Synthetic private action").assertCountEquals(0)
+        ui.onNodeWithText("Unlock").assertIsDisplayed()
+    }
     private fun snapshot(name: String) {
         val instrumentation=InstrumentationRegistry.getInstrumentation()
         val bitmap=instrumentation.uiAutomation.takeScreenshot() ?: return
