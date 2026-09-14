@@ -4,6 +4,38 @@ import androidx.room.*
 
 @Dao
 interface PersonalDao {
+    @Query("""
+        SELECT * FROM (
+            SELECT 'journal:' || id AS `key`, 'JOURNAL' AS type, id AS entityId,
+                entryLocalDate AS localDate, occurredAt, COALESCE(title, substr(body,1,100)) AS title,
+                body AS description, lifeAreaId, projectId, goalId FROM JournalEntry
+            UNION ALL SELECT 'session:' || id, 'SESSION', id, localDate, occurredAt, title,
+                COALESCE(notes,''), lifeAreaId, projectId, NULL FROM Session
+            UNION ALL SELECT 'memory:' || id, 'MEMORY', id, memoryLocalDate, COALESCE(occurredAt,createdAt), title,
+                COALESCE(body,''), lifeAreaId, projectId, NULL FROM Memory
+            UNION ALL SELECT 'idea:' || id, 'IDEA', id, date(createdAt/1000,'unixepoch','localtime'), createdAt,
+                COALESCE(title,substr(body,1,100)), body, lifeAreaId, projectId, NULL FROM Idea
+            UNION ALL SELECT 'review:' || id, 'WEEKLY_REVIEW', id, periodEndLocalDate, createdAt,
+                'Week of ' || periodStartLocalDate, COALESCE(reflectionBody,''), NULL, NULL, NULL FROM WeeklyReview
+            UNION ALL SELECT 'event:' || e.id, e.sourceType, e.sourceId, e.localDate, e.occurredAt,
+                COALESCE(e.titleSnapshot,'Personal OS'), replace(lower(e.eventType),'_',' '),
+                COALESCE(t.lifeAreaId,p.lifeAreaId,g.lifeAreaId),
+                CASE WHEN e.sourceType='PROJECT' THEN e.sourceId ELSE COALESCE(t.projectId,m.projectId) END,
+                CASE WHEN e.sourceType='GOAL' THEN e.sourceId ELSE COALESCE(t.goalId,p.goalId,m.goalId) END
+                FROM TimelineEvent e
+                LEFT JOIN Task t ON e.sourceType='TASK' AND t.id=e.sourceId
+                LEFT JOIN Project p ON e.sourceType='PROJECT' AND p.id=e.sourceId
+                LEFT JOIN Goal g ON e.sourceType='GOAL' AND g.id=e.sourceId
+                LEFT JOIN Milestone m ON e.sourceType='MILESTONE' AND m.id=e.sourceId
+                WHERE e.eventType!='CREATED'
+        ) WHERE (:fromDate IS NULL OR localDate>=:fromDate) AND (:toDate IS NULL OR localDate<=:toDate)
+            AND (:type IS NULL OR type=:type) AND (:areaId IS NULL OR lifeAreaId=:areaId)
+            AND (:projectId IS NULL OR projectId=:projectId) AND (:goalId IS NULL OR goalId=:goalId)
+        ORDER BY localDate DESC, occurredAt DESC, `key` ASC LIMIT :limit
+    """)
+    fun history(fromDate: String? = null,toDate: String? = null,type: EntityType? = null,
+        areaId: String? = null,projectId: String? = null,goalId: String? = null,limit: Int = 60): kotlinx.coroutines.flow.Flow<List<HistoryEntry>>
+
     @Query("SELECT * FROM LifeArea ORDER BY createdAt DESC") fun observeLifeArea(): kotlinx.coroutines.flow.Flow<List<LifeArea>>
     @Query("SELECT * FROM LifeArea") suspend fun allLifeArea(): List<LifeArea>
     @Query("SELECT * FROM LifeArea WHERE id = :id") suspend fun getLifeArea(id: String): LifeArea?

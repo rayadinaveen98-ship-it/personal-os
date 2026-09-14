@@ -127,4 +127,21 @@ class PersistenceTest {
         assertEquals("2026-09-07",db.dao().allWeeklyReview().single().periodStartLocalDate)
     }
 
+    @Test fun historyDerivesWritingAndKeepsCompletionSnapshotsWithDatabaseFilters() = runBlocking {
+        val project=Draft(UUID.randomUUID().toString(),EntityType.PROJECT,title="Synthetic history context")
+        repo.save(project)
+        val writing=Draft(UUID.randomUUID().toString(),EntityType.JOURNAL,title="Original writing",body="Synthetic reflection",date="2026-09-13",projectId=project.id)
+        repo.save(writing);repo.save(writing.copy(title="Edited writing"))
+        val older=Draft(UUID.randomUUID().toString(),EntityType.JOURNAL,title="Earlier day",body="Earlier synthetic reflection",date="2026-09-12")
+        repo.save(older)
+        val task=Draft(UUID.randomUUID().toString(),EntityType.TASK,title="Completed synthetic action",projectId=project.id)
+        repo.save(task);repo.completeTask(task.id)
+        val day=db.dao().history(fromDate="2026-09-13",toDate="2026-09-13",projectId=project.id).first()
+        assertEquals(2,day.size);assertTrue(day.any {it.title=="Edited writing"});assertTrue(day.any {it.description=="task completed"})
+        assertEquals(1,db.dao().history(type=EntityType.JOURNAL,projectId=project.id,limit=1).first().size)
+        assertTrue(db.dao().allTimelineEvent().none {it.eventType=="CREATED"})
+        repo.delete(EntityType.TASK,task.id)
+        assertTrue(db.dao().history().first().any {it.entityId==task.id && it.title=="Completed synthetic action"})
+    }
+
 }

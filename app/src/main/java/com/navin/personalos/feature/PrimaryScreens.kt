@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.navin.personalos.core.data.*
 import com.navin.personalos.core.database.*
 import com.navin.personalos.core.designsystem.*
@@ -82,14 +83,16 @@ import java.time.format.DateTimeFormatter
 @Composable fun JourneyScreen(vm: PersonalViewModel,p: PersonalPreferences,records: List<Record>,open: (EntityType,String)->Unit,create: (EntityType)->Unit,go: (String)->Unit) {
     var date by rememberSaveable { mutableStateOf(LocalDate.now().toString()) };val selected=runCatching { LocalDate.parse(date) }.getOrDefault(LocalDate.now())
     val week=selected.with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-    val history=records.filter { it.date==selected.toString() && it.type in listOf(EntityType.JOURNAL,EntityType.MEMORY,EntityType.SESSION,EntityType.IDEA) }
+    var historyLimit by rememberSaveable(date) {mutableIntStateOf(60)}
+    val history by remember(date,historyLimit) {vm.repository.dao.history(fromDate=selected.toString(),toDate=selected.toString(),limit=historyLimit)}.collectAsStateWithLifecycle(emptyList())
     LazyColumn(contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         item { PageTitle("The days that make a life.","Your journey",true) }
         item { Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) { (0..6).forEach { n -> val day=week.plusDays(n.toLong());TextButton(onClick={date=day.toString()}) { Text(day.format(DateTimeFormatter.ofPattern("EEE\nd")),color=if(day==selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant) } } } }
         item { DateField("Choose a date",date,{date=it});Row { TextButton(onClick={date=selected.minusWeeks(1).toString()}) {Text("Previous week")};TextButton(onClick={date=LocalDate.now().toString()}) {Text("Today")};TextButton(onClick={date=selected.plusWeeks(1).toString()}) {Text("Next week")} } }
         item { PrimaryButton("Write something",onClick={go("create/JOURNAL?date=$selected")}) }
         if(history.isEmpty()) item { QuietEmpty("A quiet day here.","Nothing has been recorded for this date yet.","Capture a memory",{go("create/MEMORY?date=$selected")},p.companion) }
-        items(history,key={it.id}) { r -> RecordRow(r,open) }
+        items(history,key={it.key}) {entry -> HistoryRow(entry,records,open)}
+        if(history.size==historyLimit) item {TextButton(onClick={historyLimit+=60}) {Text("Show more from this day")}}
         item { SectionTitle("Keep what matters");Row { TextButton(onClick={go("list/MEMORY")}) {Text("Memories")};TextButton(onClick={go("list/CHAPTER")}) {Text("Chapters")};TextButton(onClick={go("list/IDEA")}) {Text("Ideas")} } }
         item { CalmCard(tone=2,onClick={go("review")}) { Text("Your week, truthfully.",style=MaterialTheme.typography.titleLarge);Text("See what moved and choose what to carry forward.") } }
         item { TextButton(onClick={go("timeline")}) {Text("Life timeline & archive")};TextButton(onClick={go("search")}) {Text("Search your history")} }

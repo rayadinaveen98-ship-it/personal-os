@@ -54,17 +54,26 @@ import java.util.UUID
     }
 }
 @Composable fun TimelineScreen(vm: PersonalViewModel,records: List<Record>,open: (EntityType,String)->Unit,back: ()->Unit) {
-    val events by vm.repository.dao.observeTimelineEvent().collectAsStateWithLifecycle(emptyList())
     var filter by rememberSaveable { mutableStateOf<EntityType?>(null) };var limit by rememberSaveable { mutableIntStateOf(60) }
-    val sorted=events.filter { filter==null || it.sourceType==filter }.sortedWith(compareByDescending<TimelineEvent> { it.occurredAt }.thenBy { it.id })
+    var from by rememberSaveable {mutableStateOf("")};var to by rememberSaveable {mutableStateOf("")}
+    var area by rememberSaveable {mutableStateOf<String?>(null)};var project by rememberSaveable {mutableStateOf<String?>(null)};var goal by rememberSaveable {mutableStateOf<String?>(null)}
+    val history by remember(from,to,filter,area,project,goal,limit) {vm.repository.dao.history(from.ifBlank {null},to.ifBlank {null},filter,area,project,goal,limit)}.collectAsStateWithLifecycle(emptyList())
     LazyColumn(contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
-        item { HeaderBack("Your timeline",back);Text("A record of real activity, including context that is no longer available.");Choice("Show",listOf(null)+EntityType.entries,filter,{filter=it;limit=60}) { it?.label() ?: "All activity" } }
-        if(sorted.isEmpty()) item { CalmCard { Text("Your story will gather here as you use your space.") } }
-        items(sorted.take(limit),key={it.id}) { event ->
-            val source=records.firstOrNull { it.id==event.sourceId && it.type==event.sourceType }
-            CalmCard(onClick=source?.let { { open(it.type,it.id) } }) { Eyebrow(event.localDate);Text(event.titleSnapshot ?: event.sourceType?.label() ?: "Personal OS",style=MaterialTheme.typography.titleMedium);Text(event.eventType.lowercase().replace('_',' '));if(source==null && event.sourceId!=null) Text("Original item is no longer available",style=MaterialTheme.typography.labelMedium) }
-        }
-        if(sorted.size>limit) item { TextButton(onClick={limit+=60}) { Text("Load earlier activity") } }
+        item { HeaderBack("Your timeline",back);Text("Your writing, recorded activity, and meaningful changes.");Choice("Show",listOf(null)+EntityType.entries,filter,{filter=it;limit=60}) { it?.label() ?: "All activity" } }
+        item {DateField("From date",from,{from=it;limit=60});DateField("Through date",to,{to=it;limit=60})}
+        item {ContextPicker("Life area",EntityType.LIFE_AREA,records,area,{area=it;limit=60});ContextPicker("Project",EntityType.PROJECT,records,project,{project=it;limit=60});ContextPicker("Goal",EntityType.GOAL,records,goal,{goal=it;limit=60})}
+        if(history.isEmpty()) item {CalmCard {Text("No recorded history in this view. You can choose another date or context.")}}
+        items(history,key={it.key}) {entry -> HistoryRow(entry,records,open)}
+        if(history.size==limit) item {TextButton(onClick={limit+=60}) {Text("Load earlier activity")}}
+    }
+}
+@Composable fun HistoryRow(entry: HistoryEntry,records: List<Record>,open: (EntityType,String)->Unit) {
+    val source=records.firstOrNull {it.type==entry.type && it.id==entry.entityId}
+    CalmCard(onClick=source?.let {{open(it.type,it.id)}}) {
+        Eyebrow("${entry.localDate} · ${entry.type?.label() ?: "Activity"}")
+        Text(entry.title,style=MaterialTheme.typography.titleMedium)
+        if(entry.description.isNotBlank()) Text(entry.description.take(220))
+        if(source==null && entry.entityId!=null) Text("Original item is no longer available",style=MaterialTheme.typography.labelMedium)
     }
 }
 @Composable fun ReviewScreen(vm: PersonalViewModel,records: List<Record>,open: (EntityType,String)->Unit,back: ()->Unit) {

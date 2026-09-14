@@ -146,7 +146,6 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
                 if(depends) index(document.entityType,document.entityId)
             }
         }
-        if(!existed) event("CREATED",d.type,savedId,d.title.ifBlank {d.body.take(100)})
         savedId
     }
     suspend fun index(type: EntityType, id: String) {
