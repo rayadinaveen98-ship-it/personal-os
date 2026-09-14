@@ -51,7 +51,7 @@ import java.util.UUID
         if(type !in listOf(EntityType.REMINDER,EntityType.MILESTONE)) item {Field(if(type in listOf(EntityType.JOURNAL,EntityType.IDEA,EntityType.MEMORY,EntityType.WEEKLY_REVIEW)) "Your words" else "Notes / description",d.body,{d=d.copy(body=it)},true)}
         if(type in listOf(EntityType.TASK,EntityType.REMINDER,EntityType.PROJECT,EntityType.GOAL,EntityType.MILESTONE,EntityType.JOURNAL,EntityType.SESSION,EntityType.MEMORY,EntityType.CHAPTER,EntityType.HABIT)) item {
             DateField(if(type==EntityType.TASK) "Due date" else if(type==EntityType.CHAPTER) "Start date" else "Date",d.date,{d=d.copy(date=it)})
-            if(type in listOf(EntityType.TASK,EntityType.REMINDER,EntityType.SESSION,EntityType.HABIT)) TimeField(if(type==EntityType.TASK) "Due time (optional)" else "Time",d.time,{d=d.copy(time=it)})
+            if(type in listOf(EntityType.TASK,EntityType.REMINDER,EntityType.SESSION,EntityType.HABIT)) TimeField(when(type) {EntityType.TASK -> "Due time (optional)";EntityType.HABIT -> "Reminder time (optional)";else -> "Time"},d.time,{d=d.copy(time=it)})
         }
         if(type==EntityType.TASK) {
             item { Choice("Priority",Priority.entries,d.priority,{d=d.copy(priority=it)}) {it.name.lowercase().replaceFirstChar(Char::titlecase)} }

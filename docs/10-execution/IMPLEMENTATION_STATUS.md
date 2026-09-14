@@ -1,6 +1,6 @@
 # Personal OS V1 implementation status
 
-Status: **in progress; not release ready**. Updated 2026-09-13.
+Status: **in progress; not release ready**. Updated 2026-09-14.
 
 The complete specification package was read in the prescribed order, with the final execution brief last. The frozen dependency baseline and product contract remain unchanged. Work is tracked on `build/v1-foundation` and draft PR #1.
 
@@ -18,6 +18,10 @@ The complete specification package was read in the prescribed order, with the fi
 ## Verification evidence
 
 - Specification validation has passed on implementation PR commits.
+- Commit `1cdc4f681b115e6e136fc19d31ecb3f9a7bd070b`: Android run [34747510928](https://github.com/rayadinaveen98-ship-it/personal-os/actions/runs/34747510928), verify job 103701577025 passed unit tests, lint, debug assembly and APK upload.
+- Earlier milestone APK is available in [run 34747266612](https://github.com/rayadinaveen98-ship-it/personal-os/actions/runs/34747266612/artifacts/10314701699). This is a build milestone, not final runtime acceptance.
+- All five device jobs stalled at unbounded `adb wait-for-device` and hit the job timeout without running tests. Startup now checks emulator liveness, bounds both connection and boot waits, and prints launch diagnostics. Fresh CI is running; no device pass is claimed.
+- Reminder regression coverage now includes habit reminder creation/pause/resume/removal and task reminder wall time across occurrence moves/skips.
 - Android CI has exposed and driven fixes to Room indexes, splash resource references, import ambiguity, Compose scopes, Kotlin nullability and recursive return types.
 - A schema transfer was truncated during publication; it was replaced with the intact local schema. Subsequent publishing checks chunked reads and exact character counts.
 - Unit tests cover recurrence, Capture ambiguity/context, focus precedence and empty evidence.
@@ -28,7 +32,7 @@ No verified APK, passing device matrix, final visual review, or final V1 readine
 
 ## Remaining acceptance work
 
-1. Make compilation, unit tests, lint, assembly and instrumented tests green; preserve generated schema and real reports.
+1. Preserve the passing compilation/unit/lint/assembly gates while making instrumented tests green; preserve generated schema and real reports.
 2. Audit and harden date rollover, recurrence exceptions/reminder behavior, exact-once interactions, backup replacement/recovery and relationship cleanup.
 3. Verify navigation, notification deep links, permission denial/repair, reboot/time/timezone behavior, App Lock cold/resume behavior and attachment persistence on devices.
 4. Exercise the complete creation/edit/archive/delete flows and evidence on all required API levels.

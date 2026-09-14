@@ -86,4 +86,26 @@ class PersistenceTest {
         assertTrue(db.dao().allTimelineEvent().none {it.eventType=="TASK_COMPLETED"})
     }
 
+    @Test fun habitReminderFollowsTimePauseResumeAndRemoval() = runBlocking {
+        val d=Draft(UUID.randomUUID().toString(),EntityType.HABIT,title="Synthetic habit",frequency=Frequency.DAILY,time="18:00")
+        repo.save(d);repo.save(d)
+        assertEquals(1,db.dao().allReminder().size)
+        assertEquals(db.dao().getHabit(d.id)!!.scheduleRuleId,db.dao().allReminder().single().recurrenceRuleId)
+        repo.status(EntityType.HABIT,d.id,"PAUSED")
+        assertEquals(ReminderState.CANCELLED,db.dao().allReminder().single().state)
+        repo.status(EntityType.HABIT,d.id,"ACTIVE")
+        assertEquals(ReminderState.SCHEDULED,db.dao().allReminder().single().state)
+        repo.save(d.copy(time=""))
+        assertEquals(ReminderState.CANCELLED,db.dao().allReminder().single().state)
+    }
+    @Test fun movingAndSkippingOccurrencePreservesReminderWallTime() = runBlocking {
+        val d=Draft(UUID.randomUUID().toString(),EntityType.TASK,title="Synthetic recurrence",date="2026-09-14",frequency=Frequency.DAILY,reminderDate="2026-09-14",reminderTime="09:00")
+        repo.save(d);repo.overrideOccurrence(d.id,LocalDate.parse("2026-09-16"))
+        assertEquals(Instant.parse("2026-09-16T09:00:00Z").toEpochMilli(),db.dao().allReminder().single().triggerAt)
+        repo.skipOccurrence(d.id,"2026-09-16")
+        assertEquals("2026-09-15",db.dao().getTask(d.id)!!.dueLocalDate)
+        assertEquals(Instant.parse("2026-09-15T09:00:00Z").toEpochMilli(),db.dao().allReminder().single().triggerAt)
+        assertEquals(ReminderState.SCHEDULED,db.dao().allReminder().single().state)
+    }
+
 }

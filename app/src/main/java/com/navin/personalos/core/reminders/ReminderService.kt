@@ -95,6 +95,7 @@ class ReminderService @Inject constructor(@ApplicationContext private val contex
             val r=dao.getReminder(id) ?: return@withLock
             if(r.state!=ReminderState.SCHEDULED || r.triggerAt!=expectedTrigger || r.deliveredAt==expectedTrigger) return@withLock
             if(r.ownerType==OwnerType.TASK && r.ownerId?.let {dao.getTask(it)?.status}!=TaskStatus.OPEN) return@withLock
+            if(r.ownerType==OwnerType.HABIT && r.ownerId?.let {dao.getHabit(it)?.status}!=ActiveStatus.ACTIVE) return@withLock
             channel()
             if(!notificationsAllowed()) {dao.put(r.copy(deliveryState=DeliveryState.NOTIFICATIONS_BLOCKED));return@withLock}
             if(notifications.getNotificationChannel("intent-reminders")?.importance==NotificationManager.IMPORTANCE_NONE) {dao.put(r.copy(deliveryState=DeliveryState.CHANNEL_BLOCKED));return@withLock}

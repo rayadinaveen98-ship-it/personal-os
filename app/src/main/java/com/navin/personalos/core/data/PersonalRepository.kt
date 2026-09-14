@@ -128,6 +128,15 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             val old=dao.allReminder().firstOrNull { it.ownerType==OwnerType.TASK && it.ownerId==d.id }
             dao.put((old ?: Reminder(title=d.title,ownerType=OwnerType.TASK,ownerId=d.id)).copy(title=d.title,triggerAt=trigger,state=ReminderState.SCHEDULED,deliveryState=DeliveryState.PENDING,updatedAt=now))
         }
+        if(d.type==EntityType.HABIT) {
+            val habit=requireNotNull(dao.getHabit(d.id))
+            val old=dao.allReminder().firstOrNull {it.ownerType==OwnerType.HABIT && it.ownerId==d.id}
+            if(time==null) cancelReminders(EntityType.HABIT,d.id)
+            else dao.put((old ?: Reminder(title=d.title,ownerType=OwnerType.HABIT,ownerId=d.id)).copy(
+                title=d.title,recurrenceRuleId=habit.scheduleRuleId,localTimeMinutes=time.hour*60+time.minute,
+                triggerAt=at ?: now,state=if(habit.status==ActiveStatus.ACTIVE) ReminderState.SCHEDULED else ReminderState.CANCELLED,
+                deliveryState=DeliveryState.PENDING,scheduledAt=null,updatedAt=now))
+        }
         if(d.type==EntityType.TASK && d.reminderDate.isBlank()) cancelReminders(EntityType.TASK,d.id)
         index(d.type,savedId)
         if(!existed) event("CREATED",d.type,savedId,d.title.ifBlank {d.body.take(100)})
@@ -224,7 +233,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         val old=dao.allRecurrenceException().firstOrNull {it.recurrenceRuleId==rule.id && it.occurrenceLocalDate==original}
         dao.put((old ?: RecurrenceException(recurrenceRuleId=rule.id,occurrenceLocalDate=original)).copy(type=ExceptionType.SKIP,updatedAt=clock.millis()))
         val next=engine.next(rule,maxOf(LocalDate.parse(original),LocalDate.now(clock)),dao.allRecurrenceException())
-        cancelReminders(EntityType.TASK,id)
+        shiftTaskReminders(id,LocalDate.parse(requireNotNull(task.dueLocalDate)),next)
         dao.put(task.copy(dueLocalDate=next?.toString(),occurrenceLocalDate=next?.toString(),dueAt=next?.let {if(rule.localTimeMinutes!=null) engine.instant(rule,it,clock.zone).toEpochMilli() else null},status=if(next==null) TaskStatus.CANCELLED else TaskStatus.OPEN,pinnedFocus=false,updatedAt=clock.millis()))
         event("OCCURRENCE_SKIPPED",EntityType.TASK,id,task.title);index(EntityType.TASK,id)
     }
@@ -233,10 +242,23 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         val rule=requireNotNull(task.recurrenceRuleId?.let {dao.getRecurrenceRule(it)})
         val original=task.occurrenceLocalDate ?: task.dueLocalDate ?: rule.startLocalDate
         val old=dao.allRecurrenceException().firstOrNull {it.recurrenceRuleId==rule.id && it.occurrenceLocalDate==original}
+        shiftTaskReminders(id,LocalDate.parse(requireNotNull(task.dueLocalDate)),date)
         val at=engine.instant(rule,date,clock.zone).toEpochMilli()
         dao.put((old ?: RecurrenceException(recurrenceRuleId=rule.id,occurrenceLocalDate=original)).copy(type=ExceptionType.OVERRIDE,overrideDueAt=at,updatedAt=clock.millis()))
         dao.put(task.copy(dueLocalDate=date.toString(),dueAt=if(rule.localTimeMinutes!=null) at else null,occurrenceLocalDate=original,updatedAt=clock.millis()))
         event("OCCURRENCE_RESCHEDULED",EntityType.TASK,id,task.title);index(EntityType.TASK,id)
+    }
+    private suspend fun shiftTaskReminders(id: String,oldDate: LocalDate,nextDate: LocalDate?) {
+        if(nextDate==null) {cancelReminders(EntityType.TASK,id);return}
+        val days=java.time.temporal.ChronoUnit.DAYS.between(oldDate,nextDate)
+        dao.allReminder().filter {it.ownerType==OwnerType.TASK && it.ownerId==id && it.state!=ReminderState.CANCELLED}.forEach {reminder ->
+            reminder.triggerAt?.let {trigger ->
+                val shifted=Instant.ofEpochMilli(trigger).atZone(clock.zone).plusDays(days).toInstant().toEpochMilli()
+                dao.put(reminder.copy(triggerAt=shifted,state=ReminderState.SCHEDULED,
+                    deliveryState=if(shifted>clock.millis()) DeliveryState.PENDING else DeliveryState.EXPIRED,
+                    deliveredAt=null,scheduledAt=null,updatedAt=clock.millis()))
+            }
+        }
     }
     suspend fun reopenTask(id: String) = db.withTransaction {
         val t=requireNotNull(dao.getTask(id));if(t.status==TaskStatus.OPEN) return@withTransaction
@@ -258,7 +280,9 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             EntityType.PROJECT -> { val r=requireNotNull(dao.getProject(id));title=r.title;dao.put(r.copy(status=ProjectStatus.valueOf(status),completedAt=if(status=="COMPLETED") r.completedAt ?: now else if(status=="ARCHIVED") r.completedAt else null,updatedAt=now)) }
             EntityType.GOAL -> { val r=requireNotNull(dao.getGoal(id));title=r.title;dao.put(r.copy(status=GoalStatus.valueOf(status),achievedAt=if(status=="ACHIEVED") r.achievedAt ?: now else if(status=="ARCHIVED") r.achievedAt else null,updatedAt=now)) }
             EntityType.LIFE_AREA -> { val r=requireNotNull(dao.getLifeArea(id));title=r.name;dao.put(r.copy(status=LifeAreaStatus.valueOf(status),updatedAt=now)) }
-            EntityType.HABIT -> { val r=requireNotNull(dao.getHabit(id));title=r.title;dao.put(r.copy(status=ActiveStatus.valueOf(status),updatedAt=now));if(status!="ACTIVE") cancelReminders(type,id) }
+            EntityType.HABIT -> { val r=requireNotNull(dao.getHabit(id));title=r.title;dao.put(r.copy(status=ActiveStatus.valueOf(status),updatedAt=now));if(status!="ACTIVE") cancelReminders(type,id)
+                else dao.allReminder().filter {it.ownerType==OwnerType.HABIT && it.ownerId==id && it.localTimeMinutes!=null}.forEach {dao.put(it.copy(state=ReminderState.SCHEDULED,deliveryState=DeliveryState.PENDING,scheduledAt=null,updatedAt=now))}
+            }
             EntityType.HOBBY -> { val r=requireNotNull(dao.getHobby(id));title=r.title;dao.put(r.copy(status=ActiveStatus.valueOf(status),updatedAt=now)) }
             EntityType.SKILL -> { val r=requireNotNull(dao.getSkill(id));title=r.title;dao.put(r.copy(status=ActiveStatus.valueOf(status),updatedAt=now)) }
             EntityType.CHAPTER -> { val r=requireNotNull(dao.getChapter(id));title=r.title;dao.put(r.copy(status=ChapterStatus.valueOf(status),updatedAt=now)) }

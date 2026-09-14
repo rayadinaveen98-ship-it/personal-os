@@ -42,7 +42,7 @@ import java.util.UUID
             items(children,key={"child-${it.id}"}) { task -> records.firstOrNull {it.type==EntityType.TASK && it.id==task.id}?.let {RecordRow(it,open)} }
             item {TextButton(onClick={childCreate(EntityType.TASK)}) {Text("Add subtask")}}
         }
-        if(type in listOf(EntityType.REMINDER,EntityType.TASK)) item {ReminderDeliverySection(vm,type,id)}
+        if(type in listOf(EntityType.REMINDER,EntityType.TASK,EntityType.HABIT)) item {ReminderDeliverySection(vm,type,id)}
         if(type==EntityType.REMINDER) item {CalmCard(tone=1) {Text("Delivery: ${r.status.lowercase().replace('_',' ')}");Text("Saved intent and Android delivery are tracked separately.");TextButton(onClick=edit) {Text("Change reminder time")}}}
         if(type==EntityType.GOAL) item {
             draft?.let { d ->

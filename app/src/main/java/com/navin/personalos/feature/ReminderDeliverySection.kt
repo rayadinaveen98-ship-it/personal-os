@@ -17,7 +17,7 @@ import com.navin.personalos.core.designsystem.*
 @Composable fun ReminderDeliverySection(vm: PersonalViewModel,type: EntityType,id: String) {
     val context=LocalContext.current
     val reminders by vm.repository.dao.observeReminder().collectAsStateWithLifecycle(emptyList())
-    val selected=reminders.filter {if(type==EntityType.REMINDER) it.id==id else it.ownerType==OwnerType.TASK && it.ownerId==id}
+    val selected=reminders.filter {if(type==EntityType.REMINDER) it.id==id else it.ownerType==(if(type==EntityType.HABIT) OwnerType.HABIT else OwnerType.TASK) && it.ownerId==id}
     val permission=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {vm.reminders.enqueue()}
     selected.forEach {r -> CalmCard {
         Eyebrow("Reminder delivery")
