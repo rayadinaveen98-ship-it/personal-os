@@ -61,6 +61,8 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         require(d.duration.isBlank() || duration != null && duration in 1..1440) { "Duration must be between 1 and 1440 minutes." }
         suspend fun rule(oldId: String?): String? {
             if(d.frequency==null) return null
+            val count=d.countLimit.takeIf {it.isNotBlank()}?.toIntOrNull()
+            require(d.countLimit.isBlank() || count!=null && count>0) {"Use a positive whole number for the occurrence limit."}
             val existing=oldId?.let {dao.getRecurrenceRule(it)}
             val displayedDate=when(d.type) {
                 EntityType.TASK -> dao.getTask(d.id)?.dueLocalDate
@@ -73,7 +75,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
             val r=(existing ?: RecurrenceRule(startLocalDate=start.toString())).copy(
                 frequency=d.frequency,interval=d.interval,weekdaysMask=d.weekdaysMask,dayOfMonth=start.dayOfMonth,monthOfYear=start.monthValue,
                 localTimeMinutes=time?.let { it.hour*60+it.minute },startLocalDate=start.toString(),endLocalDate=d.endDate.takeIf { it.isNotBlank() },
-                occurrenceCountLimit=d.countLimit.takeIf { it.isNotBlank() }?.toInt(),updatedAt=now)
+                occurrenceCountLimit=count,updatedAt=now)
             engine.validate(r);dao.put(r);return r.id
         }
         when(d.type) {

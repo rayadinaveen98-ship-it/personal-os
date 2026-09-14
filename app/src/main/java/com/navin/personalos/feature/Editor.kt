@@ -45,6 +45,7 @@ import java.util.UUID
 @Composable fun Editor(vm: PersonalViewModel,records: List<Record>,initial: Draft,editing: Boolean,close: ()->Unit) {
     var d by rememberSaveable(initial.id) { mutableStateOf(initial) };val busy by vm.busy.collectAsStateWithLifecycle();var saved by rememberSaveable { mutableStateOf(false) }
     val type=d.type
+    var intervalInput by rememberSaveable(initial.id) {mutableStateOf(initial.interval.toString())}
     LazyColumn(Modifier.imePadding(),contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         item { HeaderBack(if(editing) "Edit ${type.label().lowercase()}" else "New ${type.label().lowercase()}",close) }
         item { Field(if(type==EntityType.JOURNAL) "Title (optional)" else "Title",d.title,{d=d.copy(title=it)}) }
@@ -61,7 +62,8 @@ import java.util.UUID
         if(type in listOf(EntityType.TASK,EntityType.REMINDER,EntityType.HABIT)) item {
             Choice("Repeats",listOf<Frequency?>(null)+Frequency.entries,d.frequency,{d=d.copy(frequency=it)}) {it?.name?.lowercase()?.replaceFirstChar(Char::titlecase) ?: "Does not repeat"}
             if(d.frequency!=null) {
-                Field("Every N ${d.frequency!!.name.lowercase().removeSuffix("ly")} periods",d.interval.toString(),{it.toIntOrNull()?.let {n -> d=d.copy(interval=n)}})
+                val period=when(d.frequency) {Frequency.DAILY -> "days";Frequency.WEEKLY -> "weeks";Frequency.MONTHLY -> "months";Frequency.YEARLY -> "years";null -> "periods"}
+                Field("Repeat every · $period",intervalInput,{intervalInput=it;d=d.copy(interval=it.toIntOrNull() ?: 0)})
                 if(d.frequency==Frequency.WEEKLY) DayOfWeek.entries.forEach { day ->
                     val selected=(d.weekdaysMask ?: (1 shl ((runCatching { LocalDate.parse(d.date) }.getOrDefault(LocalDate.now())).dayOfWeek.value-1))) and (1 shl (day.value-1))!=0
                     Toggle(day.name.lowercase().replaceFirstChar(Char::titlecase),selected,{checked -> val mask=d.weekdaysMask ?: (1 shl ((runCatching {LocalDate.parse(d.date)}.getOrDefault(LocalDate.now())).dayOfWeek.value-1));d=d.copy(weekdaysMask=if(checked) mask or (1 shl(day.value-1)) else mask and (1 shl(day.value-1)).inv())})
