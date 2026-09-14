@@ -1,0 +1,39 @@
+name: Inspect saved device evidence
+on:
+  push:
+    branches: ['build/**']
+    paths: ['.github/workflows/qa-evidence.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 34832790757
+          pattern: PersonalOS-device-API-*
+          path: previous-results
+      - name: Read saved failures and UI state
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as E
+          for path in sorted(Path('previous-results').rglob('TEST-*.xml')):
+              print('\nREPORT',path)
+              root=E.parse(path).getroot()
+              print(root.attrib)
+              for case in root.iter('testcase'):
+                  failure=case.find('failure')
+                  if failure is not None:
+                      print('FAILED',case.attrib)
+                      print(failure.text)
+          for path in sorted(Path('previous-results').rglob('*semantics.txt')):
+              if 'API-36' in str(path):
+                  print('\nUI STATE',path)
+                  print(path.read_text()[:30000])
+          PY
