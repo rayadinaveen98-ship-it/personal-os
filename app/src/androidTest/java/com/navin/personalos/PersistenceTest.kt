@@ -119,4 +119,12 @@ class PersistenceTest {
         assertEquals(task.id,db.dao().searchFiltered("garden*",EntityType.TASK,1).single().entityId)
     }
 
+    @Test fun optionalWeeklyReflectionAndCarryForwardPersistRealState() = runBlocking {
+        val task=Draft(UUID.randomUUID().toString(),EntityType.TASK,title="Synthetic open loop",date="2026-09-13")
+        repo.save(task);repo.reschedule(task.id,LocalDate.parse("2026-09-14"))
+        repo.save(Draft(UUID.randomUUID().toString(),EntityType.WEEKLY_REVIEW,date="2026-09-13"))
+        assertEquals("2026-09-14",db.dao().getTask(task.id)!!.dueLocalDate)
+        assertEquals("2026-09-07",db.dao().allWeeklyReview().single().periodStartLocalDate)
+    }
+
 }

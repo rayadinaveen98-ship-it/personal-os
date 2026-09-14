@@ -58,7 +58,12 @@ jobs:
         timeout-minutes: 8
         run: |
           sudo chmod 666 /dev/kvm
-          echo no | avdmanager create avd --name personal-os-qa --package 'system-images;android-${{ matrix.api }};google_apis;x86_64' --force
+          export ANDROID_AVD_HOME="$RUNNER_TEMP/personal-os-avd"
+          mkdir -p "$ANDROID_AVD_HOME"
+          echo no | avdmanager create avd --name personal-os-qa --path "$ANDROID_AVD_HOME/personal-os-qa.avd" --device pixel_2 --package 'system-images;android-${{ matrix.api }};google_apis;x86_64' --force
+          avdmanager list avd
+          test -f "$ANDROID_AVD_HOME/personal-os-qa.ini"
+          "$ANDROID_HOME/emulator/emulator" -list-avds
           "$ANDROID_HOME/emulator/emulator" -avd personal-os-qa -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel on > emulator.log 2>&1 &
           emulator_pid=$!
           trap 'cat emulator.log; adb devices -l' EXIT

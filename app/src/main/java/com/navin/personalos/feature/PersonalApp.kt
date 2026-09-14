@@ -69,7 +69,7 @@ fun route(type: EntityType,id: String)="detail/${type.name}/$id"
                 composable("search") { SearchScreen(vm,open) { nav.popBackStack() } }
                 composable("settings") { SettingsScreen(vm,p) { nav.popBackStack() } }
                 composable("timeline") { TimelineScreen(vm,records,open) { nav.popBackStack() } }
-                composable("review") { ReviewScreen(vm,records) { nav.popBackStack() } }
+                composable("review") { ReviewScreen(vm,records,open) { nav.popBackStack() } }
                 composable("list/{type}") { e ->
                     val type=EntityType.valueOf(requireNotNull(e.arguments?.getString("type")))
                     RecordList(type,records.filter { it.type==type },open,{create(type)}) { nav.popBackStack() }

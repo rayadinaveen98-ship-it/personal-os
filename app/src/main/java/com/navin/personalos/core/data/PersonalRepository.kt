@@ -46,7 +46,7 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
     )) { it.flatMap { list -> list }.sortedByDescending { r -> r.updatedAt } }
 
     suspend fun save(d: Draft, reflection: ReflectionType = d.reflection): String = db.withTransaction {
-        require(d.title.isNotBlank() || d.type in listOf(EntityType.JOURNAL,EntityType.IDEA,EntityType.WEEKLY_REVIEW) && d.body.isNotBlank()) { "Add a title or a thought before saving." }
+        require(d.type==EntityType.WEEKLY_REVIEW || d.title.isNotBlank() || d.type in listOf(EntityType.JOURNAL,EntityType.IDEA) && d.body.isNotBlank()) { "Add a title or a thought before saving." }
         require(d.title.length <= 500) { "Keep the title within 500 characters." }
         val date=d.date.takeIf { it.isNotBlank() }?.let(LocalDate::parse)
         val time=d.time.takeIf { it.isNotBlank() }?.let(LocalTime::parse)
@@ -278,7 +278,10 @@ class PersonalRepository @Inject constructor(val db: PersonalDatabase, val dao: 
         dao.put(t.copy(pinnedFocus=pinned,updatedAt=clock.millis()));if(pinned) event("FOCUS_PINNED",EntityType.TASK,id,t.title)
     }
     suspend fun reschedule(id: String, date: LocalDate?) = db.withTransaction {
-        val t=requireNotNull(dao.getTask(id));val time=t.dueAt?.let { Instant.ofEpochMilli(it).atZone(clock.zone).toLocalTime() }
+        val t=requireNotNull(dao.getTask(id));require(t.status==TaskStatus.OPEN)
+        if(t.recurrenceRuleId!=null && date!=null) {overrideOccurrence(id,date);return@withTransaction}
+        if(t.dueLocalDate!=null) shiftTaskReminders(id,LocalDate.parse(t.dueLocalDate),date)
+        val time=t.dueAt?.let { Instant.ofEpochMilli(it).atZone(clock.zone).toLocalTime() }
         dao.put(t.copy(dueLocalDate=date?.toString(),dueAt=if(date!=null && time!=null) date.atTime(time).atZone(clock.zone).toInstant().toEpochMilli() else null,updatedAt=clock.millis()));index(EntityType.TASK,id)
     }
     suspend fun status(type: EntityType, id: String, status: String) = db.withTransaction {

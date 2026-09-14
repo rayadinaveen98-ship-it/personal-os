@@ -67,18 +67,44 @@ import java.util.UUID
         if(sorted.size>limit) item { TextButton(onClick={limit+=60}) { Text("Load earlier activity") } }
     }
 }
-@Composable fun ReviewScreen(vm: PersonalViewModel,records: List<Record>,back: ()->Unit) {
+@Composable fun ReviewScreen(vm: PersonalViewModel,records: List<Record>,open: (EntityType,String)->Unit,back: ()->Unit) {
     var date by rememberSaveable { mutableStateOf(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toString()) }
     var draft by remember { mutableStateOf<Draft?>(null) };var evidence by remember { mutableStateOf("") }
+    var rescheduling by remember { mutableStateOf<Task?>(null) };var selectedDate by remember { mutableStateOf("") }
+    val tasks by vm.repository.dao.observeTask().collectAsStateWithLifecycle(emptyList())
+    val busy by vm.busy.collectAsStateWithLifecycle()
+    val start=LocalDate.parse(date).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));val end=start.plusDays(6)
+    var moved by remember { mutableStateOf<List<Record>>(emptyList()) }
     LaunchedEffect(date) {
-        val start=LocalDate.parse(date).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));val dao=vm.repository.dao
-        val old=dao.allWeeklyReview().firstOrNull { it.periodStartLocalDate==start.toString() }
+        val old=vm.repository.dao.allWeeklyReview().firstOrNull {it.periodStartLocalDate==start.toString()}
         draft=Draft(old?.id ?: UUID.randomUUID().toString(),EntityType.WEEKLY_REVIEW,old?.highlight.orEmpty(),old?.reflectionBody.orEmpty(),date=start.toString())
-        val e=PersonalIntelligence().week(start,dao.allTask(),dao.allSession(),dao.allJournalEntry(),dao.allMilestone(),dao.allIdea(),ZoneId.systemDefault())
-        val completions=dao.allTimelineEvent().count { it.eventType=="TASK_COMPLETED" && it.localDate>=e.start.toString() && it.localDate<=e.end.toString() }
-        evidence="${e.start} — ${e.end}\n$completions completed actions · ${e.sessions} sessions · ${e.minutes} recorded minutes\n${e.reflectionDays} days with writing · ${e.milestones} completed milestones · ${e.ideas} ideas captured"
     }
-    Column(Modifier.fillMaxSize().padding(horizontal=20.dp)) { HeaderBack("A moment with your week",back);DateField("Week containing",date,{if(it.isNotBlank()) date=it});Text(evidence,style=MaterialTheme.typography.bodyMedium);draft?.let { key(it.id) { Editor(vm,records,it,false,back) } } }
+    LaunchedEffect(date,records,tasks) {
+        val dao=vm.repository.dao
+        val e=PersonalIntelligence().week(start,dao.allTask(),dao.allSession(),dao.allJournalEntry(),dao.allMilestone(),dao.allIdea(),ZoneId.systemDefault())
+        val completed=dao.allTimelineEvent().filter {it.eventType=="TASK_COMPLETED" && it.localDate>=start.toString() && it.localDate<=end.toString()}
+        val projectIds=completed.mapNotNull {event -> tasks.firstOrNull {it.id==event.sourceId}?.projectId}.toSet()+
+            dao.allSession().filter {it.localDate>=start.toString() && it.localDate<=end.toString()}.mapNotNull {it.projectId}
+        moved=records.filter {it.type==EntityType.PROJECT && it.id in projectIds}
+        evidence="${e.start} — ${e.end}\n${completed.size} completed actions · ${e.sessions} sessions · ${e.minutes} recorded minutes\n${e.reflectionDays} days with writing · ${e.milestones} completed milestones · ${e.ideas} ideas captured"
+    }
+    rescheduling?.let { task -> AlertDialog(onDismissRequest={rescheduling=null},title={Text("Reschedule action")},text={DateField("New date",selectedDate,{selectedDate=it})},confirmButton={TextButton(enabled=selectedDate.isNotBlank() && !busy,onClick={vm.act("Action rescheduled") {vm.repository.reschedule(task.id,LocalDate.parse(selectedDate));rescheduling=null}}) {Text("Reschedule")}},dismissButton={TextButton(onClick={rescheduling=null}) {Text("Cancel")}}) }
+    val loops=tasks.filter {it.status==TaskStatus.OPEN && it.dueLocalDate!=null && it.dueLocalDate<=end.toString()}
+    LazyColumn(contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
+        item {HeaderBack("A moment with your week",back);DateField("Week containing",date,{if(it.isNotBlank()) date=it});Text(evidence,style=MaterialTheme.typography.bodyMedium)}
+        if(moved.isNotEmpty()) item {Eyebrow("What moved forward")}
+        items(moved,key={"project-${it.id}"}) {record -> CalmCard(onClick={open(record.type,record.id)}) {Text(record.title);Text("Recorded actions or sessions this week");TextButton(enabled=!busy,onClick={vm.act("Project paused") {vm.repository.status(EntityType.PROJECT,record.id,"PAUSED")}}) {Text("Pause project")}}}
+        item {Eyebrow("Open loops");if(loops.isEmpty()) Text("No dated actions to carry forward. You can still note what mattered.")}
+        items(loops,key={"loop-${it.id}"}) {task -> CalmCard {
+            TextButton(onClick={open(EntityType.TASK,task.id)}) {Text(task.title)}
+            Text("Planned for ${task.dueLocalDate}")
+            TextButton(enabled=!busy,onClick={vm.act("Carried to next week") {vm.repository.reschedule(task.id,start.plusWeeks(1))}}) {Text("Carry to next week")}
+            TextButton(enabled=!busy,onClick={selectedDate=task.dueLocalDate.orEmpty();rescheduling=task}) {Text("Reschedule")}
+            TextButton(enabled=!busy,onClick={vm.act("Action cancelled") {vm.repository.status(EntityType.TASK,task.id,"CANCELLED")}}) {Text("No longer needed")}
+            TextButton(enabled=!busy,onClick={vm.act("Focus updated") {vm.repository.pin(task.id,!task.pinnedFocus)}}) {Text(if(task.pinnedFocus) "Clear chosen focus" else "Choose as focus")}
+        }}
+        draft?.let {d -> item {CalmCard {Eyebrow("Optional reflection");Field("What felt worth the effort?",d.title,{draft=d.copy(title=it)});Field("What deserves your attention next?",d.body,{draft=d.copy(body=it)},multiline=true);PrimaryButton("Close week",!busy) {vm.act("Week closed") {vm.repository.save(requireNotNull(draft));back()}}}}}
+    }
 }
 @Composable fun SettingsScreen(vm: PersonalViewModel,p: PersonalPreferences,back: ()->Unit) {
     val context=LocalContext.current
