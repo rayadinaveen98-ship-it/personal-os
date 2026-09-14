@@ -55,18 +55,29 @@ jobs:
       - name: Install device and build packages
         run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0' 'emulator' 'system-images;android-${{ matrix.api }};google_apis;x86_64'
       - name: Boot Android device
+        timeout-minutes: 8
         run: |
           sudo chmod 666 /dev/kvm
           echo no | avdmanager create avd --name personal-os-qa --package 'system-images;android-${{ matrix.api }};google_apis;x86_64' --force
           "$ANDROID_HOME/emulator/emulator" -avd personal-os-qa -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel on > emulator.log 2>&1 &
-          adb wait-for-device
+          emulator_pid=$!
+          trap 'cat emulator.log; adb devices -l' EXIT
+          for attempt in $(seq 1 120); do
+            if ! kill -0 "$emulator_pid" 2>/dev/null; then
+              echo "Emulator exited before connecting"
+              exit 1
+            fi
+            if adb devices | grep -q 'emulator-.*device'; then break; fi
+            sleep 2
+          done
+          timeout 30 adb wait-for-device
           timeout 240 bash -c 'until adb shell getprop sys.boot_completed | tr -d "\r" | grep -q 1; do sleep 2; done'
           adb shell input keyevent 82
       - name: Test Room, backup, domain persistence and app interactions
         run: ./gradlew connectedDebugAndroidTest --stacktrace
       - name: Collect runtime screenshots
         if: always()
-        run: adb pull /sdcard/Android/data/com.navin.personalos/files/qa-screenshots qa-screenshots || true
+        run: timeout 30 adb pull /sdcard/Android/data/com.navin.personalos/files/qa-screenshots qa-screenshots || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
