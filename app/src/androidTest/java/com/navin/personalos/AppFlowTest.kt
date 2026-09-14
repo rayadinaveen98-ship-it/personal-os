@@ -6,6 +6,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import com.navin.personalos.feature.PersonalViewModel
 import com.navin.personalos.feature.label
@@ -27,7 +28,7 @@ class AppFlowTest {
             runCatching {snapshot("failed-${description.methodName}")}
             runCatching {
                 val directory=File(ui.activity.getExternalFilesDir(null),"qa-screenshots").apply {mkdirs()}
-                File(directory,"failed-${description.methodName}-semantics.txt").writeText(ui.onRoot(useUnmergedTree=true).printToString())
+                android.util.Log.e("PersonalOS-QA", "Failed ${description.methodName}: " + ui.onRoot(useUnmergedTree=true).printToString())
             }
         }
     }
@@ -38,8 +39,15 @@ class AppFlowTest {
         ui.waitForIdle()
     }
     private fun tap(text: String) {
+        ui.runOnUiThread {
+            androidx.core.view.WindowCompat.getInsetsController(ui.activity.window,ui.activity.window.decorView).hide(androidx.core.view.WindowInsetsCompat.Type.ime())
+        }
+        ui.waitUntil(10_000) {
+            androidx.core.view.ViewCompat.getRootWindowInsets(ui.activity.window.decorView)?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) != true
+        }
         ui.onNode(SemanticsMatcher.keyIsDefined(SemanticsActions.ScrollToIndex)).performScrollToNode(hasText(text))
-        ui.onNodeWithText(text).performClick();ui.waitForIdle()
+        ui.waitForIdle()
+        ui.onNodeWithText(text).assertIsDisplayed().assertIsEnabled().performClick();ui.waitForIdle()
     }
     private fun setupEmpty() {
         tap("Make this space mine")
@@ -70,8 +78,7 @@ class AppFlowTest {
         ui.waitUntil(10_000) {runBlocking {vm.preferences.flow.first().name=="Synthetic profile"}}
         snapshot("settings")
     }
-    @Test fun requiredWidthsFontsAndThemesRemainNavigable() {
-        Assume.assumeTrue("Visual acceptance targets API 36; other APIs run core flows",android.os.Build.VERSION.SDK_INT==36)
+    @Test @SdkSuppress(minSdkVersion=36,maxSdkVersion=36) fun requiredWidthsFontsAndThemesRemainNavigable() {
         setupEmpty()
         val automation=InstrumentationRegistry.getInstrumentation().uiAutomation
         fun shell(command: String) {automation.executeShellCommand(command).use {descriptor -> android.os.ParcelFileDescriptor.AutoCloseInputStream(descriptor).use {it.readBytes()}}}
@@ -126,8 +133,7 @@ class AppFlowTest {
         ui.onAllNodesWithText("Synthetic private action").assertCountEquals(0)
         ui.onNodeWithText("Unlock").assertIsDisplayed()
     }
-    @Test fun allEntityDetailsAndEditorsWorkOfflineOnCompactLargeText() {
-        Assume.assumeTrue("Visual acceptance targets API 36; other APIs run core flows",android.os.Build.VERSION.SDK_INT==36)
+    @Test @SdkSuppress(minSdkVersion=36,maxSdkVersion=36) fun allEntityDetailsAndEditorsWorkOfflineOnCompactLargeText() {
         setupEmpty()
         val automation=InstrumentationRegistry.getInstrumentation().uiAutomation
         fun shell(command: String) {automation.executeShellCommand(command).use {android.os.ParcelFileDescriptor.AutoCloseInputStream(it).use {stream -> stream.readBytes()}}}
@@ -161,9 +167,11 @@ class AppFlowTest {
         } finally {shell("cmd connectivity airplane-mode disable");shell("wm size reset");shell("wm density reset");shell("settings put system font_scale 1.0")}
     }
     private fun snapshot(name: String) {
-        val instrumentation=InstrumentationRegistry.getInstrumentation()
-        val bitmap=instrumentation.uiAutomation.takeScreenshot() ?: return
-        val directory=File(ui.activity.getExternalFilesDir(null),"qa-screenshots").apply {mkdirs()}
-        File(directory,"$name.png").outputStream().use {bitmap.compress(Bitmap.CompressFormat.PNG,100,it)}
+        val automation=InstrumentationRegistry.getInstrumentation().uiAutomation
+        for(command in listOf("mkdir -p /sdcard/Download/personal-os-qa","screencap -p /sdcard/Download/personal-os-qa/$name.png")) {
+            automation.executeShellCommand(command).use {descriptor ->
+                android.os.ParcelFileDescriptor.AutoCloseInputStream(descriptor).use {it.readBytes()}
+            }
+        }
     }
 }

@@ -80,9 +80,24 @@ jobs:
           adb shell input keyevent 82
       - name: Test Room, backup, domain persistence and app interactions
         run: ./gradlew connectedDebugAndroidTest --stacktrace
+      - name: Print device test failures
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as E
+          for path in Path('app/build/outputs/androidTest-results').rglob('TEST-*.xml'):
+              root=E.parse(path).getroot()
+              print(path,root.attrib)
+              for case in root.iter('testcase'):
+                  failure=case.find('failure')
+                  if failure is not None:
+                      print(case.attrib)
+                      print(failure.text)
+          PY
       - name: Collect runtime screenshots
         if: always()
-        run: timeout 30 adb pull /sdcard/Android/data/com.navin.personalos/files/qa-screenshots qa-screenshots || true
+        run: timeout 30 adb pull /sdcard/Download/personal-os-qa qa-screenshots || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
