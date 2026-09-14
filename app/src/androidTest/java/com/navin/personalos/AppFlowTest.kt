@@ -21,7 +21,16 @@ import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class AppFlowTest {
-    @get:Rule val ui=createAndroidComposeRule<MainActivity>()
+    @get:Rule(order=0) val ui=createAndroidComposeRule<MainActivity>()
+    @get:Rule(order=1) val failureEvidence=object: org.junit.rules.TestWatcher() {
+        override fun failed(error: Throwable,description: org.junit.runner.Description) {
+            runCatching {snapshot("failed-${description.methodName}")}
+            runCatching {
+                val directory=File(ui.activity.getExternalFilesDir(null),"qa-screenshots").apply {mkdirs()}
+                File(directory,"failed-${description.methodName}-semantics.txt").writeText(ui.onRoot(useUnmergedTree=true).printToString())
+            }
+        }
+    }
     private lateinit var vm: PersonalViewModel
     @Before fun reset() {
         ui.runOnUiThread {vm=ViewModelProvider(ui.activity)[PersonalViewModel::class.java]}
@@ -62,7 +71,7 @@ class AppFlowTest {
         snapshot("settings")
     }
     @Test fun requiredWidthsFontsAndThemesRemainNavigable() {
-        if(android.os.Build.VERSION.SDK_INT!=36) return
+        Assume.assumeTrue("Visual acceptance targets API 36; other APIs run core flows",android.os.Build.VERSION.SDK_INT==36)
         setupEmpty()
         val automation=InstrumentationRegistry.getInstrumentation().uiAutomation
         fun shell(command: String) {automation.executeShellCommand(command).use {descriptor -> android.os.ParcelFileDescriptor.AutoCloseInputStream(descriptor).use {it.readBytes()}}}
@@ -118,7 +127,7 @@ class AppFlowTest {
         ui.onNodeWithText("Unlock").assertIsDisplayed()
     }
     @Test fun allEntityDetailsAndEditorsWorkOfflineOnCompactLargeText() {
-        if(android.os.Build.VERSION.SDK_INT!=36) return
+        Assume.assumeTrue("Visual acceptance targets API 36; other APIs run core flows",android.os.Build.VERSION.SDK_INT==36)
         setupEmpty()
         val automation=InstrumentationRegistry.getInstrumentation().uiAutomation
         fun shell(command: String) {automation.executeShellCommand(command).use {android.os.ParcelFileDescriptor.AutoCloseInputStream(it).use {stream -> stream.readBytes()}}}
