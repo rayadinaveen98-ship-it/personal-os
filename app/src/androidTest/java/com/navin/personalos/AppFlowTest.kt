@@ -1,9 +1,8 @@
 package com.navin.personalos
 
-import android.graphics.Bitmap
 import androidx.compose.ui.test.*
 import androidx.compose.ui.semantics.SemanticsActions
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
@@ -18,7 +17,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.junit.*
 import org.junit.runner.RunWith
-import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class AppFlowTest {
@@ -27,8 +25,10 @@ class AppFlowTest {
         override fun failed(error: Throwable,description: org.junit.runner.Description) {
             runCatching {snapshot("failed-${description.methodName}")}
             runCatching {
-                val directory=File(ui.activity.getExternalFilesDir(null),"qa-screenshots").apply {mkdirs()}
-                android.util.Log.e("PersonalOS-QA", "Failed ${description.methodName}: " + ui.onRoot(useUnmergedTree=true).printToString())
+                android.util.Log.e("PersonalOS-QA", "Failed ${description.methodName}")
+                ui.onRoot(useUnmergedTree=true).printToString().chunked(3000).forEach { chunk ->
+                    android.util.Log.e("PersonalOS-QA", chunk)
+                }
             }
         }
     }
